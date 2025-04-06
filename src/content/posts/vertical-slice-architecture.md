@@ -1,0 +1,64 @@
+---
+title: Improving Microservices Architecture with Vertical Slice Architecture  
+publishDate: 2025-04-06 19:00:00
+img: /assets/vertical_slice_architecture.png
+img_alt: Vertical Slice Architecute graphic
+description: |
+  Explore how Vertical Slice Architecture, combined with Domain-Driven Design and Event-Driven Architecture, enhances the scalability and maintainability of microservices in a hotel reservation system.
+tags:
+  - CleanArchitecture
+  - DDD
+  - EDA
+  - C#
+  - VSA
+  - Backend
+---
+
+Recently, I have been working on modifying a **Vertical Slice Architecture** template to enhance the maintainability and scalability of microservices. This project aims to design an architecture based on **Azure ☁️** for reservation management, using **Event-Driven Architecture 🔄** to efficiently handle events and ensure asynchronous communication between services.  
+
+This architecture will serve as the foundation upon which I will build the system.  
+
+## Key Tools and Approaches  
+
+To achieve this goal, I have incorporated a combination of architectures and tools that have been fundamental in the process:  
+
+### 1. **Domain-Driven Design (DDD) 🏗️**  
+
+I restructured the application organization to clearly define domain boundaries and avoid unnecessary dependencies between modules. This has enabled greater clarity and modularity in the design.  
+
+### 2. **Screaming Architecture 📢**  
+
+By prioritizing the expressiveness of the code structure, the folder and namespace organization now directly reflects the business domain instead of being coupled to technical details.  
+
+### 3. **.NET Aspire 🚀**  
+
+I integrated Aspire for service orchestration, simplifying dependency management, configuration, and local deployment of microservices.  
+
+### 4. **Event-Driven Architecture ⚡**  
+
+I implemented an event-driven approach to improve scalability and decouple services, enabling better management of distributed transactions.  
+
+### 5. **Migration Service 🗄️**  
+
+I added a specific service to manage database schema evolution, ensuring migrations are applied automatically and in a controlled manner.  
+
+## Benefits Achieved  
+
+This combination of approaches and tools has enabled:  
+
+- Greater modularity and clarity in service development.
+
+- Improved long-term maintainability.  
+
+- Simplified integration and deployment of services in both local and cloud environments, thanks to Aspire.  
+
+## Next Steps  
+
+I will continue sharing progress and the challenges I encounter throughout the development of this system.  
+
+💬 **What other strategies do you use to improve the architecture and maintenance of your microservices?**  
+
+📌 You can follow the project's development in my GitHub repository: [GitHub repository](https://github.com/TempooDev/Booking)  
+
+---  
+_Thank you for reading! I hope this experience can serve as inspiration for your own projects!_
