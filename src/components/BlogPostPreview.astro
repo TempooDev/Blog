@@ -1,8 +1,8 @@
 ---
-import type { CollectionEntry } from 'astro:content';
+import type { CollectionEntry } from "astro:content";
 
 interface Props {
-    post: CollectionEntry<'blog'>;
+    post: CollectionEntry<"blog">;
 }
 
 const { data, id } = Astro.props.post;
@@ -10,8 +10,13 @@ const { data, id } = Astro.props.post;
 
 <a class="card" href={`/blog/${id}`}>
     <span class="title">{data.title}</span>
-    <p class="excerpt">{data.excerpt}</p>
-    <img src={data.img} alt={data.img_alt || ''} loading="lazy" decoding="async" />
+    <p class="excerpt">{data.description}</p>
+    <img
+        src={data.img}
+        alt={data.img_alt || ""}
+        loading="lazy"
+        decoding="async"
+    />
 </a>
 
 <style>
