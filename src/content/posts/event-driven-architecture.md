@@ -13,17 +13,15 @@ tags:
   - .NET
   - Azure Functions
   - Serverless
+----
 
-Recently, I've been exploring the benefits of **Event-Driven Architecture (EDA)** in a microservices-based hotel reservation system. This project aims to design an architecture that enables
-real-time interactions, improves scalability and maintainability, and simplifies integration between services.
+Recently, I've been exploring the benefits of **Event-Driven Architecture (EDA)** in a microservices-based hotel reservation system. This project aims to design an architecture that enables real-time interactions, improves scalability and maintainability, and simplifies integration between services.
 
 This architecture will serve as the foundation upon which I will build the system.
 
 ## Event-Driven Architecture: A Definition
 
-Event-Driven Architecture is a software development approach that revolves around producing and consuming events. An event represents an occurrence or state change within a microservice, such as
-"Room 101 has been reserved" or "Guest 123 has checked out". This architecture allows services to publish and subscribe to these events, enabling real-time interactions and asynchronous
-communication between services.
+Event-Driven Architecture is a software development approach that revolves around producing and consuming events. An event represents an occurrence or state change within a microservice, such as "Room 101 has been reserved" or "Guest 123 has checked out". This architecture allows services to publish and subscribe to these events, enabling real-time interactions and asynchronous communication between services.
 
 ## Key Components of EDA
 
@@ -31,19 +29,15 @@ To achieve this goal, I've identified the following key components:
 
 ### Domain Events
 
-**Domain Events** represent significant changes within a microservice's domain. These events encapsulate the essence of what has happened (e.g., "Room 101 has been reserved" or "Guest 123 has
-checked out"). By using domain events, services can react to state changes and update their internal states accordingly.
+**Domain Events** represent significant changes within a microservice's domain. These events encapsulate the essence of what has happened (e.g., "Room 101 has been reserved" or "Guest 123 has checked out"). By using domain events, services can react to state changes and update their internal states accordingly.
 
-For example, when a guest checks out, an "Guest Checkout" event is triggered. This event contains the necessary information about the checkout process (e.g., the guest's ID, room number, and
-checkout date).
+For example, when a guest checks out, an "Guest Checkout" event is triggered. This event contains the necessary information about the checkout process (e.g., the guest's ID, room number, and checkout date).
 
 ### Event Handlers
 
-**Event Handlers** are services that subscribe to events and react to them by performing specific actions. In the case of the "Guest Checkout" event, an event handler might update the guest's
-status in the database or send a confirmation email.
+**Event Handlers** are services that subscribe to events and react to them by performing specific actions. In the case of the "Guest Checkout" event, an event handler might update the guest's status in the database or send a confirmation email.
 
-To further improve performance and reduce costs, I've decided to use **Azure Functions** as event handlers. Azure Functions allows me to write scalable, serverless code that can be triggered by
-events from various sources (e.g., Azure Storage Queue, Azure Event Grid, or Azure IoT Hub).
+To further improve performance and reduce costs, I've decided to use **Azure Functions** as event handlers. Azure Functions allows me to write scalable, serverless code that can be triggered by events from various sources (e.g., Azure Storage Queue, Azure Event Grid, or Azure IoT Hub).
 
 By using Azure Functions, I can:
 
@@ -53,19 +47,15 @@ By using Azure Functions, I can:
 
 ### Event Buses
 
-**Event Buses** are middleware components responsible for distributing events between services. They ensure that events are routed correctly, provide features like message queuing and error
-handling, and help to mediate the communication between services.
+**Event Buses** are middleware components responsible for distributing events between services. They ensure that events are routed correctly, provide features like message queuing and error handling, and help to mediate the communication between services.
 
-In our hotel reservation system, an event bus would handle the "Guest Checkout" event by routing it to the relevant Azure Functions (e.g., room management, billing, and loyalty programs). This
-allows each service to react independently without affecting others.
+In our hotel reservation system, an event bus would handle the "Guest Checkout" event by routing it to the relevant Azure Functions (e.g., room management, billing, and loyalty programs). This allows each service to react independently without affecting others.
 
 ### Event Sourcing
 
-**Event Sourcing** is a pattern that involves storing the history of events related to a specific domain concept. For example, when a guest checks out, the event sourcing mechanism would store the
-"Guest Checkout" event along with its relevant information (e.g., the guest's ID, room number, and checkout date).
+**Event Sourcing** is a pattern that involves storing the history of events related to a specific domain concept. For example, when a guest checks out, the event sourcing mechanism would store the "Guest Checkout" event along with its relevant information (e.g., the guest's ID, room number, and checkout date).
 
-This approach enables auditing, debugging, and business reporting capabilities. By reconstructing the sequence of events, developers can analyze system behavior, detect anomalies, or perform
-impact assessments.
+This approach enables auditing, debugging, and business reporting capabilities. By reconstructing the sequence of events, developers can analyze system behavior, detect anomalies, or perform impact assessments.
 
 ## Benefits Achieved
 
@@ -106,8 +96,7 @@ sequenceDiagram
     AzureFunctions->>BillingService: Trigger billing actions (e.g., send invoice reminders)
     AzureFunctions->>LoyaltyProgramService: Trigger loyalty program updates (e.g., award or deduct points)
 ```
-This diagram shows the flow of events from the Hotel Reservation Service to various downstream services, including Room Management, Billing, and Loyalty Program. The Event Bus plays a central role
-in routing these events between services.
+This diagram shows the flow of events from the Hotel Reservation Service to various downstream services, including Room Management, Billing, and Loyalty Program. The Event Bus plays a central role in routing these events between services.
 
 The Azure Functions participant represents the serverless code that can be triggered by these events to perform specific actions (e.g., room management, billing, or loyalty program updates).
 
