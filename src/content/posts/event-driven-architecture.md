@@ -77,6 +77,42 @@ By implementing EDA on Azure with Azure Functions as event handlers, we've gaine
 * **Flexibility**: The architecture allows for easy addition or removal of services without affecting the overall system.
 * **Cost Efficiency**: Azure Functions helps reduce costs by only paying for the compute time consumed.
 
+## Diagram
+
+Here is a Mermaid diagram that explains the flow of events in our hotel reservation system:
+```mermaid
+sequenceDiagram
+    participant HotelReservationService as "Hotel Reservation Service"
+    participant RoomManagementService as "Room Management Service"
+    participant BillingService as "Billing Service"
+    participant LoyaltyProgramService as "Loyalty Program Service"
+    participant EventBus as "Event Bus"
+
+    HotelReservationService->>EventBus: Publish Guest Checkout event
+    EventBus->>RoomManagementService: Route Guest Checkout event to Room Management Service
+    RoomManagementService->>HotelReservationService: Update room status (e.g., change from "occupied" to "vacant")
+    HotelReservationService->>EventBus: Publish updated room status event
+
+    EventBus->>BillingService: Route updated room status event to Billing Service
+    BillingService->>HotelReservationService: Send invoice notification
+    HotelReservationService->>EventBus: Publish processed invoice event
+
+    EventBus->>LoyaltyProgramService: Route processed invoice event to Loyalty Program Service
+    LoyaltyProgramService->>HotelReservationService: Update loyalty program points (e.g., award or deduct points)
+    HotelReservationService->>EventBus: Publish updated loyalty program points event
+
+    EventBus->>AzureFunctions as "Azure Functions"
+    AzureFunctions->>RoomManagementService: Trigger room management actions (e.g., notify housekeeping to clean the room)
+    AzureFunctions->>BillingService: Trigger billing actions (e.g., send invoice reminders)
+    AzureFunctions->>LoyaltyProgramService: Trigger loyalty program updates (e.g., award or deduct points)
+```
+This diagram shows the flow of events from the Hotel Reservation Service to various downstream services, including Room Management, Billing, and Loyalty Program. The Event Bus plays a central role
+in routing these events between services.
+
+The Azure Functions participant represents the serverless code that can be triggered by these events to perform specific actions (e.g., room management, billing, or loyalty program updates).
+
+I hope this diagram helps illustrate the flow of events in our hotel reservation system!
+
 ## Next Steps
 
 I will continue sharing progress and the challenges I encounter throughout the development of this system.
