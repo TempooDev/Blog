@@ -1,4 +1,4 @@
-import { defineConfig } from 'astro';
+import { defineConfig } from 'astro/config';
 import mermaid from 'mermaid';
 
 export default defineConfig({
