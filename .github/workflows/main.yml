@@ -13,7 +13,7 @@ jobs:
       - name: Get playwright for mermaid stuff
         run: npx playwright install --with-deps chromium
       - name: Build
-        run: npm build
+        run: npm run build
       - name: Publish
         uses: cloudflare/pages-action@v1
         with:
