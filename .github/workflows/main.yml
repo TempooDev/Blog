@@ -2,7 +2,7 @@ on: [push]
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    enviroment: PROD
+    environment: PROD
     permissions:
       contents: read
       deployments: write
