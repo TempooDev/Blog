@@ -1,15 +1,21 @@
-import rehypeMermaid from 'rehype-mermaid';
-import addMermaidClass from './src/add-mermaid-classname.ts';
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
+import rehypeMermaid from 'rehype-mermaid';
+import expressiveCode from 'astro-expressive-code';
 
 export default defineConfig({
-markdown: {
+  integrations: [expressiveCode(), mdx(), react()],
+  markdown: {
     rehypePlugins: [
-      addMermaidClass,
-      rehypeMermaid,
+      [rehypeMermaid, {
+        theme: 'neutral',
+        mermaidConfig: {
+          startOnLoad: true,
+          securityLevel: 'loose',
+          fontFamily: 'monospace'
+        }
+      }]
     ]
-  } ,
-   integrations: [mdx(), react()],
+  }
 });

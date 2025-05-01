@@ -14,7 +14,6 @@ tags:
   - EDA
   - Backend
 ---
-import Mermaid from "../../components/Mermaid";
 
 ## Introduction
 
@@ -24,7 +23,25 @@ In today's digital age, hospitality companies are under pressure to provide seam
 
 Our project implements a microservices architecture using .NET Aspire to simplify infrastructure creation and enhanceobservability. It consists of two main services: **Booking** and **Hotel**, designed to manage reservations in a hotel chain.
 
-<Mermaid chart={`sequenceDiagram\n    participant BookingService as \"Booking Service\"\n    participant HotelService as \"Hotel Service\"\n    participant AzureServiceBus as \"Azure Service Bus\"\n    participant AzureBlobStorage as \"Azure Blob Storage\"\n\n    BookingService->>HotelService: Create Reservation\n    HotelService->>AzureServiceBus: Send Event (Reservation Created)\n    AzureServiceBus->>BookingService: Send Acknowledgment\n\n    alt Reservation Modified\n        BookingService->>HotelService: Update Reservation\n        HotelService->>AzureServiceBus: Send Event (Reservation Updated)\n    end\n\n    HotelService->>AzureBlobStorage: Store Reservation Data\n    AzureBlobStorage->>HotelService: Return Stored Data`} />
+```mermaid
+sequenceDiagram
+    participant BookingService as "Booking Service"
+    participant HotelService as "Hotel Service"
+    participant AzureServiceBus as "Azure Service Bus"
+    participant AzureBlobStorage as "Azure Blob Storage"
+
+    BookingService->>HotelService: Create Reservation
+    HotelService->>AzureServiceBus: Send Event (Reservation Created)
+    AzureServiceBus->>BookingService: Send Acknowledgment
+
+    alt Reservation Modified
+        BookingService->>HotelService: Update Reservation
+        HotelService->>AzureServiceBus: Send Event (Reservation Updated)
+    end
+
+    HotelService->>AzureBlobStorage: Store Reservation Data
+    AzureBlobStorage->>HotelService: Return Stored Data
+```
 
 ## Description
 
@@ -54,19 +71,21 @@ This modular and decoupled approach enhances the system's scalability and mainta
 * Scalable data storage and management
 * Enhanced observability and monitoring capabilities
 
-<Mermaid chart={`flowchart LR
-    component1['Booking Service'] -->|Create Reservation| component2['Hotel Service']
-    component2 -->|Send Event - Reservation Created| component3['Azure Service Bus']
+```mermaid
+flowchart LR
+    component1["Booking Service"] -->|Create Reservation| component2["Hotel Service"]
+    component2 -->|Send Event - Reservation Created| component3["Azure Service Bus"]
     component3 -->|Send Acknowledgment| component1
 
-    subgraph Modify Reservation
+    subgraph Modify_Reservation
         component1 -->|Update Reservation| component2
         component2 -->|Send Event - Reservation Updated| component3
     end
 
-    component2 -->|Store Reservation Data| component4['Azure Blob Storage']
+    component2 -->|Store Reservation Data| component4["Azure Blob Storage"]
     component4 -->|Return Stored Data| component2
-`} />
+
+```
 
 ## Conclusion
 
