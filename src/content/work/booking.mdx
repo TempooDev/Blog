@@ -14,14 +14,14 @@ tags:
   - EDA
   - Backend
 ---
-**Introduction**
+
+## Introduction
 
 In today's digital age, hospitality companies are under pressure to provide seamless guest experiences. To achieve this, they require a robust hotel reservation system that can handle high volumes of bookings, modifications, and cancellations efficiently. A well-designed microservices architecture can help address these challenges by breaking down the system into smaller, independent services that communicate with each other asynchronously.
 
-**Microservices Architecture**
+## Microservices Architecture
 
 Our project implements a microservices architecture using .NET Aspire to simplify infrastructure creation and enhanceobservability. It consists of two main services: **Booking** and **Hotel**, designed to manage reservations in a hotel chain.
-
 
 ```mermaid
 sequenceDiagram
@@ -43,16 +43,9 @@ sequenceDiagram
     AzureBlobStorage->>HotelService: Return Stored Data
 ```
 
-**Description**
+## Description
 
-This sequence diagram illustrates the communication flow between the **Booking 
-Service**, **Hotel Service**, **Azure Service Bus**, and **Azure Blob Storage**. When a 
-new reservation is created, the **Booking Service** sends a request to the **Hotel 
-Service**, which then publishes an event to the **Azure Service Bus**. The **Azure 
-Service Bus** acknowledges receipt of the event and stores it for later processing. 
-Similarly, when a reservation is modified, the **Booking Service** updates the 
-reservation and sends an event to the **Azure Service Bus**, which then triggers 
-further processing in the **Hotel Service**.
+This sequence diagram illustrates the communication flow between the **Booking Service**, **Hotel Service**, **Azure Service Bus**, and **Azure Blob Storage**. When a new reservation is created, the **Booking Service** sends a request to the **Hotel Service**, which then publishes an event to the **Azure Service Bus**. The **Azure Service Bus** acknowledges receipt of the event and stores it for later processing. Similarly, when a reservation is modified, the **Booking Service** updates the reservation and sends an event to the **Azure Service Bus**, which then triggers further processing in the **Hotel Service**.
 
 ### Booking Service
 
@@ -70,7 +63,7 @@ Integrating **Azure Service Bus** in .NET Aspire facilitates connection with ins
 
 Similarly, integration with **Azure Blob Storage** allows for scalable and secure management and storage of largevolumes of unstructured data, such as images or documents associated with room reservations.
 
-**Benefits**
+#### Benefits
 
 This modular and decoupled approach enhances the system's scalability and maintainability, allowing each service to evolve independently according to business needs. Additionally, by leveraging **Azure Service Bus** and **Azure Blob Storage**, our architecture provides:
 
@@ -80,20 +73,21 @@ This modular and decoupled approach enhances the system's scalability and mainta
 
 ```mermaid
 flowchart LR
-    component1["Booking Service"] -->|Create Reservation|> component2["Hotel Service"]
-    component2 -->|Send Event (Reservation Created)|> component3["Azure Service Bus"]
-    component3 -->|Send Acknowledgment|> component1
+    component1["Booking Service"] -->|Create Reservation| component2["Hotel Service"]
+    component2 -->|Send Event - Reservation Created| component3["Azure Service Bus"]
+    component3 -->|Send Acknowledgment| component1
 
-    alt Modify Reservation
-        component1 -->|Update Reservation|> component2
-        component2 -->|Send Event (Reservation Updated)|> component3
+    subgraph Modify_Reservation
+        component1 -->|Update Reservation| component2
+        component2 -->|Send Event - Reservation Updated| component3
     end
 
-    component2 -->|Store Reservation Data|> component4["Azure Blob Storage"]
-    component4 -->|Return Stored Data|> component2
+    component2 -->|Store Reservation Data| component4["Azure Blob Storage"]
+    component4 -->|Return Stored Data| component2
+
 ```
 
-**Conclusion**
+## Conclusion
 
 In this post, we explored the design of a microservices-based hotel reservation system using .NET Aspire, Azure Service Bus, and Azure Blob Storage. This scalable and maintainable architecture enables efficient booking processing, event-driven communication, and large-scale data storage.
 
