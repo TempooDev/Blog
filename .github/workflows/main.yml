@@ -2,8 +2,6 @@ on:
   pull_request:
     branches:
       - main
-    paths-ignore:
-      - '.github/workflows/main.yml'
 jobs:
   deploy:
     if: github.event.pull_request.merged == true
