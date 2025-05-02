@@ -6,7 +6,7 @@ import expressiveCode from 'astro-expressive-code';
 import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  site:'https://antoniobermudez.pages.dev/',
+  site:'https://antoniobermudez.dev/',
   integrations: [expressiveCode(), mdx(), react(), sitemap()],
   markdown: {
     rehypePlugins: [
