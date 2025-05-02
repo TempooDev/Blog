@@ -3,13 +3,11 @@ import mdx from '@astrojs/mdx';
 import react from '@astrojs/react';
 import rehypeMermaid from 'rehype-mermaid';
 import expressiveCode from 'astro-expressive-code';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import sitemap from '@astrojs/sitemap';
 
 export default defineConfig({
-  integrations: [expressiveCode(), mdx(), react()],
+  site:'https://antoniobermudez.pages.dev/',
+  integrations: [expressiveCode(), mdx(), react(), sitemap()],
   markdown: {
     rehypePlugins: [
       [rehypeMermaid, {
