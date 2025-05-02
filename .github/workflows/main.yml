@@ -1,4 +1,9 @@
-on: [push]
+on:
+  push:
+    branches:
+      - main
+    paths-ignore:
+      - '.github/workflows/main.yml'
 jobs:
   deploy:
     runs-on: ubuntu-latest
