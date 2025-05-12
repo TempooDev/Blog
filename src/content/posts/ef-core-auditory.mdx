@@ -1,26 +1,23 @@
 ---
-title: "EF Core como Sistema Nervioso: Auditoría Automática + Eventos de Dominio = Aplicaciones más Inteligentes"
-description: "Imagina que tu aplicación reacciona automáticamente a cada cambio, registra toda su actividad crítica y se comunica internamente sin código repetitivo. En este post te revelo cómo lograrlo usando EF Core como el sistema nervioso central de tu dominio, con dos técnicas infalibles: auditoría automática y eventos de dominio. Incluye el código exacto que uso en sistemas empresariales reales."
+title: "EF Core as Nervous System: Automatic Auditing + Domain Events = Smarter Applications"
+description: "Imagine your application automatically reacts to every change, logs all its critical activity, and communicates internally without repetitive code. In this post, I reveal how to achieve this using EF Core as the central nervous system of your domain, with two foolproof techniques: automatic auditing and domain events. Includes the exact code I use in real enterprise systems."
 publishDate: 2025-05-12
 tags:
-  - EDA
-  - Microservices
-  - Real-Time Systems
+  - DbContext
+  - EF
   - C#
   - .NET
-  - Azure Functions
-  - Serverless
 img: ""
 img_alt: ""
 ---
 
-# 🧠 Auditoría y Publicación de Eventos de Dominio con EF Core
+# 🧠 Auditing and Domain Event Publishing with EF Core
 
-En este post exploraremos cómo utilizar Entity Framework Core para implementar dos patrones fundamentales en aplicaciones empresariales: **auditoría de entidades** y **publicación de eventos de dominio**.
+In this post, we will explore how to use Entity Framework Core to implement two fundamental patterns in enterprise applications: **entity auditing** and **domain event publishing**.
 
-## 🔍 Auditoría Automática de Entidades
+## 🔍 Automatic Entity Auditing
 
-EF Core nos permite implementar un sistema de auditoría automática mediante el override del método **`SaveChangesAsync`**:
+EF Core allows us to implement an automatic auditing system by overriding the **`SaveChangesAsync`** method:
 
 ```csharp
 public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
@@ -39,31 +36,27 @@ public override async Task<int> SaveChangesAsync(CancellationToken cancellationT
                 break;
         }
     }
-    // Resto de la implementación...
+    // Rest of the implementation...
 }
 ```
 
-## 🎯 Beneficios Clave
+## 🎯 Key Benefits
 
-- 🛠 Automatización completa de los campos de auditoría
+- 🛠 Complete automation of audit fields
+- 🔄 Guaranteed consistency across all changes
 
-- 🔄 Consistencia garantizada en todos los cambios
+## 📌 Centralizing Logic in a Single Place
 
-## 📌 Centralización de la lógica en un único punto
+_Requirement_: Entities must implement AuditableEntity with properties such as:
 
-_Requisito_: Las entidades deben implementar AuditableEntity con propiedades como:
+- CreatedBy (who created the record)
+- Created (when it was created)
+- LastModifiedBy (last editor)
+- LastModified (last modification)
 
-- CreatedBy (quién creó el registro)
+## 🌐 Domain Events with EF Core
 
-- Created (cuándo se creó)
-
-- LastModifiedBy (último editor)
-
-- LastModified (última modificación)
-
-## 🌐 Eventos de Dominio con EF Core
-
-El mismo contexto demuestra un patrón eficiente para manejar eventos de dominio:
+The same context demonstrates an efficient pattern for handling domain events:
 
 ```csharp
 var events = ChangeTracker.Entries<IHasDomainEvent>()
@@ -77,38 +70,35 @@ var result = await base.SaveChangesAsync(cancellationToken);
 await DispatchEvents(events);
 ```
 
-## ⚡ Características Principales
+## ⚡ Main Features
 
-1. _Flujo de trabajo seguro_:
+1. _Safe workflow_:
 
-- ✅ Primero se confirman los cambios en la base de datos
+- ✅ Changes are first committed to the database
+- ✅ Then events are published
 
-- ✅ Luego se publican los eventos
+2. _Duplicate prevention mechanism_:
 
-2. _Mecanismo de prevención de duplicados_:
+- 🔍 Filters only unpublished events (!domainEvent.IsPublished)
+- 🏷 Marks events as published before sending them
 
-- 🔍 Filtra solo eventos no publicados (!domainEvent.IsPublished)
+3. _Clean integration_:
 
-- 🏷 Marca los eventos como publicados antes de enviarlos
+- 🧩 Uses an IHasDomainEvent interface to identify entities with events
+- 📤 Delegates publishing to a specialized service (IDomainEventService)
 
-3. _Integración limpia_:
+## ⚙️ Additional Configuration
 
-- 🧩 Utiliza una interfaz IHasDomainEvent para identificar entidades con eventos
-
-- 📤 Delega la publicación a un servicio especializado (IDomainEventService)
-
-## ⚙️ Configuración Adicional
-
-El contexto también incluye configuraciones valiosas:
+The context also includes valuable configurations:
 
 ```csharp
 protected override void OnModelCreating(ModelBuilder builder)
 {
-    // Ignorar DomainEvent en el modelo
+    // Ignore DomainEvent in the model
     builder.Ignore<DomainEvent>();
     builder.Ignore<List<DomainEvent>>();
 
-    // Configurar DateTime para usar UTC
+    // Configure DateTime to use UTC
     foreach (var entityType in builder.Model.GetEntityTypes())
     {
         foreach (var property in entityType.GetProperties())
@@ -124,14 +114,11 @@ protected override void OnModelCreating(ModelBuilder builder)
 }
 ```
 
-## 🏆 Conclusión
+## 🏆 Conclusion
 
-Este enfoque nos ofrece:
+This approach offers us:
 
-- 📊 Auditoría robusta y automática
-
-- 🚀 Eventos de dominio confiables
-
-- ⏱ Manejo profesional de fechas UTC
-
-- 💎 Integración elegante en el DbContext
+- 📊 Robust and automatic auditing
+- 🚀 Reliable domain events
+- ⏱ Professional UTC date handling
+- 💎 Elegant integration into the DbContext
