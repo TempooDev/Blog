@@ -7,6 +7,7 @@ tags:
   - EF
   - C#
   - .NET
+
 img: ""
 img_alt: ""
 ---
@@ -57,6 +58,7 @@ _Requirement_: Entities must implement AuditableEntity with properties such as:
 ## 🌐 Domain Events with EF Core
 
 The same context demonstrates an efficient pattern for handling domain events:
+
 
 ```csharp
 var events = ChangeTracker.Entries<IHasDomainEvent>()
