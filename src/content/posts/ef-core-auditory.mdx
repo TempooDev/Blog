@@ -20,7 +20,7 @@ En este post exploraremos cómo utilizar Entity Framework Core para implementar 
 
 ## 🔍 Auditoría Automática de Entidades
 
-EF Core nos permite implementar un sistema de auditoría automática mediante el override del método `SaveChangesAsync`:
+EF Core nos permite implementar un sistema de auditoría automática mediante el override del método **`SaveChangesAsync`**:
 
 ```csharp
 public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
