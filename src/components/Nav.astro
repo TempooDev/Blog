@@ -197,6 +197,10 @@ const isCurrentPage = (href: string) => {
 		position: absolute;
 		left: 0;
 		right: 0;
+		top: 100%;
+		background-color: var(--background-main, var(--gray-999)); /* Fondo dependiente del theme */
+		box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
+		z-index: 10000;
 	}
 
 	.nav-items {
@@ -268,6 +272,8 @@ const isCurrentPage = (href: string) => {
 			align-items: center;
 			padding: 2.5rem 5rem;
 			gap: 1rem;
+			background: none;
+			background-color: transparent;
 		}
 
 		.menu-header {
@@ -280,6 +286,10 @@ const isCurrentPage = (href: string) => {
 
 		.menu-content {
 			display: contents;
+			position: static;
+			background: none;
+			background-color: transparent;
+			box-shadow: none;
 		}
 
 		.nav-items {
