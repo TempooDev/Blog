@@ -1,7 +1,8 @@
 on:
   pull_request:
+    types: [closed]
     branches:
-      - main
+      - master
 jobs:
   deploy:
     if: github.event.pull_request.merged == true
