@@ -1,0 +1,137 @@
+---
+title: "EF Core como Sistema Nervioso: Auditoría Automática + Eventos de Dominio = Aplicaciones más Inteligentes"
+description: "Imagina que tu aplicación reacciona automáticamente a cada cambio, registra toda su actividad crítica y se comunica internamente sin código repetitivo. En este post te revelo cómo lograrlo usando EF Core como el sistema nervioso central de tu dominio, con dos técnicas infalibles: auditoría automática y eventos de dominio. Incluye el código exacto que uso en sistemas empresariales reales."
+publishDate: 2025-05-12
+tags:
+  - EDA
+  - Microservices
+  - Real-Time Systems
+  - C#
+  - .NET
+  - Azure Functions
+  - Serverless
+img: ""
+img_alt: ""
+---
+
+# 🧠 Auditoría y Publicación de Eventos de Dominio con EF Core
+
+En este post exploraremos cómo utilizar Entity Framework Core para implementar dos patrones fundamentales en aplicaciones empresariales: **auditoría de entidades** y **publicación de eventos de dominio**.
+
+## 🔍 Auditoría Automática de Entidades
+
+EF Core nos permite implementar un sistema de auditoría automática mediante el override del método **`SaveChangesAsync`**:
+
+```csharp
+public override async Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
+{
+    foreach (var entry in ChangeTracker.Entries<AuditableEntity>())
+    {
+        switch (entry.State)
+        {
+            case EntityState.Added:
+                entry.Entity.CreatedBy = _currentUserService.UserId;
+                entry.Entity.Created = _dateTime.Now;
+                break;
+            case EntityState.Modified:
+                entry.Entity.LastModifiedBy = _currentUserService.UserId;
+                entry.Entity.LastModified = _dateTime.Now;
+                break;
+        }
+    }
+    // Resto de la implementación...
+}
+```
+
+## 🎯 Beneficios Clave
+
+- 🛠 Automatización completa de los campos de auditoría
+
+- 🔄 Consistencia garantizada en todos los cambios
+
+## 📌 Centralización de la lógica en un único punto
+
+_Requisito_: Las entidades deben implementar AuditableEntity con propiedades como:
+
+- CreatedBy (quién creó el registro)
+
+- Created (cuándo se creó)
+
+- LastModifiedBy (último editor)
+
+- LastModified (última modificación)
+
+## 🌐 Eventos de Dominio con EF Core
+
+El mismo contexto demuestra un patrón eficiente para manejar eventos de dominio:
+
+```csharp
+var events = ChangeTracker.Entries<IHasDomainEvent>()
+        .Select(x => x.Entity.DomainEvents)
+        .SelectMany(x => x)
+        .Where(domainEvent => !domainEvent.IsPublished)
+        .ToArray();
+
+var result = await base.SaveChangesAsync(cancellationToken);
+
+await DispatchEvents(events);
+```
+
+## ⚡ Características Principales
+
+1. _Flujo de trabajo seguro_:
+
+- ✅ Primero se confirman los cambios en la base de datos
+
+- ✅ Luego se publican los eventos
+
+2. _Mecanismo de prevención de duplicados_:
+
+- 🔍 Filtra solo eventos no publicados (!domainEvent.IsPublished)
+
+- 🏷 Marca los eventos como publicados antes de enviarlos
+
+3. _Integración limpia_:
+
+- 🧩 Utiliza una interfaz IHasDomainEvent para identificar entidades con eventos
+
+- 📤 Delega la publicación a un servicio especializado (IDomainEventService)
+
+## ⚙️ Configuración Adicional
+
+El contexto también incluye configuraciones valiosas:
+
+```csharp
+protected override void OnModelCreating(ModelBuilder builder)
+{
+    // Ignorar DomainEvent en el modelo
+    builder.Ignore<DomainEvent>();
+    builder.Ignore<List<DomainEvent>>();
+
+    // Configurar DateTime para usar UTC
+    foreach (var entityType in builder.Model.GetEntityTypes())
+    {
+        foreach (var property in entityType.GetProperties())
+        {
+            if (property.ClrType == typeof(DateTime) || property.ClrType == typeof(DateTime?))
+            {
+                property.SetValueConverter(new ValueConverter<DateTime, DateTime>(
+                    v => v.Kind == DateTimeKind.Utc ? v : DateTime.SpecifyKind(v, DateTimeKind.Utc),
+                    v => DateTime.SpecifyKind(v, DateTimeKind.Utc)));
+            }
+        }
+    }
+}
+```
+
+## 🏆 Conclusión
+
+Este enfoque nos ofrece:
+
+- 📊 Auditoría robusta y automática
+
+- 🚀 Eventos de dominio confiables
+
+- ⏱ Manejo profesional de fechas UTC
+
+- 💎 Integración elegante en el DbContext

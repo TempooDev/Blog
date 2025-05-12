@@ -34,11 +34,12 @@ const { Content } = await render(entry);
 						><Icon icon="arrow-left" /> Blog</a
 					>
 					<Hero title={entry.data.title} align="start">
+						<div class="tags">
+							{entry.data.tags.map((t) => <Pill>{t}</Pill>)}
+						</div>
 						<div class="details">
-							<div class="tags">
-								{entry.data.tags.map((t) => <Pill>{t}</Pill>)}
-							</div>
 							<p class="description">{entry.data.description}</p>
+							
 						</div>
 					</Hero>
 				</div>
@@ -77,14 +78,24 @@ const { Content } = await render(entry);
 		display: flex;
 		flex-direction: column;
 		padding: 0.5rem;
-		gap: 1.5rem;
-		justify-content: space-between;
-		align-items: center;
+		gap: 0.5rem;
+		justify-content: flex-start;
+		align-items: flex-start;
 	}
 
 	.tags {
 		display: flex;
 		gap: 0.5rem;
+		font-size: 0.85em;
+		opacity: 0.6;
+		margin-top: 0.25rem;
+		margin-bottom: 0.25rem;
+	}
+
+	@media (max-width: 50em) {
+		.tags {
+			display: none;
+		}
 	}
 
 	.description {
@@ -93,7 +104,7 @@ const { Content } = await render(entry);
 	}
 
 	.content {
-		max-width: 65ch;
+		max-width: 85ch;
 		margin-inline: auto;
 	}
 
@@ -149,6 +160,11 @@ const { Content } = await render(entry);
 		.details {
 			flex-direction: row;
 			gap: 2.5rem;
+			align-items: flex-start;
+		}
+
+		.tags {
+			font-size: 0.8em;
 		}
 
 		.content :global(blockquote) {
