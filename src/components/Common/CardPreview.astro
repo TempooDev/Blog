@@ -1,23 +1,25 @@
 ---
+import Pill from "@components/Common/Pill.astro";
+
 interface Props {
     href: string;
     title: string;
-    description: string; // Asegurar que description esté aquí
+    description: string; 
     imgSrc: string;
     imgAlt?: string;
-    tags?: string[];      // Añadido para las etiquetas
-    publishDate?: string; // Añadido para la fecha de publicación
-    excerpt?: string;     // El excerpt es opcional
+    tags?: string[];
+    publishDate?: string; 
+    excerpt?: string;     
 }
 
 const { 
     href, 
     title, 
-    description, // Asegurar que se desestructura
+    description, 
     imgSrc, 
     imgAlt = "", 
-    tags,         // Asegurar que se desestructura
-    publishDate,  // Asegurar que se desestructura
+    tags,         
+    publishDate,  
     excerpt 
 } = Astro.props;
 ---
@@ -27,15 +29,10 @@ const {
         <h2 class="title">{title}</h2>
         {tags && tags.length > 0 && (
             <div class="tags-container">
-                {tags.slice(0, 3).map(tag => <span class="tag">{tag}</span>)}
+                {tags.slice(0, 3).map(tag => <Pill>{tag}</Pill>)}
             </div>
         )}
     </header>
-    <div class="content-body">
-        <p class="description">{description}</p>
-        {excerpt && <p class="excerpt">{excerpt}</p>}
-        {publishDate && <p class="publish-date">{publishDate}</p>}
-    </div>
     <img
         src={imgSrc}
         alt={imgAlt}
@@ -47,7 +44,7 @@ const {
 <style>
     .card {
         display: grid;
-        grid-template-rows: auto auto 1fr; /* title, content-body, img */
+        grid-template-rows: auto 1fr; /* Cambiado de auto auto 1fr a auto 1fr */
         height: auto; 
         min-height: 20rem; /* Aumentado para más contenido */
         background: var(--gradient-subtle);
@@ -124,23 +121,22 @@ const {
 
     img {
         width: 100%;
-        height: 12rem; /* Altura fija para la imagen */
-        object-fit: cover;
-        align-self: end; /* Alinea la imagen al final del grid item */
+        object-fit: contain; 
+        align-self: end; 
     }
 
     @media (min-width: 50em) {
         .card {
             min-height: 25rem; /* Aumentado para pantallas grandes */
             border-radius: 1.5rem;
-            grid-template-rows: auto auto 1fr; /* Mantener consistencia */
+            grid-template-rows: auto 1fr; /* Mantener consistencia */
         }
         .title {
 			border-radius: 0.9375rem;
             font-size: var(--text-xl);
 		}
         img {
-            height: 15rem; /* Imagen un poco más grande en desktop */
+            object-fit: contain; /* Mantener consistencia */
         }
     }
 </style>
