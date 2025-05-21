@@ -29,3 +29,4 @@ jobs:
           projectName: antoniobermudez
           directory: dist
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
