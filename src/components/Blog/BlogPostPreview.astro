@@ -1,0 +1,20 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import CardPreview from '@components/Common/CardPreview.astro';
+
+interface Props {
+	post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+---
+
+<CardPreview
+	title={post.data.title}
+	description={post.data.description} 
+	href={`/blog/${post.id}/`}
+	imgSrc={post.data.img}
+	imgAlt={post.data.img_alt || post.data.title}
+	tags={post.data.tags}
+	publishDate={post.data.publishDate.toISOString().split('T')[0]}
+/>

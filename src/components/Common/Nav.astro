@@ -1,7 +1,7 @@
 ---
-import Icon from './Icon.astro';
-import ThemeToggle from './ThemeToggle.astro';
-import type { iconPaths } from './IconPaths';
+import Icon from '@components/Common/Icon.astro';
+import ThemeToggle from '@components/Common/ThemeToggle.astro';
+import type { iconPaths } from '@components/Common/IconPaths';
 
 /** Main menu items */
 const textLinks: { label: string; href: string }[] = [
@@ -143,6 +143,7 @@ const isCurrentPage = (href: string) => {
 		font-family: var(--font-brand);
 		font-weight: 500;
 		margin-bottom: 3.5rem;
+		background-color: var(--blue-999); /* Usar directamente --blue-999 que es el color base del body */
 	}
 
 	.menu-header {
@@ -198,7 +199,7 @@ const isCurrentPage = (href: string) => {
 		left: 0;
 		right: 0;
 		top: 100%;
-		background-color: var(--background-main, var(--gray-999)); /* Fondo dependiente del theme */
+		background-color: var(--blue-999); /* Usar directamente --blue-999 */
 		box-shadow: 0 8px 32px 0 rgba(0,0,0,0.18);
 		z-index: 10000;
 	}
