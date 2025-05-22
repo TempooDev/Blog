@@ -19,7 +19,7 @@ export default defineConfig({
     sitemap({
       changefreq: "weekly",
       priority: 0.7,
-      lastmod: new Date("2025-05-02"),
+      lastmod: Date.now(),
     }),
   ],
   markdown: {
