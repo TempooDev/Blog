@@ -22,10 +22,18 @@ const { title, description } = Astro.props;
     {/* --- Código de Google Analytics 4 (GA4) --- */}
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YEQZKB7Q1"></script>
     <script is:inline>
+      // Defer GA config until the browser is idle to avoid work on the critical path
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-2YEQZKB7Q1');
+      function gtag(){dataLayer.push(arguments);}      
+      const initGA = () => {
+        gtag('js', new Date());
+        gtag('config', 'G-2YEQZKB7Q1');
+      };
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(initGA);
+      } else {
+        addEventListener('load', initGA);
+      }
     </script>
     {/* --- Fin Código de Google Analytics 4 (GA4) --- */}
   </head>
@@ -51,6 +59,7 @@ const { title, description } = Astro.props;
         --bg-image-subtle-1: var(--_placeholder-bg);
         --bg-image-subtle-2: var(--_placeholder-bg);
         --bg-image-footer: var(--_placeholder-bg);
+        --bg-noise: var(--_placeholder-bg); /* lazy load noise texture */
         --bg-svg-blend-mode: overlay;
         --bg-blend-mode: darken;
         --bg-image-aspect-ratio: 2.25;
@@ -72,11 +81,13 @@ const { title, description } = Astro.props;
         --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-light-800w.webp");
         --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-light-800w.webp");
         --bg-image-footer: url("/assets/backgrounds/bg-footer-light-800w.webp");
+        --bg-noise: url("/assets/backgrounds/noise.webp");
       }
       :root.loaded.theme-dark {
         --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-dark-800w.webp");
         --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-dark-800w.webp");
         --bg-image-footer: url("/assets/backgrounds/bg-footer-dark-800w.webp");
+        --bg-noise: url("/assets/backgrounds/noise.webp");
       }
 
       @media (min-width: 50em) {
@@ -104,8 +115,7 @@ const { title, description } = Astro.props;
         min-height: 100%;
         isolation: isolate;
         background:
-					/*noise*/
-          url("/assets/backgrounds/noise.webp") top center/220px repeat,
+					/*noise*/ var(--bg-noise) top center/220px repeat,
           /*footer*/ var(--bg-image-footer) bottom
             center/var(--bg-gradient-size) no-repeat,
           /*header1*/ var(--bg-image-main-curves) top
