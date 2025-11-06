@@ -33,20 +33,22 @@ const {
             </div>
         )}
     </header>
-    <img
-        src={imgSrc}
-        alt={imgAlt}
-        loading="lazy"
-        decoding="async"
-    />
+    {imgSrc != '' && (
+        <img
+            src={imgSrc}
+            alt={imgAlt}
+            loading="lazy"
+            decoding="async"
+        />
+    )}
 </a>
 
 <style>
     .card {
         display: grid;
-        grid-template-rows: auto 1fr; /* Cambiado de auto auto 1fr a auto 1fr */
+        grid-template-rows: auto 1fr; 
         height: auto; 
-        min-height: 20rem; /* Aumentado para más contenido */
+        min-height: 20rem;
         background: var(--gradient-subtle);
         border: 1px solid var(--gray-800);
         border-radius: 0.75rem;

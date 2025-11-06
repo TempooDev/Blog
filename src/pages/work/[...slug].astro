@@ -13,9 +13,6 @@ interface Props {
 	entry: CollectionEntry<'work'>;
 }
 
-// This is a dynamic route that generates a page for every Markdown file in src/content/
-// Read more about dynamic routes and this `getStaticPaths` function in the Astro docs:
-// https://docs.astro.build/en/core-concepts/routing/#dynamic-routes
 export async function getStaticPaths() {
 	const work = await getCollection('work');
 	return work.map((entry) => ({
@@ -42,14 +39,15 @@ const { Content } = await render(entry);
 						</div>
 						<div class="details">
 							<p class="description">{entry.data.description}</p>
-							
 						</div>
 					</Hero>
 				</div>
 			</header>
 			<main class="wrapper">
 				<div class="stack gap-10 content">
-					{entry.data.img && <img src={entry.data.img} alt={entry.data.img_alt || ''} />}
+					{entry.data.img &&
+					 entry.data.img != ''
+					  && <img src={entry.data.img} alt={entry.data.img_alt || ''} />}
 					<div class="content">
 						<Content />
 					</div>
@@ -81,16 +79,20 @@ const { Content } = await render(entry);
 
 	.tags {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 		font-size: 0.85em;
-		opacity: 0.6;
+		opacity: 0.7;
 		margin-top: 0.25rem;
 		margin-bottom: 0.25rem;
+		max-width: 100%;
 	}
 
 	@media (max-width: 50em) {
+		/* Allow tags to wrap on small screens and slightly reduce size/gap */
 		.tags {
-			display: none;
+			gap: 0.35rem;
+			font-size: 0.75em;
 		}
 	}
 
@@ -165,6 +167,15 @@ const { Content } = await render(entry);
 
 		.content :global(blockquote) {
 			font-size: var(--text-2xl);
+		}
+	}
+
+	/* Mobile: ensure content fits viewport width to avoid clipping paragraphs */
+	@media (max-width: 50em) {
+		.content {
+			max-width: 100%;
+			padding-inline: 0.5rem;
+			box-sizing: border-box;
 		}
 	}
 </style>

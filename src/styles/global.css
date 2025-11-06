@@ -125,6 +125,8 @@
 html,
 body {
 	min-height: 100%;
+	/* Prevent the whole page from scrolling horizontally; internal scrollable
+	   elements (code blocks) will handle their own overflow via overflow-x:auto */
 	overflow-x: hidden;
 }
 
@@ -258,5 +260,181 @@ h5 {
 	}
 	.lg\:gap-48 {
 		gap: 12rem;
+	}
+}
+
+/* Improve code block and inline code handling so they don't overflow on mobile
+   - pre: allow wrapping or scrolling, max-width 100% and touch-friendly scrolling
+   - code: allow wrapping for very long tokens and use monospace font */
+.content :global(pre) {
+	overflow-x: auto; /* internal horizontal scroll for long lines */
+	overflow-y: hidden;
+	max-width: 100%;
+	box-sizing: border-box; /* ensure padding doesn't expand width */
+	padding: 1rem;
+	border-radius: 0.75rem;
+	background: rgba(0,0,0,0.04);
+	white-space: pre; /* keep original formatting, allow horizontal scroll */
+	-webkit-overflow-scrolling: touch;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Helvetica Neue", monospace;
+	font-size: 0.95rem;
+}
+
+.content :global(pre) :global(code) {
+	white-space: pre; /* inline code inside pre should not wrap */
+}
+
+.content :global(code) {
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Helvetica Neue", monospace;
+	font-size: 0.92rem;
+	word-break: break-word;
+	white-space: pre-wrap; /* inline code can wrap */
+	background: rgba(0,0,0,0.02);
+	padding: 0.12rem 0.28rem;
+	border-radius: 4px;
+}
+
+@media (max-width: 50em) {
+	/* Reduce heading sizes and improve layout on mobile */
+	h1 {
+		font-size: clamp(1.75rem, 6vw, 2.5rem);
+		line-height: 1.05;
+	}
+	h2 {
+		font-size: clamp(1.5rem, 5.5vw, 2rem);
+	}
+	h3 {
+		font-size: clamp(1.25rem, 4.5vw, 1.5rem);
+	}
+
+	.content :global(pre) {
+		padding: 0.75rem;
+		font-size: 0.9rem;
+	}
+	.content :global(code) {
+		font-size: 0.88rem;
+	}
+
+	/* Ensure content wrapper doesn't cause horizontal overflow */
+	.content {
+		max-width: 100%;
+		padding-inline: 0.5rem;
+	}
+}
+
+/* Defensive rules to stop any descendant from expanding past the viewport
+   (fixes clipped h2 and paragraphs caused by wide inline elements). We keep
+   pre/code behavior intact but ensure text elements can wrap safely.) */
+.content {
+	box-sizing: border-box;
+}
+
+.content :global(*) {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Allow code blocks to keep internal scroll but not force parent's width */
+.content :global(pre),
+.content :global(code),
+.content :global(img),
+.content :global(table) {
+	max-width: 100% !important;
+	width: auto !important;
+}
+
+/* Ensure headings and paragraphs wrap instead of producing overflow */
+.content :global(h2),
+.content :global(h3),
+.content :global(p) {
+	overflow-wrap: anywhere;
+	word-break: break-word;
+}
+
+@media (max-width: 50em) {
+	.content :global(h2) {
+		font-size: 1.05rem !important;
+		line-height: 1.18 !important;
+	}
+	.content :global(p) {
+		font-size: 0.96rem !important;
+	}
+}
+
+/* Neutralize common Bootstrap grid/layout classes when they appear inside
+   content MDX (some posts include raw Bootstrap HTML). These classes use
+   negative margins and fixed column widths that can create horizontal overflow
+   on small viewports — reset them safely inside .content only. */
+.content :global(.container-fluid),
+.content :global(.container),
+.content :global(.row) {
+	width: 100% !important;
+	max-width: 100% !important;
+	margin-left: 0 !important;
+	margin-right: 0 !important;
+	padding-left: 0 !important;
+	padding-right: 0 !important;
+	box-sizing: border-box !important;
+}
+
+.content :global([class*="col-"]) {
+	float: none !important;
+	width: auto !important;
+	min-width: 0 !important;
+	padding-left: 0.5rem !important;
+	padding-right: 0.5rem !important;
+	box-sizing: border-box !important;
+}
+
+/* Defensive: ensure cards, expressive code wrappers and tables don't force
+   widths beyond the container */
+.content :global(.card),
+.content :global(.expressive-code),
+.content :global(table) {
+	max-width: 100% !important;
+	width: auto !important;
+	box-sizing: border-box !important;
+	overflow-x: auto !important;
+}
+
+/* Strong mobile overrides for headings and hero titles to ensure
+   they don't render excessively large on small screens. These rules
+   are placed at the end to increase specificity and take precedence.
+*/
+@media (max-width: 50em) {
+	/* Generic headings */
+	h1 {
+		font-size: 1.6rem !important;
+		line-height: 1.06 !important;
+		margin-top: 0.25rem;
+		margin-bottom: 0.65rem;
+	}
+	h2 {
+		font-size: 1.2rem !important;
+		line-height: 1.12 !important;
+		margin-top: 0.75rem;
+		margin-bottom: 0.5rem;
+	}
+
+	/* Hero-specific title override */
+	.hero .title,
+	.title {
+		font-size: clamp(1.25rem, 6vw, 1.9rem) !important;
+		line-height: 1.08 !important;
+		max-width: 100% !important;
+		margin-inline: 0 !important;
+		/* avoid forcing a fixed width that, together with padding, can produce
+		   clipped text when the page has overflow hidden; let the element size
+		   naturally and use safe wrapping */
+		padding-inline: 0.5rem;
+		display: block;
+		width: auto !important;
+		overflow-wrap: anywhere !important; /* break long words when needed */
+		word-break: break-word !important;
+	}
+
+	/* Ensure the hero block uses full width padding so text doesn't get squeezed */
+	.hero {
+		padding-inline: 0.5rem;
 	}
 }

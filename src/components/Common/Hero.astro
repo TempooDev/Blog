@@ -51,4 +51,18 @@ const { align = 'center', tagline, title } = Astro.props;
 			font-size: var(--text-5xl);
 		}
 	}
+
+	/* Mobile adjustments: make titles more compact and avoid very narrow max-widths
+	   when the hero is used with align="start" so they don't wrap into many lines */
+	@media (max-width: 50em) {
+		.title {
+			font-size: clamp(1.4rem, 6vw, 2rem);
+			max-width: 100%;
+			margin-inline: 0;
+			text-align: start;
+		}
+		.hero.start {
+			text-align: start;
+		}
+	}
 </style>
