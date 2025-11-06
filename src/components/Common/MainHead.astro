@@ -19,12 +19,13 @@ const {
 <title>{title}</title>
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link
-	href="https://fonts.googleapis.com/css2?family=Public+Sans:ital,wght@0,400;0,700;1,400&family=Rubik:wght@500;600&display=swap"
-	rel="stylesheet"
-/>
+<!-- Removed Google Fonts to shorten critical request chain.
+     Tip: self-host minimal WOFF2 variants later (Public Sans 400/700, Rubik 500)
+     with @font-face and optional preload for best LCP. Fallbacks are used now. -->
+<!-- Preload self-hosted fonts to improve LCP -->
+<link rel="preload" href="/fonts/public-sans-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/public-sans-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/rubik-500.woff2" as="font" type="font/woff2" crossorigin>
 <script is:inline>
 	// This code is inlined in the head to make dark mode instant & blocking.
 	const getThemePreference = () => {
