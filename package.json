@@ -9,13 +9,13 @@
     "astro": "astro"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.2.6",
-    "@astrojs/react": "^4.2.7",
-    "@astrojs/sitemap": "^3.3.1",
+    "@astrojs/mdx": "^4.3.10",
+    "@astrojs/react": "^4.4.2",
+    "@astrojs/sitemap": "^3.6.0",
     "@mermaid-js/mermaid-cli": "^10.8.0",
     "@types/hast": "^3.0.4",
     "@types/lodash": "^4.17.16",
-    "astro": "^5.7.9",
+    "astro": "^5.15.4",
     "astro-expressive-code": "^0.41.2",
     "lodash": "^4.17.21",
     "playwright": "^1.52.0",
