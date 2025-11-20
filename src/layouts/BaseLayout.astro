@@ -20,29 +20,28 @@ const { title, description } = Astro.props;
     <MainHead title={title} description={description} />
     <link rel="sitemap" href="/sitemap-index.xml" />
     {/* --- Código de Google Analytics 4 (GA4) --- */}
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YEQZKB7Q1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YEQZKB7Q1"
+    ></script>
     <script is:inline>
       // Defer GA config until the browser is idle to avoid work on the critical path
       window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}      
+      function gtag() {
+        dataLayer.push(arguments);
+      }
       const initGA = () => {
-        gtag('js', new Date());
-        gtag('config', 'G-2YEQZKB7Q1');
+        gtag("js", new Date());
+        gtag("config", "G-2YEQZKB7Q1");
       };
-      if ('requestIdleCallback' in window) {
+      if ("requestIdleCallback" in window) {
         requestIdleCallback(initGA);
       } else {
-        addEventListener('load', initGA);
+        addEventListener("load", initGA);
       }
     </script>
-    <script
-      src="/js/tempoo-analytics.min.js"
-      data-site-id="antoniobermudez-dev"
-      data-api-url="https://tempooanalytics.onrender.com/analytics/events">
-  </script>
-
-    {/* --- Fin Código de Google Analytics 4 (GA4) --- */}
   </head>
+
+  {/* --- Fin Código de Google Analytics 4 (GA4) --- */}
+
   <body>
     <div class="stack backgrounds">
       <Nav />
@@ -53,7 +52,7 @@ const { title, description } = Astro.props;
     <script>
       // Add “loaded” class once the document has completely loaded.
       addEventListener("load", () =>
-        document.documentElement.classList.add("loaded")
+        document.documentElement.classList.add("loaded"),
       );
     </script>
 
@@ -121,7 +120,8 @@ const { title, description } = Astro.props;
         min-height: 100%;
         isolation: isolate;
         background:
-					/*noise*/ var(--bg-noise) top center/220px repeat,
+					/*noise*/
+          var(--bg-noise) top center/220px repeat,
           /*footer*/ var(--bg-image-footer) bottom
             center/var(--bg-gradient-size) no-repeat,
           /*header1*/ var(--bg-image-main-curves) top
