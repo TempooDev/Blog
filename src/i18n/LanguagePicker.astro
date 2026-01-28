@@ -1,0 +1,41 @@
+---
+// src/components/LanguagePicker.astro
+import { getCollection } from "astro:content";
+const { entry } = Astro.props;
+
+let otherLink;
+
+if (entry) {
+  const allPosts = await getCollection("blog");
+  const translations = allPosts.filter(
+    (p) =>
+      p.data.translationId === entry.data.translationId && p.id !== entry.id,
+  );
+  const otherVersion = translations[0];
+  otherLink = otherVersion
+    ? `/blog/${otherVersion.id}`
+    : entry.id.startsWith("en/")
+      ? "/blog"
+      : "/en/blog";
+} else {
+  // Fallback for non-blog pages: toggle /en/ prefix
+  const currentPath = Astro.url.pathname;
+  if (currentPath.startsWith("/en/")) {
+    otherLink = currentPath.replace("/en/", "/");
+  } else if (currentPath === "/en") {
+    otherLink = "/";
+  } else {
+    otherLink = "/en" + (currentPath === "/" ? "" : currentPath);
+  }
+}
+
+const isEnglish = entry
+  ? entry.id.startsWith("en/")
+  : Astro.url.pathname.startsWith("/en");
+---
+
+<nav>
+  <a href={otherLink}>
+    {isEnglish ? "Leer en Español" : "Read in English"}
+  </a>
+</nav>

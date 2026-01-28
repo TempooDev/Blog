@@ -7,6 +7,7 @@ export const collections = {
 		loader: glob({ base: './src/content/work', pattern: '**/*.mdx', }),
 		schema: z.object({
 			title: z.string(),
+			translationId: z.string(),
 			description: z.string(),
 			publishDate: z.coerce.date(),
 			tags: z.array(z.string()),
@@ -18,6 +19,7 @@ export const collections = {
 		loader: glob({ base: './src/content/posts', pattern: '**/*.mdx', }),
 		schema: z.object({
 			title: z.string(),
+			translationId: z.string(),
 			description: z.string(),
 			publishDate: z.coerce.date(),
 			tags: z.array(z.string()),
