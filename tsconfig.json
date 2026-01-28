@@ -11,7 +11,8 @@
       "@pages/*": ["src/pages/*"],
       "@styles/*": ["src/styles/*"],
       "@content/*": ["src/content/*"],
-      "@assets/*": ["public/assets/*"]
+      "@assets/*": ["public/assets/*"],
+      "@i18n/*": ["src/i18n/*"]
     }
   }
 }

@@ -1,21 +1,29 @@
 ---
-import type { CollectionEntry } from 'astro:content';
-import CardPreview from '@components/Common/CardPreview.astro';
+import type { CollectionEntry } from "astro:content";
+import CardPreview from "@components/Common/CardPreview.astro";
 
 interface Props {
-	project: CollectionEntry<'work'>;
+  project: CollectionEntry<"work">;
 }
 
+const { pathname } = Astro.url;
+const lang = pathname.startsWith("/en") ? "en" : "es";
 const { project } = Astro.props;
 const { data } = project;
+
+// Ensure we strip the lang prefix from project ID if it exists in the ID,
+// though typically collection IDs include the folder name (e.g. 'en/project1').
+// If IDs are 'en/slug', we want the link to be '/en/work/slug'.
+// If our dynamic route is [lang]/work/[...slug], then href should be `/${lang}/work/${slug}`.
+const slug = project.id.split("/").slice(1).join("/");
 ---
 
 <CardPreview
-	title={data.title}
-	description={data.description}
-	href={`/work/${project.id}/`}
-	imgSrc={data.img}
-	imgAlt={data.img_alt || data.title} 
-	tags={data.tags}
-	publishDate={data.publishDate.toISOString().split('T')[0]}
+  title={data.title}
+  description={data.description}
+  href={`/${lang}/work/${slug}/`}
+  imgSrc={data.img}
+  imgAlt={data.img_alt || data.title}
+  tags={data.tags}
+  publishDate={data.publishDate.toISOString().split("T")[0]}
 />

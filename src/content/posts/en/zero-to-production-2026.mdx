@@ -1,0 +1,111 @@
+---
+title: "From 0€ to Production: How I host my personal projects in 2026 without breaking the bank"
+translationId: "zero-to-production"
+publishDate: 2026-01-29 00:00:00
+img: "/assets/de-cero-a-produccion-2026.webp"
+img_alt: "Budget Hosting 2026"
+description: |
+  Deploying your projects shouldn't be a risk sport for your bank account. In this guide, I analyze the hosting ecosystem in 2026: from the triumphant return of the VPS with Coolify to how to leverage free tiers of 'Serverless' services without falling into the cost scaling trap. Learn to take your ideas to production for the price of a coffee a month.
+tags:
+  - FullStack
+  - IndieHacking
+  - Tools
+  - DevOps
+  - Hosting
+---
+
+Deploying an app in 2026 is almost trivial: a `git push` and you're on the air. What is not trivial is opening the billing dashboard at the end of the month and finding a three-figure surprise for a project that hasn't invoiced its first euro yet.
+
+Many developers continue to apply large enterprise architectures to personal projects, falling into the **"over-infrastructure"** trap. In this post, we are going to ground things: how to set up a professional, secure, and scalable stack for less than the cost of a specialty coffee.
+
+### The Graveyard of Unnecessary Bills
+
+I still see developers hosting their logic on **Azure Functions** or **AWS Lambda** connecting to a database in **Supabase**. While the *Serverless* model makes sense for extreme load peaks, using it for services that require 24/7 availability is often a recipe for financial disaster. Not only do you pay for every execution, but the connection latency between different providers ends up penalizing the user experience.
+
+On the other hand, there is the opposite extreme: spinning up an oversized **EC2** instance just to ensure the backend is "alive". It's like renting a trailer to carry a shoebox; you end up paying for resources (CPU and RAM) that sit idle 99% of the time, gifting your money to Jeff Bezos.
+
+### The Traffic Trap: The "Wallet DDoS"
+
+But the real hidden danger isn't compute, but network consumption (**Egress fees**). Providers like **Vercel** have democratized deployment, but their data transfer costs can be prohibitive. A poorly managed DDoS attack or simply a bot deciding to aggressively *scrape* your site can generate millions of requests in minutes.
+
+Without proper **Spend Limits**, you could wake up with unwanted debt just because your service "allowed" you to be charged for traffic you never asked for.
+
+---
+
+### The Hosting Map 2026: Where do we put the code?
+
+To navigate the current ecosystem without losing money along the way, we must classify tools according to their "responsibility" model. It is no longer enough to know if they are good; we need to know how much control they demand in exchange for the price.
+
+#### 1. PaaS: Platforms as a Service. Convenience has a price
+
+If you are looking for the "zero config" experience, PaaS are still the number one option. They are ideal for MVPs where time is worth more than a few dollars difference.
+
+* **[Vercel](https://vercel.com):** The gold standard for Frontend and Serverless. Its integration with Next.js is unbeatable, but be careful with the limits of its free tier if your traffic starts to scale.
+* **[Railway](https://railway.app):** Probably the most balanced platform for the Backend. It allows you to deploy Docker containers or services from GitHub in seconds. Its credit model is fair, but for 24/7 services, the meter never stops.
+
+#### 2. The VPS Renaissance: Total control and fixed cost
+
+In 2026, the strongest trend among *Indie Hackers* is the return to the virtual private server (VPS). The difference? You no longer need to be a terminal expert to manage them.
+
+* **[Hetzner](https://www.hetzner.com):** Still the king of performance/price in Europe. For the price of a dinner, you have enough power to run 10 small projects.
+* **[DigitalOcean](https://digitalocean.com):** If you prefer a US provider, it is the most popular option. It usually offers credits for new users, allowing experimentation without initial shocks.
+* **[Coolify](https://coolify.io):** The missing piece. It is an open-source alternative to Heroku that you install on your own VPS. It gives you a visual interface to manage databases, deployments, and SSL certificates without touching a line of Bash.
+* **[Dokploy](https://dokploy.com):** An incredibly lightweight alternative that is gaining a lot of ground this year. If you look for pure simplicity based on Docker and a clean interface, Dokploy is your choice.
+
+#### 3. Databases: The Rise of "Scale-to-Zero"
+
+* **[Neon](https://neon.tech):** Pure Postgres that "shuts down" when there is no traffic and activates in milliseconds.
+* **[Turso](https://turso.tech):** Based on SQLite, perfect if your application is at the *Edge*. Very generous free tier.
+* **[Supabase](https://supabase.com):** More than a DB, it is a complete Backend-as-a-Service. Ideal for moving fast with Auth and Storage included.
+
+---
+
+### The Decision Matrix: Which stack to choose?
+
+#### Scenario A: The "Fast & Furious" MVP
+*Your goal is to validate an idea in <48h without touching a terminal.*
+- **Frontend:** Vercel.
+- **Backend/DB:** Supabase + Railway.
+- **Verdict:** Maximum speed, initial cost 0€.
+
+#### Scenario B: The Multi-Project "Indie Hacker"
+*You have 5 or 6 ideas and want a fixed monthly cost.*
+- **Infrastructure:** VPS on Hetzner or DigitalOcean.
+- **Orchestrator:** Coolify or Dokploy.
+- **Verdict:** Fixed cost (~5-10€/mo) for all your projects.
+
+#### Scenario C: High Performance App (Edge Ready)
+*You need perfect SEO and minimal global latency.*
+- **Framework:** Next.js or Astro.
+- **Deployment:** Cloudflare Pages.
+- **Database:** Turso.
+- **Verdict:** Infinite scalability and almost free network transfer.
+
+---
+
+### Coolify or Dokploy? The duel of "Self-hosted" PaaS
+
+In 2026, we no longer install Docker by hand. We use control panels:
+
+- **Choose [Coolify](https://coolify.io)** if you come from Heroku and want all the comforts: automatic deployments, one-click backups, and a great community. It is the "Swiss Army knife".
+- **Choose [Dokploy](https://dokploy.com)** if you prefer something more minimalist and fast. It feels lighter on resources and its focus on Docker Compose simplicity is impeccable.
+
+---
+
+### Checklist: Don't launch anything without checking these boxes
+
+1.  **Spend Limits 🛑:** Activate alerts in Vercel/AWS. Configure warnings at 5€ and "auto-shutdown" at 20€.
+2.  **Backups 💾:** If you use Coolify/Dokploy, the responsibility is yours. Send your daily backups to external storage like **S3** or **Cloudflare R2**.
+3.  **Firewall and SSH 🔒:** Disable passwords, use only SSH keys and change port 22 to a random one. Use `ufw` to limit traffic.
+4.  **DDoS Protection 🛡️:** Use **Cloudflare** as a proxy. It is the best free barrier for your pocket.
+5.  **Monitoring ⏱️:** Configure **UptimeRobot** or **Better Stack**. Don't find out from a user that your server is down.
+
+---
+
+### Conclusion
+
+In 2026, infrastructure should no longer be a black hole of money. We have moved from the unnecessary complexity of large providers to an ecosystem where the **Indie Hacker** has total control.
+
+Choosing the right stack is what will allow you to keep your projects alive for years without maintenance costs killing them.
+
+**Which stack are you going to use for your next project? Are you team "Serverless" or have you switched to "Self-hosting"? I read you in the comments.**

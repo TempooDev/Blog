@@ -1,0 +1,65 @@
+---
+title: Mejorando la Arquitectura de Microservicios con Vertical Slice Architecture  
+translationId: "vertical-slice-architecture"
+publishDate: 2025-04-06 19:00:00
+img: "/assets/vertical_slice_architecture.webp"
+img_alt: Gráfico de Vertical Slice Architecture
+description: |
+  Explora cómo la Arquitectura Vertical Slice, combinada con Domain-Driven Design y Arquitectura Orientada a Eventos, mejora la escalabilidad y mantenibilidad de los microservicios en un sistema de reservas hoteleras.
+tags:
+  - CleanArchitecture
+  - DDD
+  - EDA
+  - C#
+  - VSA
+  - Backend
+---
+
+Recientemente, he estado trabajando en modificar una plantilla de **Vertical Slice Architecture** para mejorar la mantenibilidad y escalabilidad de los microservicios. Este proyecto tiene como objetivo diseñar una arquitectura basada en **Azure ☁️** para la gestión de reservas, utilizando **Arquitectura Orientada a Eventos 🔄** para manejar eficientemente los eventos y asegurar la comunicación asíncrona entre servicios.  
+
+Esta arquitectura servirá como base sobre la cual construiré el sistema.  
+
+## Herramientas y Enfoques Clave  
+
+Para lograr este objetivo, he incorporado una combinación de arquitecturas y herramientas que han sido fundamentales en el proceso:  
+
+### 1. **Domain-Driven Design (DDD) 🏗️**  
+
+Reestructuré la organización de la aplicación para definir claramente los límites del dominio y evitar dependencias innecesarias entre módulos. Esto ha permitido una mayor claridad y modularidad en el diseño.  
+
+### 2. **Screaming Architecture 📢**  
+
+Al priorizar la expresividad de la estructura del código, la organización de carpetas y espacios de nombres ahora refleja directamente el dominio del negocio en lugar de estar acoplada a detalles técnicos.  
+
+### 3. **.NET Aspire 🚀**  
+
+Integré Aspire para la orquestación de servicios, simplificando la gestión de dependencias, configuración y despliegue local de microservicios.  
+
+### 4. **Arquitectura Orientada a Eventos (EDA) ⚡**  
+
+Implementé un enfoque orientado a eventos para mejorar la escalabilidad y desacoplar servicios, permitiendo una mejor gestión de transacciones distribuidas.  
+
+### 5. **Migration Service 🗄️**  
+
+Añadí un servicio específico para gestionar la evolución del esquema de base de datos, asegurando que las migraciones se apliquen automáticamente y de manera controlada.  
+
+## Beneficios Logrados  
+
+Esta combinación de enfoques y herramientas ha permitido:  
+
+- Mayor modularidad y claridad en el desarrollo de servicios.
+
+- Mantenibilidad a largo plazo mejorada.  
+
+- Integración y despliegue simplificados de servicios tanto en entornos locales como en la nube, gracias a Aspire.  
+
+## Próximos Pasos  
+
+Continuaré compartiendo el progreso y los desafíos que encuentre a lo largo del desarrollo de este sistema.  
+
+💬 **¿Qué otras estrategias usas para mejorar la arquitectura y el mantenimiento de tus microservicios?**  
+
+📌 Puedes seguir el desarrollo del proyecto en mi repositorio de GitHub: [GitHub repository](https://github.com/TempooDev/Booking)  
+
+---  
+_¡Gracias por leer! ¡Espero que esta experiencia pueda servir de inspiración para tus propios proyectos!_

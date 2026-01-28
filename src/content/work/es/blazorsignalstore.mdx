@@ -1,30 +1,31 @@
 ---
-title: "BlazorSignalStore: A Simple Way to Manage State in Blazor"
-subtitle: "Reactive State Management for Modern Blazor Applications"
+title: "BlazorSignalStore: Una forma sencilla de gestionar el estado en Blazor"
+translationId: "blazorsignalstore"
+subtitle: "Gestión de Estado Reactiva para Aplicaciones Blazor Modernas"
 publishDate: 2025-11-02 18:00:00
 lastModified: 2025-11-02 18:00:00
 author: "TempooDev"
 img: ""
-img_alt: "BlazorSignalStore vs Microsoft Container State pattern performance comparison showing 50% fewer re-renders"
+img_alt: "Comparación de rendimiento entre BlazorSignalStore y el patrón Container State de Microsoft mostrando un 50% menos de re-renderizados"
 description: |
-    Discover how BlazorSignalStore revolutionizes state management in Blazor applications with granular reactivity, 
-    eliminating boilerplate code while delivering 50% fewer re-renders compared to Microsoft's Container State pattern. 
-    Learn the differences, see performance comparisons, and understand when to use each approach in your projects.
+    Descubre cómo BlazorSignalStore revoluciona la gestión de estado en aplicaciones Blazor con reactividad granular, 
+    eliminando código repetitivo mientras ofrece un 50% menos de re-renderizados comparado con el patrón Container State de Microsoft. 
+    Aprende las diferencias, mira comparaciones de rendimiento y entiende cuándo usar cada enfoque en tus proyectos.
 excerpt: |
-    A comprehensive comparison between BlazorSignalStore and Microsoft's Container State pattern, 
-    demonstrating how reactive programming can significantly improve both developer experience and application performance.
+    Una comparación completa entre BlazorSignalStore y el patrón Container State de Microsoft, 
+    demostrando cómo la programación reactiva puede mejorar significativamente tanto la experiencia del desarrollador como el rendimiento de la aplicación.
 keywords:
   - BlazorSignalStore
-  - Blazor state management
-  - reactive programming
+  - Gestión de estado Blazor
+  - programación reactiva
   - Microsoft Container State
-  - Signal pattern
-  - Blazor performance
-  - .NET state management
-  - granular reactivity
-  - form optimization
+  - Patrón Signal
+  - Rendimiento Blazor
+  - Gestión de estado .NET
+  - reactividad granular
+  - optimización de formularios
   - Blazor WebAssembly
-category: "Development"
+category: "Desarrollo"
 tags: 
   - Blazor
   - State Management
@@ -36,42 +37,42 @@ tags:
   - Component Development
   - Frontend Architecture
   - Developer Experience
-readTime: "8 min read"
-difficulty: "Intermediate"
+readTime: "8 min de lectura"
+difficulty: "Intermedio"
 toc: true
 featured: true
-series: "Blazor State Management"
+series: "Gestión de Estado en Blazor"
 socialShare:
-  twitter: "Discover how @BlazorSignalStore delivers 50% fewer re-renders compared to Microsoft's Container State pattern 🚀 #Blazor #StateManagement #ReactiveProgramming"
-  linkedin: "Learn how BlazorSignalStore revolutionizes Blazor state management with granular reactivity and superior performance"
-  facebook: "BlazorSignalStore vs Container State: A comprehensive performance and developer experience comparison"
+  twitter: "Descubre cómo @BlazorSignalStore ofrece un 50% menos de re-renderizados comparado con el patrón Container State de Microsoft 🚀 #Blazor #StateManagement #ReactiveProgramming"
+  linkedin: "Aprende cómo BlazorSignalStore revoluciona la gestión de estado en Blazor con reactividad granular y rendimiento superior"
+  facebook: "BlazorSignalStore vs Container State: Una comparación completa de rendimiento y experiencia de desarrollador"
 meta:
   canonical: "https://tempoodev.github.io/blazor-signal-store-comparison"
   robots: "index, follow"
-  language: "en-US"
+  language: "es-ES"
 schema:
   type: "TechArticle"
   proficiencyLevel: "Intermediate"
-  about: "Blazor state management comparison"
-  teaches: ["Reactive programming in Blazor", "Performance optimization", "State management patterns"]
+  about: "Comparación de gestión de estado en Blazor"
+  teaches: ["Programación reactiva en Blazor", "Optimización de rendimiento", "Patrones de gestión de estado"]
 ---
 
-## Introduction
+## Introducción
 
-BlazorSignalStore is a modern solution for state management in Blazor applications. After working on several Blazor projects using the Container State pattern proposed by Microsoft, I noticed significant amounts of repetitive code: manual subscriptions in `OnInitialized`, `IDisposable` implementations in every subscribed component, and the need to manually trigger state changes. Additionally, any property change would cause entire components to re-render unnecessarily.
+BlazorSignalStore es una solución moderna para la gestión de estado en aplicaciones Blazor. Después de trabajar en varios proyectos Blazor utilizando el patrón Container State propuesto por Microsoft, noté cantidades significativas de código repetitivo: suscripciones manuales en `OnInitialized`, implementaciones de `IDisposable` en cada componente suscrito, y la necesidad de disparar manualmente los cambios de estado. Además, cualquier cambio de propiedad causaba que componentes enteros se re-renderizaran innecesariamente.
 
-This is where BlazorSignalStore shines - it provides granular reactivity that only re-renders the specific parts of the UI that actually changed.
+Aquí es donde brilla BlazorSignalStore: proporciona reactividad granular que solo re-renderiza las partes específicas de la UI que realmente cambiaron.
 
-## Container State Pattern
+## Patrón Container State
 
-Microsoft recommends using a class as a container and injecting it into the dependency injection container as Scoped.
+Microsoft recomienda usar una clase como contenedor e inyectarla en el contenedor de inyección de dependencias como Scoped.
 
 ``` csharp
 // Program.cs
 builder.Services.AddScoped<ContainerStateService>();
 
 ```
-You need a class that describes the state and the actions that can be performed on it:
+Necesitas una clase que describa el estado y las acciones que se pueden realizar sobre él:
 ```csharp
 // FormContainerState.cs
 public record FormContainerState
@@ -82,7 +83,7 @@ public record FormContainerState
         public bool IsSubmitting { get; init; } = false;
         public SubmissionResult? SubmissionResult { get; init; } = null;
 
-        // Validation logic within the container
+        // Lógica de validación dentro del contenedor
         public bool IsValid()
         {
             return PersonalInfo.IsValid() && Address.IsValid() && Preferences.IsValid();
@@ -104,7 +105,7 @@ public record FormContainerState
 
         public double GetCompletionPercentage()
         {
-            var totalFields = 9; // Total required fields
+            var totalFields = 9; // Total de campos requeridos
             var completedFields = 0;
 
             if (!string.IsNullOrWhiteSpace(PersonalInfo.FirstName)) completedFields++;
@@ -122,7 +123,7 @@ public record FormContainerState
     }
 ```
 
-The state container declares actions and notifies subscribers when changes occur:
+El contenedor de estado declara acciones y notifica a los suscriptores cuando ocurren cambios:
 ```csharp
 // ContainerStateService.cs 
 
@@ -134,13 +135,13 @@ The state container declares actions and notifies subscribers when changes occur
 
         public FormContainerState FormState => _formState;
 
-        // Properties derived from the container state
+        // Propiedades derivadas del estado del contenedor
         public bool IsFormValid => _formState.IsValid();
         public bool CanSubmit => _formState.CanSubmit();
         public List<string> ValidationErrors => _formState.GetValidationErrors();
         public double FormCompletionPercentage => _formState.GetCompletionPercentage();
 
-        // Actions that modify the container state
+        // Acciones que modifican el estado del contenedor
         public void UpdatePersonalInfo(string firstName, string lastName, string email)
         {
             _formState = _formState with
@@ -188,7 +189,7 @@ The state container declares actions and notifies subscribers when changes occur
     }
 ```
 
-To use it, you inject the service/state container and implement `IDisposable` to cancel subscriptions when the component lifecycle ends:
+Para usarlo, inyectas el servicio/contenedor de estado e implementas `IDisposable` para cancelar suscripciones cuando termina el ciclo de vida del componente:
 ``` html
 <!-- ContainerExample.razor -->
 @page "/container-state"
@@ -201,20 +202,20 @@ To use it, you inject the service/state container and implement `IDisposable` to
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <h1 class="display-4 text-center mb-4">📦 Container State Pattern Demo</h1>
+            <h1 class="display-4 text-center mb-4">📦 Demo Patrón Container State</h1>
             <p class="lead text-center mb-5">
-                This demo shows Microsoft's recommended Container State pattern for Blazor applications.
-                Instead of managing individual state properties, all related state is grouped into a single container.
+                Esta demo muestra el patrón Container State recomendado por Microsoft para aplicaciones Blazor.
+                En lugar de gestionar propiedades de estado individuales, todo el estado relacionado se agrupa en un solo contenedor.
             </p>
         </div>
     </div>
 
-    <!-- Progress Bar -->
+    <!-- Barra de Progreso -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">📊 Form Progress</h5>
+                    <h5 class="mb-0">📊 Progreso del Formulario</h5>
                 </div>
                 <div class="card-body">
                     <div class="progress mb-2" style="height: 25px;">
@@ -223,23 +224,23 @@ To use it, you inject the service/state container and implement `IDisposable` to
                             @ContainerStateService.FormCompletionPercentage.ToString("F0")%
                         </div>
                     </div>
-                    <small class="text-muted">Complete all fields to enable submission</small>
+                    <small class="text-muted">Completa todos los campos para habilitar el envío</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Form Example -->
+    <!-- Ejemplo de Formulario -->
     <div class="row">
         <div class="col-md-6">
-            <input type="text" class="form-control mb-2" placeholder="First Name"
+            <input type="text" class="form-control mb-2" placeholder="Nombre"
                    value="@ContainerStateService.FormState.PersonalInfo.FirstName"
                    @onchange="@(e => UpdatePersonalInfo(e.Value?.ToString() ?? "", 
                                                        ContainerStateService.FormState.PersonalInfo.LastName,
                                                        ContainerStateService.FormState.PersonalInfo.Email))" />
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control mb-2" placeholder="Last Name"
+            <input type="text" class="form-control mb-2" placeholder="Apellido"
                    value="@ContainerStateService.FormState.PersonalInfo.LastName"
                    @onchange="@(e => UpdatePersonalInfo(ContainerStateService.FormState.PersonalInfo.FirstName,
                                                        e.Value?.ToString() ?? "",
@@ -276,22 +277,22 @@ To use it, you inject the service/state container and implement `IDisposable` to
 }
 ```
 
-### The Problem with Container State
+### El Problema con Container State
 
-The problem with this solution is that we always have repetitive code for subscribing and unsubscribing from state changes. The main issue is that when receiving changes in any property, the entire component re-renders. This means if we have a form and modify the first name, the entire component will re-render due to the state change subscription.
+El problema con esta solución es que siempre tenemos código repetitivo para suscribirnos y desuscribirnos de los cambios de estado. El problema principal es que al recibir cambios en cualquier propiedad, el componente completo se re-renderiza. Esto significa que si tenemos un formulario y modificamos el nombre, todo el componente se re-renderizará debido a la suscripción al cambio de estado.
 
-This is where the reactivity of Signals shines, as only the specific parts that have been modified will re-render partially.
+Aquí es donde brilla la reactividad de Signals, ya que solo las partes específicas que han sido modificadas se re-renderizarán parcialmente.
 
 ## BlazorSignalStore 
 
-This implementation simplifies the development experience by eliminating boilerplate code and optimizing the solution to avoid re-renders when a single state property is modified.
+Esta implementación simplifica la experiencia de desarrollo eliminando el código boilerplate y optimizando la solución para evitar re-renderizados cuando se modifica una sola propiedad del estado.
 
 ```csharp
 // Program.cs
 builder.Services.AddSignalStore<SignalFormStore>();
 ```
 
-Store declaration with properties grouped in Signals and Computed properties:
+Declaración del Store con propiedades agrupadas en Signals y propiedades Computadas:
 ``` csharp
 // SignalFormStore.cs
 using BlazorSignalStore.Core;
@@ -299,28 +300,28 @@ using BlazorSignalStore.Core;
 namespace BlazorSignalStore.Demo.Store
 {
     /// <summary>
-    /// A form store demonstrating granular reactivity with Signals.
-    /// Each property is its own Signal, allowing for precise UI updates.
+    /// Un store de formulario demostrando reactividad granular con Signals.
+    /// Cada propiedad es su propio Signal, permitiendo actualizaciones precisas de la UI.
     /// </summary>
     public class SignalFormStore : StoreBase
     {
-        // Personal Info Signals
+        // Signals de Información Personal
         public Signal<string> FirstName { get; } = new("");
         public Signal<string> LastName { get; } = new("");
         public Signal<string> Email { get; } = new("");
         
-        // Address Signals
+        // Signals de Dirección
         public Signal<string> Street { get; } = new("");
         public Signal<string> City { get; } = new("");
         public Signal<string> PostalCode { get; } = new("");
         public Signal<string> Country { get; } = new("");
         
-        // Preferences Signals
+        // Signals de Preferencias
         public Signal<bool> EmailNotifications { get; } = new(false);
         public Signal<bool> SmsNotifications { get; } = new(false);
         public Signal<string> Theme { get; } = new("light");
         
-        // Computed properties for validation and progress
+        // Propiedades computadas para validación y progreso
         public Computed<bool> IsPersonalInfoValid { get; }
         public Computed<bool> IsAddressValid { get; }
         public Computed<bool> IsFormValid { get; }
@@ -367,7 +368,7 @@ namespace BlazorSignalStore.Demo.Store
 }
 ```
 
-Component usage is simplified. You just inject the Store and add the Signals in OnInitialized. The Signals themselves handle the rendering logic and change notification automatically:
+El uso en el componente se simplifica. Solo inyectas el Store y añades los Signals en OnInitialized. Los propios Signals manejan la lógica de renderizado y la notificación de cambios automáticamente:
 
 ```html
 <!-- SignalFormExample.razor -->
@@ -376,24 +377,24 @@ Component usage is simplified. You just inject the Store and add the Signals in 
 @using BlazorSignalStore.Core
 @inject SignalFormStore SignalFormStore
 
-<PageTitle>Signal Form Demo - BlazorSignalStore</PageTitle>
+<PageTitle>Demo Formulario Signal - BlazorSignalStore</PageTitle>
 
 <div class="container-fluid">
     <div class="row">
         <div class="col-12">
-            <h1 class="display-4 text-center mb-4">⚡ Signal Form Demo</h1>
+            <h1 class="display-4 text-center mb-4">⚡ Demo Formulario Signal</h1>
             <p class="lead text-center mb-5">
-                This demo shows BlazorSignalStore's granular reactivity - only the specific UI parts that depend on changed signals will re-render.
+                Esta demo muestra la reactividad granular de BlazorSignalStore: solo las partes específicas de la UI que dependen de señales modificadas se re-renderizarán.
             </p>
         </div>
     </div>
 
-    <!-- Progress Bar -->
+    <!-- Barra de Progreso -->
     <div class="row mb-4">
         <div class="col-12">
             <div class="card shadow-sm">
                 <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">📊 Form Progress (Reactive)</h5>
+                    <h5 class="mb-0">📊 Progreso del Formulario (Reactivo)</h5>
                 </div>
                 <div class="card-body">
                     <div class="progress mb-2" style="height: 25px;">
@@ -402,21 +403,21 @@ Component usage is simplified. You just inject the Store and add the Signals in 
                             @formProgress().ToString("F0")%
                         </div>
                     </div>
-                    <small class="text-muted">Complete all fields to enable submission</small>
+                    <small class="text-muted">Completa todos los campos para habilitar el envío</small>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Form Fields -->
+    <!-- Campos del Formulario -->
     <div class="row">
         <div class="col-md-6">
-            <input type="text" class="form-control mb-2" placeholder="First Name"
+            <input type="text" class="form-control mb-2" placeholder="Nombre"
                    value="@firstName()"
                    @onchange="@(e => SignalFormStore.FirstName.Value = e.Value?.ToString() ?? "")" />
         </div>
         <div class="col-md-6">
-            <input type="text" class="form-control mb-2" placeholder="Last Name"
+            <input type="text" class="form-control mb-2" placeholder="Apellido"
                    value="@lastName()"
                    @onchange="@(e => SignalFormStore.LastName.Value = e.Value?.ToString() ?? "")" />
         </div>
@@ -441,72 +442,72 @@ Component usage is simplified. You just inject the Store and add the Signals in 
 }
 ```
 
-## Performance Comparison
+## Comparación de Rendimiento
 
-Our demo application includes a side-by-side comparison that demonstrates the performance benefits of BlazorSignalStore:
+Nuestra aplicación de demostración incluye una comparación lado a lado que demuestra los beneficios de rendimiento de BlazorSignalStore:
 
-### Container State Pattern:
-- **Re-renders**: When any field changes, the entire component re-renders
-- **Performance**: ~100% re-render rate for form interactions
-- **Code**: Requires manual subscription management and IDisposable implementation
+### Patrón Container State:
+- **Re-renderizados**: Cuando cualquier campo cambia, todo el componente se re-renderiza
+- **Rendimiento**: ~100% tasa de re-renderizado para interacciones de formulario
+- **Código**: Requiere gestión de suscripción manual e implementación de IDisposable
 
 ### BlazorSignalStore:
-- **Re-renders**: Only the specific UI elements that depend on the changed signal re-render
-- **Performance**: ~50% fewer re-renders compared to Container State
-- **Code**: Automatic subscription management, no boilerplate required
+- **Re-renderizados**: Solo los elementos específicos de la UI que dependen de la señal cambiada se re-renderizan
+- **Rendimiento**: ~50% menos re-renderizados comparado con Container State
+- **Código**: Gestión automática de suscripciones, sin necesidad de boilerplate
 
-## Key Advantages of BlazorSignalStore
+## Ventajas Clave de BlazorSignalStore
 
-### 🚀 **Performance Benefits**
-1. **Granular Reactivity**: Only affected UI parts re-render
-2. **Reduced CPU Usage**: Fewer unnecessary render cycles
-3. **Better User Experience**: Smoother interactions in complex forms
+### 🚀 **Beneficios de Rendimiento**
+1. **Reactividad Granular**: Solo las partes afectadas de la UI se re-renderizan
+2. **Uso Reducido de CPU**: Menos ciclos de renderizado innecesarios
+3. **Mejor Experiencia de Usuario**: Interacciones más fluidas en formularios complejos
 
-### 🛠️ **Developer Experience**
-1. **Less Boilerplate**: No need for manual subscription management
-2. **No IDisposable**: Automatic cleanup handled by the library
-3. **Type Safety**: Strong typing with generic Signal&lt;T&gt; and Computed&lt;T&gt;
-4. **Intuitive API**: Similar to modern reactive frameworks
+### 🛠️ **Experiencia de Desarrollador**
+1. **Menos Boilerplate**: Sin necesidad de gestión manual de suscripciones
+2. **Sin IDisposable**: Limpieza automática manejada por la librería
+3. **Seguridad de Tipos**: Tipado fuerte con Signal&lt;T&gt; y Computed&lt;T&gt; genéricos
+4. **API Intuitiva**: Similar a frameworks reactivos modernos
 
-### 📊 **Scalability**
-1. **Large Forms**: Performance benefits increase with form complexity
-2. **Complex State**: Easy to manage interdependent state with Computed signals
-3. **Memory Efficiency**: Automatic subscription cleanup prevents memory leaks
+### 📊 **Escalabilidad**
+1. **Formularios Grandes**: Los beneficios de rendimiento aumentan con la complejidad del formulario
+2. **Estado Complejo**: Fácil de gestionar estado interdependiente con señales Computadas
+3. **Eficiencia de Memoria**: La limpieza automática de suscripciones previene fugas de memoria
 
-## When to Use Each Pattern
+## Cuándo Usar Cada Patrón
 
-### Use Container State When:
-- ✅ Simple applications with minimal state management needs
-- ✅ Following strict Microsoft patterns is required
-- ✅ Team is not familiar with reactive programming concepts
+### Usa Container State Cuando:
+- ✅ Aplicaciones simples con necesidades mínimas de gestión de estado
+- ✅ Se requiere seguir patrones estrictos de Microsoft
+- ✅ El equipo no está familiarizado con conceptos de programación reactiva
 
-### Use BlazorSignalStore When:
-- ✅ Building complex forms with many fields
-- ✅ Performance optimization is important
-- ✅ You want modern reactive state management
-- ✅ Reducing boilerplate code is a priority
-- ✅ Building large-scale applications
+### Usa BlazorSignalStore Cuando:
+- ✅ Construyes formularios complejos con muchos campos
+- ✅ La optimización del rendimiento es importante
+- ✅ Quieres una gestión de estado reactiva moderna
+- ✅ Reducir el código boilerplate es una prioridad
+- ✅ Construyes aplicaciones de gran escala
 
-## Conclusion
+## Conclusión
 
-While Microsoft's Container State pattern provides a solid foundation for state management in Blazor, **BlazorSignalStore offers significant advantages** in both performance and developer experience:
+Mientras que el patrón Container State de Microsoft proporciona una base sólida para la gestión de estado en Blazor, **BlazorSignalStore ofrece ventajas significativas** tanto en rendimiento como en experiencia de desarrollador:
 
-1. **~50% fewer re-renders** in typical form scenarios
-2. **Eliminates boilerplate code** for subscription management
-3. **Provides granular reactivity** similar to modern frontend frameworks
-4. **Maintains type safety** and follows .NET conventions
-5. **Scales better** for complex applications
+1. **~50% menos re-renderizados** en escenarios típicos de formularios
+2. **Elimina código boilerplate** para la gestión de suscripciones
+3. **Proporciona reactividad granular** similar a frameworks frontend modernos
+4. **Mantiene la seguridad de tipos** y sigue las convenciones de .NET
+5. **Escala mejor** para aplicaciones complejas
 
-BlazorSignalStore brings the best of reactive programming to Blazor while maintaining the familiar C# development experience. It's particularly valuable for applications with complex forms, real-time data, or performance-critical scenarios.
+BlazorSignalStore trae lo mejor de la programación reactiva a Blazor mientras mantiene la experiencia de desarrollo familiar de C#. Es particularmente valioso para aplicaciones con formularios complejos, datos en tiempo real o escenarios críticos de rendimiento.
 
-The library proves that you don't have to choose between performance and developer experience - you can have both.
+La librería prueba que no tienes que elegir entre rendimiento y experiencia de desarrollador - puedes tener ambos.
 
 ---
 
-**Try BlazorSignalStore today** and experience the difference that granular reactivity makes in your Blazor applications!
+**Prueba BlazorSignalStore hoy** y experimenta la diferencia que hace la reactividad granular en tus aplicaciones Blazor!
 
 ```bash
 dotnet add package BlazorSignalStore
 ```
 
-For more examples and documentation, visit our [GitHub repository](https://github.com/TempooDev/BlazorSignalStore). 
+Para más ejemplos y documentación, visita nuestro [repositorio de GitHub](https://github.com/TempooDev/BlazorSignalStore).

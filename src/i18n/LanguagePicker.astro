@@ -1,0 +1,336 @@
+---
+import { getCollection } from "astro:content";
+const { entry } = Astro.props;
+
+let otherLink;
+let currentLangLink;
+
+const currentPath = Astro.url.pathname;
+const isEnglish = entry
+  ? entry.id.startsWith("en/")
+  : currentPath.startsWith("/en");
+
+// Logic to determine the "other" link
+if (entry) {
+  const allPosts = await getCollection("blog");
+  const translations = allPosts.filter(
+    (p) =>
+      p.data.translationId === entry.data.translationId && p.id !== entry.id,
+  );
+  const otherVersion = translations[0];
+
+  if (otherVersion) {
+    // If we have a translation, map it to the correct URL
+    // Assuming ID is like 'es/slug' or 'en/slug'
+    const [lang, ...slugParts] = otherVersion.id.split("/");
+    const slug = slugParts.join("/");
+    otherLink = `/${lang}/blog/${slug}`;
+  } else {
+    // If no translation, link to the blog index of the other language
+    const currentLang = currentPath.startsWith("/en") ? "en" : "es";
+    const targetLang = currentLang === "en" ? "es" : "en";
+    otherLink = `/${targetLang}/blog`;
+  }
+} else {
+  // Fallback for non-blog pages
+  // Check if current path starts with /en/ or /es/
+  const match = currentPath.match(/^\/(en|es)(\/.*)?$/);
+
+  if (match) {
+    const lang = match[1];
+    const rest = match[2] || "/";
+    const targetLang = lang === "en" ? "es" : "en";
+
+    // Construct new path: swap lang prefix
+    otherLink = `/${targetLang}${rest}`;
+  } else {
+    // If no language prefix (e.g. root / or direct access), default to swapping to 'en' from 'es' logic or vice versa
+    // But with prefixDefaultLocale: true, we should usually have a prefix.
+    // If at root /, redirect handles it.
+    // If strictly at /, assume we want to toggle.
+    otherLink = "/en/";
+  }
+}
+
+// Define links for both languages
+// currentPath should include the lang prefix now
+let esLink, enLink;
+
+if (currentPath.startsWith("/en")) {
+  enLink = currentPath;
+  esLink = otherLink;
+} else if (currentPath.startsWith("/es")) {
+  esLink = currentPath;
+  enLink = otherLink;
+} else {
+  // Fallback?
+  esLink = "/es" + currentPath;
+  enLink = "/en" + currentPath;
+}
+
+const currentLang = currentPath.startsWith("/en") ? "en" : "es";
+---
+
+<div class="language-picker" id="languagePicker">
+  <button
+    class="picker-btn"
+    aria-label="Select language"
+    aria-expanded="false"
+    id="pickerBtn"
+  >
+    {
+      currentLang === "es" ? (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 480"
+          class="flag-icon"
+        >
+          <path fill="#aa151b" d="M0 0h640v480H0z" />
+          <path fill="#f1bf00" d="M0 120h640v240H0z" />
+        </svg>
+      ) : (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 480"
+          class="flag-icon"
+        >
+          <path fill="#012169" d="M0 0h640v480H0z" />
+          <path
+            fill="#FFF"
+            d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"
+          />
+          <path
+            fill="#C8102E"
+            d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"
+          />
+          <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z" />
+          <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z" />
+        </svg>
+      )
+    }
+    <span class="lang-text">{currentLang === "es" ? "ES" : "EN"}</span>
+    <svg
+      class="chevron"
+      xmlns="http://www.w3.org/2000/svg"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    >
+      <path d="m6 9 6 6 6-6"></path>
+    </svg>
+  </button>
+
+  <ul class="dropdown-menu" id="dropdownMenu">
+    <li>
+      <a
+        href={esLink}
+        data-lang="es"
+        class={`lang-option ${currentLang === "es" ? "active" : ""}`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 480"
+          class="flag-icon-sm"
+        >
+          <path fill="#aa151b" d="M0 0h640v480H0z"></path>
+          <path fill="#f1bf00" d="M0 120h640v240H0z"></path>
+        </svg>
+        <span>Español</span>
+      </a>
+    </li>
+    <li>
+      <a
+        href={enLink}
+        data-lang="en"
+        class={`lang-option ${currentLang === "en" ? "active" : ""}`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 640 480"
+          class="flag-icon-sm"
+        >
+          <path fill="#012169" d="M0 0h640v480H0z"></path>
+          <path
+            fill="#FFF"
+            d="M75 0l244 181L562 0h78v62L400 241l240 178v61h-80L320 301 81 480H0v-60l239-178L0 64V0h75z"
+          ></path>
+          <path
+            fill="#C8102E"
+            d="M424 281l216 159v40L369 281h55zm-184 20l6 35L54 480H0l240-179zM640 0v3L391 191l2-44L590 0h50zM0 0l239 176h-60L0 42V0z"
+          ></path>
+          <path fill="#FFF" d="M241 0v480h160V0H241zM0 160v160h640V160H0z"
+          ></path>
+          <path fill="#C8102E" d="M0 193v96h640v-96H0zM273 0v480h96V0h-96z"
+          ></path>
+        </svg>
+        <span>English</span>
+      </a>
+    </li>
+  </ul>
+</div>
+
+<script is:inline>
+  function initLanguagePicker() {
+    const pickers = document.querySelectorAll(".language-picker");
+
+    pickers.forEach((picker) => {
+      const btn = picker.querySelector(".picker-btn");
+      const menu = picker.querySelector(".dropdown-menu");
+
+      if (!btn || !menu) return;
+
+      // Toggle dropdown
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        const expanded = btn.getAttribute("aria-expanded") === "true";
+        btn.setAttribute("aria-expanded", (!expanded).toString());
+        menu.classList.toggle("show");
+      });
+
+      // Handle selection and persistence
+      const options = picker.querySelectorAll(".lang-option");
+      options.forEach((option) => {
+        option.addEventListener("click", (e) => {
+          const lang = option.getAttribute("data-lang");
+          if (lang) {
+            localStorage.setItem("language", lang);
+          }
+        });
+      });
+    });
+
+    // Close on click outside (only one listener needed globally)
+    document.addEventListener("click", (e) => {
+      const isClickInside = e.target.closest(".language-picker");
+      if (!isClickInside) {
+        document
+          .querySelectorAll('.picker-btn[aria-expanded="true"]')
+          .forEach((btn) => {
+            btn.setAttribute("aria-expanded", "false");
+          });
+        document.querySelectorAll(".dropdown-menu.show").forEach((menu) => {
+          menu.classList.remove("show");
+        });
+      }
+    });
+  }
+
+  // Run on load
+  initLanguagePicker();
+
+  // Support for View Transitions (if enabled in future)
+  document.addEventListener("astro:page-load", initLanguagePicker);
+</script>
+
+<style>
+  .language-picker {
+    position: relative;
+    font-family: var(--font-body);
+  }
+
+  .picker-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px; /* Pill shape */
+    color: var(--gray-0);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .picker-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .flag-icon {
+    width: 1.25rem;
+    height: auto;
+    border-radius: 2px;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .flag-icon-sm {
+    width: 1.25rem;
+    height: auto;
+    border-radius: 2px;
+    margin-right: 0.5rem;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .chevron {
+    width: 1rem;
+    height: 1rem;
+    opacity: 0.7;
+    transition: transform 0.2s;
+  }
+
+  .picker-btn[aria-expanded="true"] .chevron {
+    transform: rotate(180deg);
+  }
+
+  .dropdown-menu {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 0;
+    min-width: 150px;
+    background: var(--gray-999);
+    border: 1px solid var(--gray-800);
+    border-radius: 0.75rem;
+    padding: 0.5rem;
+    list-style: none;
+    box-shadow:
+      0 10px 15px -3px rgba(0, 0, 0, 0.1),
+      0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+    transition: all 0.2s ease;
+    z-index: 50;
+  }
+
+  .dropdown-menu.show {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+  }
+
+  .lang-option {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    color: var(--gray-200);
+    text-decoration: none;
+    transition: background-color 0.2s;
+    font-size: 0.9rem;
+  }
+
+  .lang-option:hover {
+    background-color: var(--gray-800);
+    color: var(--gray-0);
+  }
+
+  .lang-option.active {
+    background-color: var(--gray-800);
+    color: var(--accent-regular);
+    font-weight: 600;
+  }
+
+  :global(.theme-dark) .dropdown-menu {
+    background: #1a1a1a;
+    border-color: #333;
+  }
+</style>
