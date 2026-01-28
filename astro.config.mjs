@@ -18,7 +18,6 @@ function getPostRedirects() {
     const files = fs.readdirSync(postsDir);
     files.forEach(file => {
       const slug = file.replace(/\.mdx?$/, '');
-      // IMPORTANTE: Cambiado de /posts/ a /blog/
       redirects[`/blog/${slug}`] = `/blog/en/${slug}`;
     });
   }
@@ -33,7 +32,6 @@ function getWorkRedirects() {
     const files = fs.readdirSync(workDir);
     files.forEach(file => {
       const slug = file.replace(/\.mdx?$/, '');
-      // Si tu sección de portafolio también cambió a /en/work/
       redirects[`/work/${slug}`] = `/work/en/${slug}`;
     });
   }
