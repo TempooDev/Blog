@@ -6,6 +6,7 @@ import expressiveCode from "astro-expressive-code";
 import sitemap from "@astrojs/sitemap";
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
+import fs from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -18,7 +19,7 @@ function getPostRedirects() {
     const files = fs.readdirSync(postsDir);
     files.forEach(file => {
       const slug = file.replace(/\.mdx?$/, '');
-      redirects[`/blog/${slug}`] = `/blog/en/${slug}`;
+      redirects[`/blog/${slug}`] = `/en/blog/${slug}`;
     });
   }
   return redirects;
@@ -32,7 +33,7 @@ function getWorkRedirects() {
     const files = fs.readdirSync(workDir);
     files.forEach(file => {
       const slug = file.replace(/\.mdx?$/, '');
-      redirects[`/work/${slug}`] = `/work/en/${slug}`;
+      redirects[`/work/${slug}`] = `/en/work/${slug}`;
     });
   }
   return redirects;
