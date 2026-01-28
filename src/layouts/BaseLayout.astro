@@ -19,6 +19,29 @@ const { title, description } = Astro.props;
   <head>
     <MainHead title={title} description={description} />
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <script is:inline>
+      // Language detection and redirect
+      (function () {
+        try {
+          const saved = localStorage.getItem("language");
+          const currentPath = window.location.pathname;
+
+          // Only redirect from the root path
+          if (currentPath === "/" || currentPath === "/index.html") {
+            if (saved === "en") {
+              window.location.href = "/en/";
+            } else if (!saved) {
+              const browserLang = navigator.language || navigator.userLanguage;
+              if (browserLang && browserLang.startsWith("en")) {
+                window.location.href = "/en/";
+              }
+            }
+          }
+        } catch (e) {
+          console.error("Language detection failed", e);
+        }
+      })();
+    </script>
     {/* --- Código de Google Analytics 4 (GA4) --- */}
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YEQZKB7Q1"
     ></script>

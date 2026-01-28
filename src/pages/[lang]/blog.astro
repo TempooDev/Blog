@@ -1,22 +1,25 @@
 ---
 import { getCollection } from "astro:content";
-import BaseLayout from "@layouts/BaseLayout.astro";
+import BaseLayout from "../../layouts/BaseLayout.astro";
 import ContactCTA from "@components/Common/ContactCTA.astro";
 import Hero from "@components/Common/Hero.astro";
 import Grid from "@components/Common/Grid.astro";
 import BlogPostPreview from "@components/Blog/BlogPostPreview.astro";
 
-const { pathname } = Astro.url;
-const currentLang = pathname.startsWith("/en") ? "en" : "es";
+export async function getStaticPaths() {
+  return [{ params: { lang: "es" } }, { params: { lang: "en" } }];
+}
+
+const { lang } = Astro.params;
 
 const posts = (
   await getCollection("blog", ({ id }) => {
-    return id.startsWith(`${currentLang}/`);
+    return id.startsWith(`${lang}/`);
   })
 ).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
 const content =
-  currentLang === "en"
+  lang === "en"
     ? {
         title: "My Blog",
         tagline:

@@ -5,22 +5,15 @@ import type { iconPaths } from "@components/Common/IconPaths";
 import LanguagePicker from "@i18n/LanguagePicker.astro";
 
 const { pathname } = Astro.url;
-const isEnglish = pathname.startsWith("/en");
+const lang = pathname.startsWith("/en") ? "en" : "es";
 
 /** Main menu items */
-const textLinks = isEnglish
-  ? [
-      { label: "Home", href: "/en/" },
-      { label: "Work", href: "/en/work/" },
-      { label: "Blog", href: "/en/blog/" },
-      { label: "About", href: "/en/about/" },
-    ]
-  : [
-      { label: "Inicio", href: "/" },
-      { label: "Proyectos", href: "/work/" },
-      { label: "Blog", href: "/blog/" },
-      { label: "Sobre mí", href: "/about/" },
-    ];
+const textLinks = [
+  { label: lang === "en" ? "Home" : "Inicio", href: `/${lang}/` },
+  { label: lang === "en" ? "Work" : "Proyectos", href: `/${lang}/work/` },
+  { label: "Blog", href: `/${lang}/blog/` },
+  { label: lang === "en" ? "About" : "Sobre mí", href: `/${lang}/about/` },
+];
 
 /** Icon links to social media — edit these with links to your profiles! */
 const iconLinks: {

@@ -1,8 +1,8 @@
 ---
 import { getCollection } from "astro:content";
 
-// Layout import — provides basic page elements: <head>, <nav>, <footer> etc.
-import BaseLayout from "../layouts/BaseLayout.astro";
+// Layout import
+import BaseLayout from "../../layouts/BaseLayout.astro";
 
 // Component Imports
 import CallToAction from "@components/Common/CallToAction.astro";
@@ -14,33 +14,84 @@ import PortfolioPreview from "@components/Portfolio/PortfolioPreview.astro";
 import ContactCTA from "@components/Common/ContactCTA.astro";
 import Skills from "@components/Common/Skills.astro";
 
-// Content Fetching: List four most recent work projects
+export async function getStaticPaths() {
+  return [{ params: { lang: "es" } }, { params: { lang: "en" } }];
+}
+
+const { lang } = Astro.params;
+
+// Content Strings
+const content =
+  lang === "en"
+    ? {
+        title: "Antonio Bermúdez",
+        description:
+          "I am a Computer Engineer specializing in enterprise Cloud solutions. Based in Málaga, Spain.",
+        heroTitle: "Hello, my name is Antonio Bermúdez",
+        heroTagline:
+          "I am a Computer Engineer specializing in enterprise Cloud solutions. Based in Málaga, Spain.",
+        roles: {
+          dev: "Developer",
+          teacher: "Teacher",
+          arch: "Architect",
+        },
+        imgAlt:
+          "Antonio Bermúdez in his graduation attire, smiling and standing outdoors",
+        projectsTitle: "Personal Projects",
+        projectsDesc:
+          "Below are some of my personal projects that showcase my skills and creativity.",
+        viewAll: "View All",
+      }
+    : {
+        title: "Antonio Bermúdez",
+        description:
+          "Soy Ingeniero Informático especializado en soluciones Cloud empresariales. Basado en Málaga, España.",
+        heroTitle: "Hola, soy Antonio Bermúdez",
+        heroTagline:
+          "Soy Ingeniero Informático especializado en soluciones Cloud empresariales. Basado en Málaga, España.",
+        roles: {
+          dev: "Desarrollador",
+          teacher: "Formador",
+          arch: "Arquitecto",
+        },
+        imgAlt:
+          "Antonio Bermúdez con su birrete de graduación, sonriendo al aire libre",
+        projectsTitle: "Proyectos Personales",
+        projectsDesc:
+          "A continuación presento algunos de mis proyectos personales que demuestran mis habilidades y creatividad.",
+        viewAll: "Ver Todos",
+      };
+
+// Content Fetching
 const projects = (await getCollection("work"))
   .sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf())
   .slice(0, 4);
 ---
 
-<BaseLayout
-  title="Antonio Bermúdez"
-  description="Soy Ingeniero Informático especializado en soluciones Cloud empresariales. Basado en Málaga, España."
->
+<BaseLayout title={content.title} description={content.description}>
   <div class="stack gap-20 lg:gap-48">
     <div class="wrapper stack gap-8 lg:gap-20">
       <header class="hero">
         <Hero
-          title="Hola, soy Antonio Bermúdez"
-          tagline="Soy Ingeniero Informático especializado en soluciones Cloud empresariales. Basado en Málaga, España."
+          title={content.heroTitle}
+          tagline={content.heroTagline}
           align="start"
         >
           <div class="roles">
-            <Pill><Icon icon="code" size="1.33em" /> Desarrollador</Pill>
-            <Pill><Icon icon="microphone-stage" size="1.33em" /> Formador</Pill>
-            <Pill><Icon icon="pencil-line" size="1.33em" /> Arquitecto</Pill>
+            <Pill><Icon icon="code" size="1.33em" /> {content.roles.dev}</Pill>
+            <Pill
+              ><Icon icon="microphone-stage" size="1.33em" />
+              {content.roles.teacher}</Pill
+            >
+            <Pill
+              ><Icon icon="pencil-line" size="1.33em" />
+              {content.roles.arch}</Pill
+            >
           </div>
         </Hero>
 
         <img
-          alt="Antonio Bermúdez con su birrete de graduación, sonriendo al aire libre"
+          alt={content.imgAlt}
           width="480"
           height="620"
           src="/assets/portrait.webp"
@@ -53,11 +104,8 @@ const projects = (await getCollection("work"))
     <main class="wrapper stack gap-20 lg:gap-48">
       <section class="section with-background with-cta">
         <header class="section-header stack gap-2 lg:gap-4">
-          <h3>Proyectos Personales</h3>
-          <p>
-            A continuación presento algunos de mis proyectos personales que
-            demuestran mis habilidades y creatividad.
-          </p>
+          <h3>{content.projectsTitle}</h3>
+          <p>{content.projectsDesc}</p>
         </header>
 
         <div class="gallery">
@@ -73,8 +121,8 @@ const projects = (await getCollection("work"))
         </div>
 
         <div class="cta">
-          <CallToAction href="/work/">
-            Ver Todos
+          <CallToAction href={`/${lang}/work/`}>
+            {content.viewAll}
             <Icon icon="arrow-right" size="1.2em" />
           </CallToAction>
         </div>
