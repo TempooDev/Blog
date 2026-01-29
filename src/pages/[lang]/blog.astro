@@ -5,10 +5,10 @@ import ContactCTA from "@components/Common/ContactCTA.astro";
 import Hero from "@components/Common/Hero.astro";
 import Grid from "@components/Common/Grid.astro";
 import BlogPostPreview from "@components/Blog/BlogPostPreview.astro";
+import { getLangStaticPaths } from "../../utils/routing";
+import { blogI18n } from "../../i18n/pages/collections";
 
-export async function getStaticPaths() {
-  return [{ params: { lang: "es" } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getLangStaticPaths;
 
 const { lang } = Astro.params;
 
@@ -18,18 +18,7 @@ const posts = (
   })
 ).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
-const content =
-  lang === "en"
-    ? {
-        title: "My Blog",
-        tagline:
-          "Here you will find information about systems design and my most recent projects.",
-      }
-    : {
-        title: "Mi Blog",
-        tagline:
-          "Aquí encontrarás información sobre diseño de sistemas y mis proyectos más recientes.",
-      };
+const content = blogI18n[lang as keyof typeof blogI18n];
 ---
 
 <BaseLayout

@@ -24,10 +24,12 @@ export async function getStaticPaths() {
   });
 }
 
+import { workI18n } from "../../../i18n/pages/collections";
+
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { lang } = Astro.params;
-const backLinkTitle = lang === "en" ? "Work" : "Proyectos";
+const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>

@@ -7,10 +7,10 @@ import ContactCTA from "@components/Common/ContactCTA.astro";
 import PortfolioPreview from "@components/Portfolio/PortfolioPreview.astro";
 import Hero from "@components/Common/Hero.astro";
 import Grid from "@components/Common/Grid.astro";
+import { getLangStaticPaths } from "../../utils/routing";
+import { workI18n } from "../../i18n/pages/collections";
 
-export async function getStaticPaths() {
-  return [{ params: { lang: "es" } }, { params: { lang: "en" } }];
-}
+export const getStaticPaths = getLangStaticPaths;
 
 const { lang } = Astro.params;
 
@@ -20,22 +20,7 @@ const projects = (
   })
 ).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
-const content =
-  lang === "en"
-    ? {
-        title: "My Work",
-        description: "Learn about my most recent projects",
-        heroTitle: "My Work",
-        heroTagline:
-          "See my most recent projects below to get an idea of my past experience.",
-      }
-    : {
-        title: "Mis Proyectos",
-        description: "Conoce mis proyectos más recientes",
-        heroTitle: "Mis Proyectos",
-        heroTagline:
-          "Echa un vistazo a mis proyectos más recientes para conocer mi experiencia.",
-      };
+const content = workI18n[lang as keyof typeof workI18n];
 ---
 
 <BaseLayout title={content.title} description={content.description}>

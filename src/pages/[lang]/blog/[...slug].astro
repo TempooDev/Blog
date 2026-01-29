@@ -28,9 +28,12 @@ export async function getStaticPaths() {
   });
 }
 
+import { blogI18n } from "../../../i18n/pages/collections";
+
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { lang } = Astro.params;
+const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
@@ -44,7 +47,7 @@ const { lang } = Astro.params;
       <header>
         <div class="wrapper stack gap-2">
           <a class="back-link" href={`/${lang}/blog/`}
-            ><Icon icon="arrow-left" /> Blog</a
+            ><Icon icon="arrow-left" /> {backLinkTitle}</a
           >
           <Hero title={entry.data.title} align="start">
             <div class="tags">
