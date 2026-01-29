@@ -12,9 +12,10 @@ const isEnglish = entry
 
 // Logic to determine the "other" link
 if (entry) {
-  const allPosts = await getCollection("blog");
-  const translations = allPosts.filter(
-    (p) =>
+  const collectionName = entry.collection as "blog" | "work";
+  const allEntries = await getCollection(collectionName);
+  const translations = allEntries.filter(
+    (p: any) =>
       p.data.translationId === entry.data.translationId && p.id !== entry.id,
   );
   const otherVersion = translations[0];
@@ -24,12 +25,15 @@ if (entry) {
     // Assuming ID is like 'es/slug' or 'en/slug'
     const [lang, ...slugParts] = otherVersion.id.split("/");
     const slug = slugParts.join("/");
-    otherLink = `/${lang}/blog/${slug}`;
+    // Construct link based on collection
+    const basePath = collectionName === "work" ? "work" : "blog";
+    otherLink = `/${lang}/${basePath}/${slug}`;
   } else {
-    // If no translation, link to the blog index of the other language
+    // If no translation, link to the index of the collection
     const currentLang = currentPath.startsWith("/en") ? "en" : "es";
     const targetLang = currentLang === "en" ? "es" : "en";
-    otherLink = `/${targetLang}/blog`;
+    const basePath = collectionName === "work" ? "work" : "blog";
+    otherLink = `/${targetLang}/${basePath}`;
   }
 } else {
   // Fallback for non-blog pages
