@@ -1,13 +1,23 @@
 ---
-import BaseLayout from "../../layouts/BaseLayout.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
 import ContactCTA from "@components/Common/ContactCTA.astro";
-import { getLangStaticPaths } from "../../utils/routing";
-import { aboutI18n } from "../../i18n/pages/about";
 
-export const getStaticPaths = getLangStaticPaths;
+const lang = "en";
 
-const { lang } = Astro.params;
-const content = aboutI18n[lang as keyof typeof aboutI18n];
+const content = {
+  title: "About | Antonio Bermúdez",
+  description: "About Antonio Bermúdez Rodríguez",
+  backgroundTitle: "Background",
+  p1: "With a solid background in Computer Engineering from the University of Malaga, I work as a Developer at Convotis, where I apply my knowledge in .NET Core and functional analysis. My experience is focused on the maintenance and development of enterprise applications, standing out for the proposal of improvements and migration of functions in Azure.",
+  p2: "At Convotis, my current focus includes the development of enterprise applications in Angular, improving the user experience based on Figma designs. Migration of legacy technology to recent versions of .NET. In collaboration with my team, I have maintained event-driven applications, employing technologies such as Event Hub and Azure Functions...",
+  educationTitle: "Education",
+  educationP1:
+    "I am currently studying Computer Engineering at the University of Malaga.",
+  educationP2: "I have an AZ-900 Azure Fundamentals certification.",
+  skillsTitle: "Skills",
+  skillsP1:
+    "My skills include functional analysis, .NET Core, Azure DevOps, SQL, Event Bus and Service Bus, AKS and microservices.",
+};
 ---
 
 <BaseLayout title={content.title} description={content.description}>

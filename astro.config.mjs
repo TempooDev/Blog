@@ -51,7 +51,7 @@ export default defineConfig({
     }),
   ],
   i18n: {
-    defaultLocale: "es",
+    defaultLocale: "en",
     locales: ["en", "es"],
     routing: {
       prefixDefaultLocale: true,
@@ -59,7 +59,7 @@ export default defineConfig({
       redirectToDefaultLocale: true,
     },
     fallback: {
-      en: "es",
+      es: "en",
     }
   },
   redirects: {

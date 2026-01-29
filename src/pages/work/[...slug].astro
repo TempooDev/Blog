@@ -14,22 +14,21 @@ interface Props {
 
 export async function getStaticPaths() {
   const work = await getCollection("work");
-  return work.map((entry) => {
+  const englishWork = work.filter((entry) => entry.id.startsWith("en/"));
+  return englishWork.map((entry) => {
     const [lang, ...slugParts] = entry.id.split("/");
     const slug = slugParts.join("/");
     return {
-      params: { lang, slug },
+      params: { slug },
       props: { entry },
     };
   });
 }
 
-import { workI18n } from "../../../i18n/pages/collections";
-
 const { entry } = Astro.props;
 const { Content } = await render(entry);
-const { lang } = Astro.params;
-const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
+const lang = "en";
+const backLinkTitle = "Work";
 ---
 
 <BaseLayout title={entry.data.title} description={entry.data.description}>
@@ -42,7 +41,7 @@ const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
     <div class="stack gap-15">
       <header>
         <div class="wrapper stack gap-2">
-          <a class="back-link" href={`/${lang}/work/`}
+          <a class="back-link" href="/work/"
             ><Icon icon="arrow-left" /> {backLinkTitle}</a
           >
           <Hero title={entry.data.title} align="start">
