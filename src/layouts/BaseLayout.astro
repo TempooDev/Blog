@@ -69,6 +69,11 @@ const { title, description } = Astro.props;
       );
     </script>
 
+    <script>
+      import mermaid from "mermaid";
+      mermaid.initialize({ startOnLoad: true, theme: "neutral" });
+    </script>
+
     <style>
       :root {
         --_placeholder-bg: linear-gradient(transparent, transparent);
