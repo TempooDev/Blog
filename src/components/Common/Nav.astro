@@ -3,16 +3,20 @@ import Icon from "@components/Common/Icon.astro";
 import ThemeToggle from "@components/Common/ThemeToggle.astro";
 import type { iconPaths } from "@components/Common/IconPaths";
 import LanguagePicker from "@i18n/LanguagePicker.astro";
+import { navI18n } from "../../i18n/components";
 
 const { pathname } = Astro.url;
-const lang = pathname.startsWith("/en") ? "en" : "es";
+const urlLang = pathname.startsWith("/en") ? "en" : "es";
+const { lang = urlLang } = Astro.props;
+
+const t = navI18n[lang as keyof typeof navI18n];
 
 /** Main menu items */
 const textLinks = [
-  { label: lang === "en" ? "Home" : "Inicio", href: `/${lang}/` },
-  { label: lang === "en" ? "Work" : "Proyectos", href: `/${lang}/work/` },
-  { label: "Blog", href: `/${lang}/blog/` },
-  { label: lang === "en" ? "About" : "Sobre mí", href: `/${lang}/about/` },
+  { label: t.home, href: `/${lang}/` },
+  { label: t.work, href: `/${lang}/work/` },
+  { label: t.blog, href: `/${lang}/blog/` },
+  { label: t.about, href: `/${lang}/about/` },
 ];
 
 /** Icon links to social media — edit these with links to your profiles! */
