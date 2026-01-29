@@ -1,17 +1,17 @@
 ---
 import CallToAction from "@components/Common/CallToAction.astro";
 import Icon from "@components/Common/Icon.astro";
+import { contactI18n } from "../../i18n/components";
+
+interface Props {
+  lang?: string;
+}
 
 const { pathname } = Astro.url;
-const lang = pathname.startsWith("/en") ? "en" : "es";
+const urlLang = pathname.startsWith("/en") ? "en" : "es";
+const { lang = urlLang } = Astro.props;
 
-const text =
-  lang === "en"
-    ? { title: "Interested in working together?", btn: "Send Me a Message" }
-    : {
-        title: "¿Te interesa que trabajemos juntos?",
-        btn: "Envíame un mensaje",
-      };
+const text = contactI18n[lang as keyof typeof contactI18n];
 ---
 
 <aside>
