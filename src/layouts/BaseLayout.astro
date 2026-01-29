@@ -6,9 +6,10 @@ import Footer from "@components/Common/Footer.astro";
 interface Props {
   title?: string | undefined;
   description?: string | undefined;
+  entry?: any;
 }
 
-const { title, description } = Astro.props;
+const { title, description, entry } = Astro.props;
 ---
 
 <html lang="en">
@@ -58,7 +59,7 @@ const { title, description } = Astro.props;
 
   <body>
     <div class="stack backgrounds">
-      <Nav />
+      <Nav entry={entry} />
       <slot />
       <Footer />
     </div>

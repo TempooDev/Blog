@@ -7,7 +7,7 @@ import { navI18n } from "../../i18n/components";
 
 const { pathname } = Astro.url;
 const urlLang = pathname.startsWith("/en") ? "en" : "es";
-const { lang = urlLang } = Astro.props;
+const { lang = urlLang, entry } = Astro.props;
 
 const t = navI18n[lang as keyof typeof navI18n];
 
@@ -126,7 +126,7 @@ const isCurrentPage = (href: string) => {
       </div>
 
       <div class="theme-toggle">
-        <LanguagePicker />
+        <LanguagePicker entry={entry} />
         <ThemeToggle />
       </div>
     </div>
