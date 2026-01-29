@@ -10,31 +10,29 @@
     "fetch:fonts": "node scripts/fetch-fonts.mjs"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.10",
+    "@astrojs/mdx": "^4.3.13",
     "@astrojs/react": "^4.4.2",
-    "@astrojs/sitemap": "^3.6.0",
+    "@astrojs/sitemap": "^3.7.0",
     "@mermaid-js/mermaid-cli": "^11.12.0",
     "@types/hast": "^3.0.4",
-    "@types/lodash": "^4.17.20",
-    "astro": "^5.15.4",
-    "astro-expressive-code": "^0.41.3",
-    "lodash": "^4.17.21",
-    "playwright": "^1.56.1",
-    "react": "^19.2.0",
-    "react-dom": "^19.2.0",
+    "@types/lodash": "^4.17.23",
+    "astro": "^5.16.16",
+    "astro-expressive-code": "^0.41.6",
+    "lodash": "^4.17.23",
+    "playwright": "^1.58.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4",
     "rehype": "^13.0.2",
-    "rehype-mermaid": "^3.0.0",
+    "sitemap": "9.0.0",
     "unified": "^11.0.5",
-    "unist-util-visit": "^5.0.0",
-    "sitemap": "8.0.1"
+    "unist-util-visit": "^5.1.0"
   },
   "devDependencies": {
-    "@types/react": "^19.2.2",
-    "@types/react-dom": "^19.2.2",
-    "mermaid": "^11.12.1"
+    "@types/react": "^19.2.10",
+    "@types/react-dom": "^19.2.3",
+    "mermaid": "^11.12.2"
   },
   "resolutions": {
-    "puppeteer": "^22.8.2",
     "rimraf": "^5.0.5",
     "glob": "^10.0.0",
     "inflight": "^2.0.0"
