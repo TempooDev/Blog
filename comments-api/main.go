@@ -237,6 +237,11 @@ func handleAdminList(w http.ResponseWriter, r *http.Request) {
 
 	filter := bson.M{"status": status}
 
+	slug := r.URL.Query().Get("slug")
+	if slug != "" {
+		filter["slug"] = slug
+	}
+
 	// Sort by newest first for approved/rejected, oldest first for pending?
 	// Let's standard on newest first for all admin lists to see recent activity.
 	// Or pending should be oldest first to clear queue.

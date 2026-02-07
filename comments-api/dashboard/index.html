@@ -132,6 +132,30 @@
             color: #fff;
             border-color: #333;
         }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filters input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .filters button {
+            flex: 0 0 auto;
+            background: #333;
+            color: #fff;
+        }
+
+        .filters button:hover {
+            background: #555;
+        }
     </style>
 </head>
 
@@ -142,6 +166,12 @@
     <div class="tabs">
         <button id="tab-pending" class="tab active" onclick="switchTab('pending')">Pending</button>
         <button id="tab-approved" class="tab" onclick="switchTab('approved')">Approved</button>
+    </div>
+
+    <div class="filters">
+        <input type="text" id="slug-filter" placeholder="Filter by Post Slug / Translation ID"
+            onkeypress="handleEnter(event)">
+        <button onclick="fetchComments()">Search</button>
     </div>
 
     <div id="error-msg" class="error"></div>
@@ -160,9 +190,19 @@
             fetchComments();
         }
 
+        function handleEnter(e) {
+            if (e.key === 'Enter') fetchComments();
+        }
+
         async function fetchComments() {
             try {
-                const response = await fetch(`${API_BASE}/admin/list?status=${currentStatus}`);
+                const slug = document.getElementById('slug-filter').value.trim();
+                let url = `${API_BASE}/admin/list?status=${currentStatus}`;
+                if (slug) {
+                    url += `&slug=${encodeURIComponent(slug)}`;
+                }
+
+                const response = await fetch(url);
                 if (response.status === 401) {
                     window.location.reload(); // Trigger browser basic auth prompt
                     return;
