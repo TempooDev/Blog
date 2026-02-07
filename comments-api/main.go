@@ -426,6 +426,11 @@ func checkAndNotifyPendingComments() error {
 }
 
 func notifyTelegram(message string) error {
+	botURL := os.Getenv("TELEGRAM_NOTIFY_URL")
+	if botURL == "" {
+		botURL = "http://localhost:8080/notify"
+	}
+
 	reqBody, err := json.Marshal(NotificationRequest{
 		Source:  "Comments API",
 		Message: message,
@@ -434,7 +439,7 @@ func notifyTelegram(message string) error {
 		return fmt.Errorf("error marshaling notification request: %v", err)
 	}
 
-	resp, err := http.Post("https://bot.antoniobermudez.dev/notify", "application/json", bytes.NewBuffer(reqBody))
+	resp, err := http.Post(botURL, "application/json", bytes.NewBuffer(reqBody))
 	if err != nil {
 		return fmt.Errorf("error sending notification to Telegram: %v", err)
 	}

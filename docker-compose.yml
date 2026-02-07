@@ -8,6 +8,7 @@ services:
       - PORT=${EXTERNAL_PORT}
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - TELEGRAM_NOTIFY_URL=${TELEGRAM_NOTIFY_URL:-http://localhost:8080/notify}
     depends_on:
       - mongo
     networks:
