@@ -10,13 +10,48 @@ interface Comment {
 
 interface CommentsProps {
     slug: string;
+    lang?: string;
     apiBase?: string;
 }
 
-export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMENTS_API }: CommentsProps) {
+const translations = {
+    en: {
+        title: 'Comments',
+        loading: 'Loading comments...',
+        noComments: 'No comments yet. Be the first!',
+        loadMore: 'Load More',
+        leaveComment: 'Leave a Comment',
+        placeholderName: 'Your Name',
+        placeholderComment: 'Your Comment',
+        postButton: 'Post Comment',
+        successMsg: 'Comment submitted for checking! It will appear after approval.',
+        errorMsg: 'Failed to submit comment.',
+        networkError: 'Error submitting comment.'
+    },
+    es: {
+        title: 'Comentarios',
+        loading: 'Cargando comentarios...',
+        noComments: 'Aún no hay comentarios. ¡Sé el primero!',
+        loadMore: 'Cargar más',
+        leaveComment: 'Deja un comentario',
+        placeholderName: 'Tu Nombre',
+        placeholderComment: 'Tu Comentario',
+        postButton: 'Publicar Comentario',
+        successMsg: '¡Comentario enviado para revisión! Aparecerá después de ser aprobado.',
+        errorMsg: 'Error al enviar el comentario.',
+        networkError: 'Error de red al enviar el comentario.'
+    }
+};
+
+export default function Comments({ slug, lang = 'en', apiBase = import.meta.env.PUBLIC_COMMENTS_API }: CommentsProps) {
     if (!apiBase) {
         console.error("PUBLIC_COMMENTS_API is not defined. Please set it in your environment/build configuration.");
     }
+
+    // Normalize lang to ensure we have a valid key, default to 'en'
+    const currentLang = (lang && translations[lang as keyof typeof translations]) ? lang as keyof typeof translations : 'en';
+    const t = translations[currentLang];
+
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -70,19 +105,19 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
             });
 
             if (res.ok) {
-                setMessage('Comment submitted for checking! It will appear after approval.');
+                setMessage(t.successMsg);
                 setNewComment({ author: '', content: '' });
             } else {
-                setMessage('Failed to submit comment.');
+                setMessage(t.errorMsg);
             }
         } catch (err) {
-            setMessage('Error submitting comment.');
+            setMessage(t.networkError);
         }
     };
 
     return (
         <div className="comments-section" style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--gray-800)' }}>
-            <h3 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>Comments</h3>
+            <h3 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>{t.title}</h3>
 
             <div className="comments-list" style={{ marginBottom: '30px' }}>
                 {comments.map((comment) => (
@@ -102,9 +137,9 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                     </div>
                 ))}
 
-                {loading && <p style={{ color: 'var(--gray-300)' }}>Loading comments...</p>}
+                {loading && <p style={{ color: 'var(--gray-300)' }}>{t.loading}</p>}
 
-                {!loading && comments.length === 0 && <p style={{ color: 'var(--gray-300)', fontStyle: 'italic' }}>No comments yet. Be the first!</p>}
+                {!loading && comments.length === 0 && <p style={{ color: 'var(--gray-300)', fontStyle: 'italic' }}>{t.noComments}</p>}
 
                 {hasMore && !loading && comments.length > 0 && (
                     <button onClick={handleLoadMore} style={{
@@ -116,18 +151,18 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                         cursor: 'pointer',
                         transition: 'background-color var(--theme-transition)'
                     }}>
-                        Load More
+                        {t.loadMore}
                     </button>
                 )}
             </div>
 
             <div className="comment-form">
-                <h4 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>Leave a Comment</h4>
+                <h4 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>{t.leaveComment}</h4>
                 {message && <p style={{ padding: '10px', background: 'var(--accent-subtle-overlay)', color: 'var(--accent-text-over)', borderRadius: '0.5rem' }}>{message}</p>}
                 <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                     <input
                         type="text"
-                        placeholder="Your Name"
+                        placeholder={t.placeholderName}
                         value={newComment.author}
                         onChange={e => setNewComment({ ...newComment, author: e.target.value })}
                         required
@@ -141,7 +176,7 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                         }}
                     />
                     <textarea
-                        placeholder="Your Comment"
+                        placeholder={t.placeholderComment}
                         value={newComment.content}
                         onChange={e => setNewComment({ ...newComment, content: e.target.value })}
                         required
@@ -166,7 +201,7 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                         fontWeight: 'bold',
                         width: 'fit-content'
                     }}>
-                        Post Comment
+                        {t.postButton}
                     </button>
                 </form>
             </div>
