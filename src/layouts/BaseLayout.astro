@@ -3,7 +3,7 @@ import MainHead from "@components/Common/MainHead.astro";
 import Nav from "@components/Common/Nav.astro";
 import Footer from "@components/Common/Footer.astro";
 
-interface Props {
+export interface Props {
   title?: string | undefined;
   description?: string | undefined;
   entry?: any;
@@ -66,7 +66,7 @@ const { title, description, entry } = Astro.props;
 
     <script>
       addEventListener("load", () =>
-        document.documentElement.classList.add("loaded"),
+        document.documentElement.classList.add("loaded")
       );
     </script>
 
@@ -137,8 +137,7 @@ const { title, description, entry } = Astro.props;
         min-height: 100%;
         isolation: isolate;
         background:
-					/*noise*/
-          var(--bg-noise) top center/220px repeat,
+					/*noise*/ var(--bg-noise) top center/220px repeat,
           /*footer*/ var(--bg-image-footer) bottom
             center/var(--bg-gradient-size) no-repeat,
           /*header1*/ var(--bg-image-main-curves) top
@@ -146,12 +145,9 @@ const { title, description, entry } = Astro.props;
           /*header2*/ var(--bg-image-main) top center/var(--bg-gradient-size)
             no-repeat,
           /*base*/ var(--gray-999);
-        background-blend-mode: /*noise*/
-          overlay,
-          /*footer*/ var(--bg-blend-mode),
-          /*header1*/ var(--bg-svg-blend-mode),
-          /*header2*/ normal,
-          /*base*/ normal;
+        background-blend-mode: /*noise*/ overlay,
+          /*footer*/ var(--bg-blend-mode), /*header1*/ var(--bg-svg-blend-mode),
+          /*header2*/ normal, /*base*/ normal;
       }
       @media (forced-colors: active) {
         /* Deactivate custom backgrounds for high contrast users. */
