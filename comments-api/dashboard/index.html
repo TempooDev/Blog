@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,52 +13,60 @@
             padding: 20px;
             color: #333;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: #444;
         }
+
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
+
         .card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s;
         }
+
         .card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         .meta {
             font-size: 0.9em;
             color: #666;
             margin-bottom: 10px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            overflow-wrap: anywhere;
         }
+
         .content {
-            flex-grow: 1;
             margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
             white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
             background-color: #fafafa;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             border: 1px solid #eee;
         }
+
         .actions {
             display: flex;
             gap: 10px;
         }
+
         button {
             flex: 1;
             padding: 10px;
@@ -67,20 +76,25 @@
             font-weight: bold;
             transition: background 0.2s;
         }
+
         .approve {
             background-color: #4CAF50;
             color: white;
         }
+
         .approve:hover {
             background-color: #45a049;
         }
+
         .reject {
             background-color: #f44336;
             color: white;
         }
+
         .reject:hover {
             background-color: #da190b;
         }
+
         .no-comments {
             grid-column: 1 / -1;
             text-align: center;
@@ -88,16 +102,77 @@
             color: #888;
             font-size: 1.2em;
         }
+
         .error {
             color: red;
             text-align: center;
             margin-bottom: 20px;
         }
     </style>
+    <style>
+        /* ... existing styles ... */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+        .filters {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .filters input {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 300px;
+        }
+
+        .filters button {
+            flex: 0 0 auto;
+            background: #333;
+            color: #fff;
+        }
+
+        .filters button:hover {
+            background: #555;
+        }
+    </style>
 </head>
+
 <body>
 
-    <h1>Pending Comments Validation</h1>
+    <h1>Comments Admin Dashboard</h1>
+
+    <div class="tabs">
+        <button id="tab-pending" class="tab active" onclick="switchTab('pending')">Pending</button>
+        <button id="tab-approved" class="tab" onclick="switchTab('approved')">Approved</button>
+    </div>
+
+    <div class="filters">
+        <input type="text" id="slug-filter" placeholder="Filter by Post Slug / Translation ID"
+            onkeypress="handleEnter(event)">
+        <button onclick="fetchComments()">Search</button>
+    </div>
 
     <div id="error-msg" class="error"></div>
     <div id="comments-container" class="container">
@@ -106,16 +181,34 @@
 
     <script>
         const API_BASE = window.location.origin;
+        let currentStatus = 'pending';
 
-        async function fetchPendingComments() {
+        function switchTab(status) {
+            currentStatus = status;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${status}`).classList.add('active');
+            fetchComments();
+        }
+
+        function handleEnter(e) {
+            if (e.key === 'Enter') fetchComments();
+        }
+
+        async function fetchComments() {
             try {
-                const response = await fetch(`${API_BASE}/admin/pending`);
+                const slug = document.getElementById('slug-filter').value.trim();
+                let url = `${API_BASE}/admin/list?status=${currentStatus}`;
+                if (slug) {
+                    url += `&slug=${encodeURIComponent(slug)}`;
+                }
+
+                const response = await fetch(url);
                 if (response.status === 401) {
                     window.location.reload(); // Trigger browser basic auth prompt
                     return;
                 }
                 if (!response.ok) throw new Error('Failed to fetch comments');
-                
+
                 const comments = await response.json();
                 renderComments(comments);
             } catch (err) {
@@ -128,13 +221,26 @@
             container.innerHTML = '';
 
             if (!comments || comments.length === 0) {
-                container.innerHTML = '<div class="no-comments">No pending comments to review! 🎉</div>';
+                container.innerHTML = `<div class="no-comments">No ${currentStatus} comments found!</div>`;
                 return;
             }
 
             comments.forEach(comment => {
                 const card = document.createElement('div');
                 card.className = 'card';
+
+                let actions = '';
+                if (currentStatus === 'pending') {
+                    actions = `
+                        <button class="approve" onclick="approveComment('${comment.id}')">Approve</button>
+                        <button class="reject" onclick="rejectComment('${comment.id}')">Reject</button>
+                    `;
+                } else if (currentStatus === 'approved') {
+                    actions = `
+                        <button class="reject" onclick="rejectComment('${comment.id}')">Delete</button>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="meta">
                         <strong>Author:</strong> ${escapeHtml(comment.author)}<br>
@@ -143,8 +249,7 @@
                     </div>
                     <div class="content">${escapeHtml(comment.content)}</div>
                     <div class="actions">
-                        <button class="approve" onclick="approveComment('${comment.id}')">Approve</button>
-                        <button class="reject" onclick="rejectComment('${comment.id}')">Reject</button>
+                        ${actions}
                     </div>
                 `;
                 container.appendChild(card);
@@ -156,18 +261,19 @@
             try {
                 const res = await fetch(`${API_BASE}/admin/approve?id=${id}`, { method: 'POST' });
                 if (!res.ok) throw new Error('Failed to approve');
-                fetchPendingComments();
+                fetchComments();
             } catch (err) {
                 alert(err.message);
             }
         }
 
         async function rejectComment(id) {
-            if (!confirm('Reject (delete) this comment?')) return;
+            const action = currentStatus === 'approved' ? 'Delete' : 'Reject';
+            if (!confirm(`${action} this comment?`)) return;
             try {
                 const res = await fetch(`${API_BASE}/admin/reject?id=${id}`, { method: 'POST' });
                 if (!res.ok) throw new Error('Failed to reject');
-                fetchPendingComments();
+                fetchComments();
             } catch (err) {
                 alert(err.message);
             }
@@ -175,15 +281,16 @@
 
         function escapeHtml(unsafe) {
             return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         // Initial load
-        fetchPendingComments();
+        fetchComments();
     </script>
 </body>
+
 </html>

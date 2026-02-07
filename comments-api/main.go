@@ -61,7 +61,7 @@ func main() {
 
 	// Admin Routes
 	http.HandleFunc("/dashboard", authMiddleware(handleDashboard))
-	http.HandleFunc("/admin/pending", authMiddleware(handleAdminPending))
+	http.HandleFunc("/admin/list", authMiddleware(handleAdminList))
 	http.HandleFunc("/admin/approve", authMiddleware(handleAdminApprove))
 	http.HandleFunc("/admin/reject", authMiddleware(handleAdminReject))
 
@@ -223,17 +223,34 @@ func getComments(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(comments)
 }
 
-func handleAdminPending(w http.ResponseWriter, r *http.Request) {
-	// CORS for Admin (if accessing from different origin, but dashboard is same origin usually)
-	// Adding simple CORS just in case
+func handleAdminList(w http.ResponseWriter, r *http.Request) {
+	// CORS for Admin
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	status := r.URL.Query().Get("status")
+	if status == "" {
+		status = "pending"
+	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	filter := bson.M{"status": "pending"}
+	filter := bson.M{"status": status}
 
-	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(bson.D{{Key: "createdAt", Value: 1}})) // Oldest first for moderation? Or newest? Let's do oldest first to clear backlog.
+	slug := r.URL.Query().Get("slug")
+	if slug != "" {
+		filter["slug"] = slug
+	}
+
+	// Sort by newest first for approved/rejected, oldest first for pending?
+	// Let's standard on newest first for all admin lists to see recent activity.
+	// Or pending should be oldest first to clear queue.
+	sortOrder := -1 // Descending (newest first)
+	if status == "pending" {
+		sortOrder = 1 // Ascending (oldest first)
+	}
+
+	cursor, err := collection.Find(ctx, filter, options.Find().SetSort(bson.D{{Key: "createdAt", Value: sortOrder}}))
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
