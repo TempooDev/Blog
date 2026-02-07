@@ -4,7 +4,7 @@ services:
   comments-api:
     build: ./comments-api
     ports:
-      - "${EXTERNAL_PORT:-3000}:8080" # Maps host port (default 3000) to container port 8080
+      - "${EXTERNAL_PORT}"
     environment:
       - MONGO_URI=mongodb://${MONGO_USER}:${MONGO_PASSWORD}@mongo:27017
       - PORT=8080
