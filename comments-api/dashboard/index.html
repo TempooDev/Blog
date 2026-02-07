@@ -109,11 +109,40 @@
             margin-bottom: 20px;
         }
     </style>
+    <style>
+        /* ... existing styles ... */
+        .tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .tab {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background: #fff;
+            font-weight: bold;
+        }
+
+        .tab.active {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+    </style>
 </head>
 
 <body>
 
-    <h1>Pending Comments Validation</h1>
+    <h1>Comments Admin Dashboard</h1>
+
+    <div class="tabs">
+        <button id="tab-pending" class="tab active" onclick="switchTab('pending')">Pending</button>
+        <button id="tab-approved" class="tab" onclick="switchTab('approved')">Approved</button>
+    </div>
 
     <div id="error-msg" class="error"></div>
     <div id="comments-container" class="container">
@@ -122,10 +151,18 @@
 
     <script>
         const API_BASE = window.location.origin;
+        let currentStatus = 'pending';
 
-        async function fetchPendingComments() {
+        function switchTab(status) {
+            currentStatus = status;
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(`tab-${status}`).classList.add('active');
+            fetchComments();
+        }
+
+        async function fetchComments() {
             try {
-                const response = await fetch(`${API_BASE}/admin/pending`);
+                const response = await fetch(`${API_BASE}/admin/list?status=${currentStatus}`);
                 if (response.status === 401) {
                     window.location.reload(); // Trigger browser basic auth prompt
                     return;
@@ -144,13 +181,26 @@
             container.innerHTML = '';
 
             if (!comments || comments.length === 0) {
-                container.innerHTML = '<div class="no-comments">No pending comments to review! 🎉</div>';
+                container.innerHTML = `<div class="no-comments">No ${currentStatus} comments found!</div>`;
                 return;
             }
 
             comments.forEach(comment => {
                 const card = document.createElement('div');
                 card.className = 'card';
+
+                let actions = '';
+                if (currentStatus === 'pending') {
+                    actions = `
+                        <button class="approve" onclick="approveComment('${comment.id}')">Approve</button>
+                        <button class="reject" onclick="rejectComment('${comment.id}')">Reject</button>
+                    `;
+                } else if (currentStatus === 'approved') {
+                    actions = `
+                        <button class="reject" onclick="rejectComment('${comment.id}')">Delete</button>
+                    `;
+                }
+
                 card.innerHTML = `
                     <div class="meta">
                         <strong>Author:</strong> ${escapeHtml(comment.author)}<br>
@@ -159,8 +209,7 @@
                     </div>
                     <div class="content">${escapeHtml(comment.content)}</div>
                     <div class="actions">
-                        <button class="approve" onclick="approveComment('${comment.id}')">Approve</button>
-                        <button class="reject" onclick="rejectComment('${comment.id}')">Reject</button>
+                        ${actions}
                     </div>
                 `;
                 container.appendChild(card);
@@ -172,18 +221,19 @@
             try {
                 const res = await fetch(`${API_BASE}/admin/approve?id=${id}`, { method: 'POST' });
                 if (!res.ok) throw new Error('Failed to approve');
-                fetchPendingComments();
+                fetchComments();
             } catch (err) {
                 alert(err.message);
             }
         }
 
         async function rejectComment(id) {
-            if (!confirm('Reject (delete) this comment?')) return;
+            const action = currentStatus === 'approved' ? 'Delete' : 'Reject';
+            if (!confirm(`${action} this comment?`)) return;
             try {
                 const res = await fetch(`${API_BASE}/admin/reject?id=${id}`, { method: 'POST' });
                 if (!res.ok) throw new Error('Failed to reject');
-                fetchPendingComments();
+                fetchComments();
             } catch (err) {
                 alert(err.message);
             }
@@ -199,7 +249,7 @@
         }
 
         // Initial load
-        fetchPendingComments();
+        fetchComments();
     </script>
 </body>
 
