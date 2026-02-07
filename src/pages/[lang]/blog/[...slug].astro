@@ -75,7 +75,11 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
             <Content />
           </div>
           <hr />
-          <Comments client:visible slug={entry.data.translationId} />
+          <Comments
+            client:visible
+            slug={entry.data.translationId}
+            lang={lang}
+          />
         </div>
       </main>
     </div>
