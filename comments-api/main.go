@@ -10,6 +10,10 @@ import (
 	"strconv"
 	"time"
 
+	"bytes"
+	"fmt"
+
+	"github.com/robfig/cron/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -26,6 +30,11 @@ type Comment struct {
 	Content   string             `bson:"content" json:"content"`
 	Status    string             `bson:"status" json:"status"` // pending, approved, rejected
 	CreatedAt time.Time          `bson:"createdAt" json:"createdAt"`
+}
+
+type NotificationRequest struct {
+	Source  string `json:"Source"`
+	Message string `json:"Message"`
 }
 
 var client *mongo.Client
@@ -64,6 +73,10 @@ func main() {
 	http.HandleFunc("/admin/list", authMiddleware(handleAdminList))
 	http.HandleFunc("/admin/approve", authMiddleware(handleAdminApprove))
 	http.HandleFunc("/admin/reject", authMiddleware(handleAdminReject))
+	http.HandleFunc("/admin/trigger-notify", authMiddleware(handleAdminTriggerNotify))
+
+	// Cron Jobs
+	scheduleCronJobs()
 
 	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
@@ -342,4 +355,95 @@ func handleAdminReject(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte("Rejected"))
+}
+
+func handleAdminTriggerNotify(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	err := checkAndNotifyPendingComments()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Write([]byte("Notification triggered"))
+}
+
+func scheduleCronJobs() {
+	c := cron.New()
+	// Every day at 21:00
+	_, err := c.AddFunc("0 21 * * *", func() {
+		log.Println("Running cron job: checkAndNotifyPendingComments")
+		err := checkAndNotifyPendingComments()
+		if err != nil {
+			log.Printf("Error in cron job: %v\n", err)
+		}
+	})
+	if err != nil {
+		log.Fatalf("Error scheduling cron job: %v\n", err)
+	}
+	c.Start()
+	log.Println("Cron scheduler started")
+}
+
+func checkAndNotifyPendingComments() error {
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	filter := bson.M{"status": "pending"}
+	cursor, err := collection.Find(ctx, filter)
+	if err != nil {
+		return fmt.Errorf("error searching pending comments: %v", err)
+	}
+	defer cursor.Close(ctx)
+
+	countsBySlug := make(map[string]int)
+	totalPending := 0
+	for cursor.Next(ctx) {
+		var comment Comment
+		if err := cursor.Decode(&comment); err != nil {
+			log.Printf("Error decoding comment: %v\n", err)
+			continue
+		}
+		countsBySlug[comment.Slug]++
+		totalPending++
+	}
+
+	if totalPending == 0 {
+		log.Println("No pending comments to notify")
+		return nil
+	}
+
+	message := "Tienes comentarios pendientes de validar:\n"
+	for slug, count := range countsBySlug {
+		message += fmt.Sprintf("- %s: %d\n", slug, count)
+	}
+
+	return notifyTelegram(message)
+}
+
+func notifyTelegram(message string) error {
+	reqBody, err := json.Marshal(NotificationRequest{
+		Source:  "Comments API",
+		Message: message,
+	})
+	if err != nil {
+		return fmt.Errorf("error marshaling notification request: %v", err)
+	}
+
+	resp, err := http.Post("https://bot.antoniobermudez.dev/notify", "application/json", bytes.NewBuffer(reqBody))
+	if err != nil {
+		return fmt.Errorf("error sending notification to Telegram: %v", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return fmt.Errorf("telegram bot returned status: %s", resp.Status)
+	}
+
+	log.Println("Telegram notification sent successfully")
+	return nil
 }
