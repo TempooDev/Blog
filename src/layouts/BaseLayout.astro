@@ -37,24 +37,11 @@ const { title, description, entry } = Astro.props;
         }
       })();
     </script>
-
-    <script async src="https://www.googletagmanager.com/gtag/js?id=G-2YEQZKB7Q1"
+    <script
+      src="https://cdn.analytics.antoniobermudez.dev/analytics.js"
+      data-site="antoniobermudez-blog-RZq3-A"
+      data-key="N71Rfehcz5PGzekWKqf4wWX2GXNYhbbFwv1whFQR8Wo"
     ></script>
-    <script is:inline>
-      window.dataLayer = window.dataLayer || [];
-      function gtag() {
-        dataLayer.push(arguments);
-      }
-      const initGA = () => {
-        gtag("js", new Date());
-        gtag("config", "G-2YEQZKB7Q1");
-      };
-      if ("requestIdleCallback" in window) {
-        requestIdleCallback(initGA);
-      } else {
-        addEventListener("load", initGA);
-      }
-    </script>
   </head>
 
   <body>
