@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,52 +13,60 @@
             padding: 20px;
             color: #333;
         }
+
         h1 {
             text-align: center;
             margin-bottom: 30px;
             color: #444;
         }
+
         .container {
-            max-width: 1200px;
+            max-width: 900px;
             margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            display: flex;
+            flex-direction: column;
             gap: 20px;
         }
+
         .card {
             background: white;
             border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
             padding: 20px;
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s;
         }
+
         .card:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         }
+
         .meta {
             font-size: 0.9em;
             color: #666;
             margin-bottom: 10px;
             border-bottom: 1px solid #eee;
             padding-bottom: 10px;
+            overflow-wrap: anywhere;
         }
+
         .content {
-            flex-grow: 1;
             margin-bottom: 20px;
-            max-height: 200px;
-            overflow-y: auto;
             white-space: pre-wrap;
+            overflow-wrap: anywhere;
+            word-break: break-word;
             background-color: #fafafa;
-            padding: 10px;
+            padding: 15px;
             border-radius: 4px;
             border: 1px solid #eee;
         }
+
         .actions {
             display: flex;
             gap: 10px;
         }
+
         button {
             flex: 1;
             padding: 10px;
@@ -67,20 +76,25 @@
             font-weight: bold;
             transition: background 0.2s;
         }
+
         .approve {
             background-color: #4CAF50;
             color: white;
         }
+
         .approve:hover {
             background-color: #45a049;
         }
+
         .reject {
             background-color: #f44336;
             color: white;
         }
+
         .reject:hover {
             background-color: #da190b;
         }
+
         .no-comments {
             grid-column: 1 / -1;
             text-align: center;
@@ -88,6 +102,7 @@
             color: #888;
             font-size: 1.2em;
         }
+
         .error {
             color: red;
             text-align: center;
@@ -95,6 +110,7 @@
         }
     </style>
 </head>
+
 <body>
 
     <h1>Pending Comments Validation</h1>
@@ -115,7 +131,7 @@
                     return;
                 }
                 if (!response.ok) throw new Error('Failed to fetch comments');
-                
+
                 const comments = await response.json();
                 renderComments(comments);
             } catch (err) {
@@ -175,15 +191,16 @@
 
         function escapeHtml(unsafe) {
             return unsafe
-                 .replace(/&/g, "&amp;")
-                 .replace(/</g, "&lt;")
-                 .replace(/>/g, "&gt;")
-                 .replace(/"/g, "&quot;")
-                 .replace(/'/g, "&#039;");
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         // Initial load
         fetchPendingComments();
     </script>
 </body>
+
 </html>

@@ -98,7 +98,7 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                             <strong style={{ color: 'var(--gray-0)' }}>{comment.author}</strong>
                             <small style={{ color: 'var(--gray-300)' }}>{new Date(comment.createdAt).toLocaleDateString()}</small>
                         </div>
-                        <div style={{ whiteSpace: 'pre-wrap', color: 'var(--gray-300)' }}>{comment.content}</div>
+                        <div style={{ whiteSpace: 'pre-wrap', color: 'var(--gray-300)', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{comment.content}</div>
                     </div>
                 ))}
 
@@ -134,8 +134,8 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                         style={{
                             padding: '0.75rem',
                             borderRadius: '0.5rem',
-                            border: '1px solid var(--gray-800)',
-                            background: 'var(--gray-999)',
+                            border: '1px solid var(--gray-700)',
+                            background: 'var(--gray-950)',
                             color: 'var(--gray-0)',
                             fontFamily: 'inherit'
                         }}
@@ -149,8 +149,8 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
                         style={{
                             padding: '0.75rem',
                             borderRadius: '0.5rem',
-                            border: '1px solid var(--gray-800)',
-                            background: 'var(--gray-999)',
+                            border: '1px solid var(--gray-700)',
+                            background: 'var(--gray-950)',
                             color: 'var(--gray-0)',
                             fontFamily: 'inherit',
                             resize: 'vertical'
