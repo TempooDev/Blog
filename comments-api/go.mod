@@ -2,7 +2,10 @@ module comments-api
 
 go 1.24
 
-require go.mongodb.org/mongo-driver v1.17.9
+require (
+	github.com/robfig/cron/v3 v3.0.1
+	go.mongodb.org/mongo-driver v1.17.9
+)
 
 require (
 	github.com/golang/snappy v0.0.4 // indirect
