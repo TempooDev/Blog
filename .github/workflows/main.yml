@@ -22,6 +22,8 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Build
         run: npm run build
+        env:
+          PUBLIC_COMMENTS_API: ${{ vars.PUBLIC_COMMENTS_API }}
       - name: Publish
         uses: cloudflare/wrangler-action@v3
         with:
