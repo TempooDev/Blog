@@ -13,7 +13,10 @@ interface CommentsProps {
     apiBase?: string;
 }
 
-export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMENTS_API || "http://localhost:3000" }: CommentsProps) {
+export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMENTS_API }: CommentsProps) {
+    if (!apiBase) {
+        console.error("PUBLIC_COMMENTS_API is not defined. Please set it in your environment/build configuration.");
+    }
     const [comments, setComments] = useState<Comment[]>([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(1);
@@ -22,6 +25,7 @@ export default function Comments({ slug, apiBase = import.meta.env.PUBLIC_COMMEN
     const [message, setMessage] = useState('');
 
     const fetchComments = async (pageNum: number) => {
+        if (!apiBase) return;
         setLoading(true);
         try {
             const res = await fetch(`${apiBase}/comments?slug=${slug}&page=${pageNum}&limit=10`);
