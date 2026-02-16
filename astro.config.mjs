@@ -48,6 +48,13 @@ export default defineConfig({
     sitemap({
       changefreq: "weekly",
       priority: 0.7,
+      filter: (page) => {
+        const url = new URL(page);
+        const path = url.pathname;
+        // Only include the root "/" and URLs with language prefix (/en/ or /es/)
+        if (path === '/') return true;
+        return path.startsWith('/en/') || path.startsWith('/es/');
+      },
     }),
   ],
   i18n: {
@@ -65,6 +72,9 @@ export default defineConfig({
   redirects: {
     ...getPostRedirects(),
     ...getWorkRedirects(),
+    '/about': '/en/about',
+    '/blog': '/en/blog',
+    '/work': '/en/work',
   },
   markdown: {
     remarkPlugins: [remarkMermaid],
