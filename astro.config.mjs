@@ -42,11 +42,14 @@ function getWorkRedirects() {
 
 export default defineConfig({
   site: "https://antoniobermudez.dev/",
+  output: 'static',
   integrations: [
     expressiveCode(),
     mdx(),
     react(),
-    keystatic(),
+    // Keystatic is only used locally for content management.
+    // We only enable the integration during development to avoid forcing SSR in production builds.
+    process.env.NODE_ENV === 'development' || process.env.VITE_DEV === 'true' ? keystatic() : [],
     sitemap({
       changefreq: "weekly",
       priority: 0.7,
@@ -58,7 +61,7 @@ export default defineConfig({
         return path.startsWith('/en/') || path.startsWith('/es/');
       },
     }),
-  ],
+  ].flat(),
   i18n: {
     defaultLocale: "en",
     locales: ["en", "es"],
