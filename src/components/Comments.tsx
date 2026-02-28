@@ -48,7 +48,6 @@ export default function Comments({ slug, lang = 'en', apiBase = import.meta.env.
         console.error("PUBLIC_COMMENTS_API is not defined. Please set it in your environment/build configuration.");
     }
 
-    // Normalize lang to ensure we have a valid key, default to 'en'
     const currentLang = (lang && translations[lang as keyof typeof translations]) ? lang as keyof typeof translations : 'en';
     const t = translations[currentLang];
 
@@ -116,91 +115,190 @@ export default function Comments({ slug, lang = 'en', apiBase = import.meta.env.
     };
 
     return (
-        <div className="comments-section" style={{ marginTop: '40px', paddingTop: '20px', borderTop: '1px solid var(--gray-800)' }}>
-            <h3 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>{t.title}</h3>
+        <div className="comments-section" style={{ 
+            marginTop: '60px', 
+            padding: '40px 0', 
+            borderTop: '1px solid var(--blue-700)' 
+        }}>
+            <h3 style={{ color: 'var(--blue-0)', marginBottom: '2rem', fontSize: 'var(--text-2xl)' }}>{t.title}</h3>
 
-            <div className="comments-list" style={{ marginBottom: '30px' }}>
+            <div className="comments-list" style={{ marginBottom: '40px' }}>
                 {comments.map((comment) => (
                     <div key={comment.id} className="comment-card" style={{
-                        background: 'var(--gray-999)',
+                        background: 'rgba(255, 255, 255, 0.03)',
                         padding: '1.5rem',
-                        marginBottom: '1rem',
-                        borderRadius: '0.75rem',
-                        border: '1px solid var(--gray-800)',
+                        marginBottom: '1.5rem',
+                        borderRadius: '1rem',
+                        border: '1px solid var(--blue-700)',
                         boxShadow: 'var(--shadow-sm)'
                     }}>
-                        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem', borderBottom: '1px solid var(--gray-800)', paddingBottom: '0.5rem' }}>
-                            <strong style={{ color: 'var(--gray-0)' }}>{comment.author}</strong>
-                            <small style={{ color: 'var(--gray-300)' }}>{new Date(comment.createdAt).toLocaleDateString()}</small>
+                        <div style={{ 
+                            display: 'flex', 
+                            justifyContent: 'space-between', 
+                            marginBottom: '1rem', 
+                            borderBottom: '1px solid var(--blue-700)', 
+                            paddingBottom: '0.75rem' 
+                        }}>
+                            <strong style={{ color: 'var(--blue-0)', fontSize: 'var(--text-md)' }}>{comment.author}</strong>
+                            <small style={{ color: 'var(--blue-300)' }}>{new Date(comment.createdAt).toLocaleDateString()}</small>
                         </div>
-                        <div style={{ whiteSpace: 'pre-wrap', color: 'var(--gray-300)', overflowWrap: 'anywhere', wordBreak: 'break-word' }}>{comment.content}</div>
+                        <div style={{ 
+                            whiteSpace: 'pre-wrap', 
+                            color: 'var(--blue-100)', 
+                            lineHeight: '1.6',
+                            overflowWrap: 'anywhere', 
+                            wordBreak: 'break-word' 
+                        }}>{comment.content}</div>
                     </div>
                 ))}
 
-                {loading && <p style={{ color: 'var(--gray-300)' }}>{t.loading}</p>}
+                {loading && <p style={{ color: 'var(--blue-300)', textAlign: 'center' }}>{t.loading}</p>}
 
-                {!loading && comments.length === 0 && <p style={{ color: 'var(--gray-300)', fontStyle: 'italic' }}>{t.noComments}</p>}
+                {!loading && comments.length === 0 && (
+                    <p style={{ 
+                        color: 'var(--blue-300)', 
+                        fontStyle: 'italic', 
+                        textAlign: 'center',
+                        padding: '2rem',
+                        background: 'rgba(255, 255, 255, 0.02)',
+                        borderRadius: '1rem',
+                        border: '1px dashed var(--blue-600)'
+                    }}>{t.noComments}</p>
+                )}
 
                 {hasMore && !loading && comments.length > 0 && (
-                    <button onClick={handleLoadMore} style={{
-                        padding: '0.5rem 1rem',
-                        background: 'var(--gray-800)',
-                        color: 'var(--gray-0)',
-                        border: '1px solid var(--gray-800)', // border to match input style
-                        borderRadius: '999rem', // rounded pill style like site
-                        cursor: 'pointer',
-                        transition: 'background-color var(--theme-transition)'
-                    }}>
-                        {t.loadMore}
-                    </button>
+                    <div style={{ textAlign: 'center', marginTop: '1rem' }}>
+                        <button onClick={handleLoadMore} style={{
+                            padding: '0.6rem 1.5rem',
+                            background: 'transparent',
+                            color: 'var(--blue-200)',
+                            border: '1px solid var(--blue-600)',
+                            borderRadius: '999rem',
+                            cursor: 'pointer',
+                            fontSize: 'var(--text-sm)',
+                            transition: 'all var(--theme-transition)'
+                        }}
+                        onMouseOver={(e) => {
+                            e.currentTarget.style.background = 'var(--blue-700)';
+                            e.currentTarget.style.borderColor = 'var(--blue-400)';
+                        }}
+                        onMouseOut={(e) => {
+                            e.currentTarget.style.background = 'transparent';
+                            e.currentTarget.style.borderColor = 'var(--blue-600)';
+                        }}
+                        >
+                            {t.loadMore}
+                        </button>
+                    </div>
                 )}
             </div>
 
-            <div className="comment-form">
-                <h4 style={{ color: 'var(--gray-0)', marginBottom: '1rem' }}>{t.leaveComment}</h4>
-                {message && <p style={{ padding: '10px', background: 'var(--accent-subtle-overlay)', color: 'var(--accent-text-over)', borderRadius: '0.5rem' }}>{message}</p>}
-                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                    <input
-                        type="text"
-                        placeholder={t.placeholderName}
-                        value={newComment.author}
-                        onChange={e => setNewComment({ ...newComment, author: e.target.value })}
-                        required
-                        style={{
-                            padding: '0.75rem',
-                            borderRadius: '0.5rem',
-                            border: '1px solid var(--gray-700)',
-                            background: 'var(--gray-950)',
-                            color: 'var(--gray-0)',
-                            fontFamily: 'inherit'
-                        }}
-                    />
-                    <textarea
-                        placeholder={t.placeholderComment}
-                        value={newComment.content}
-                        onChange={e => setNewComment({ ...newComment, content: e.target.value })}
-                        required
-                        rows={4}
-                        style={{
-                            padding: '0.75rem',
-                            borderRadius: '0.5rem',
-                            border: '1px solid var(--gray-700)',
-                            background: 'var(--gray-950)',
-                            color: 'var(--gray-0)',
-                            fontFamily: 'inherit',
-                            resize: 'vertical'
-                        }}
-                    />
+            <div className="comment-form" style={{
+                background: 'rgba(255, 255, 255, 0.03)',
+                padding: '2rem',
+                borderRadius: '1.5rem',
+                border: '1px solid var(--blue-700)',
+                boxShadow: 'var(--shadow-md)'
+            }}>
+                <h4 style={{ color: 'var(--blue-0)', marginBottom: '1.5rem', fontSize: 'var(--text-xl)' }}>{t.leaveComment}</h4>
+                {message && (
+                    <div style={{ 
+                        padding: '1rem', 
+                        marginBottom: '1.5rem',
+                        background: 'var(--accent-overlay)', 
+                        color: 'var(--blue-0)', 
+                        borderRadius: '0.75rem',
+                        border: '1px solid var(--accent-regular)',
+                        fontSize: 'var(--text-sm)'
+                    }}>
+                        {message}
+                    </div>
+                )}
+                <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label htmlFor="author" style={{ color: 'var(--blue-200)', fontSize: 'var(--text-sm)', fontWeight: '500' }}>{t.placeholderName}</label>
+                        <input
+                            id="author"
+                            type="text"
+                            placeholder="E.g. Antonio Bermúdez"
+                            value={newComment.author}
+                            onChange={e => setNewComment({ ...newComment, author: e.target.value })}
+                            required
+                            style={{
+                                padding: '0.85rem 1rem',
+                                borderRadius: '0.75rem',
+                                border: '2px solid var(--blue-600)',
+                                background: 'var(--blue-800)',
+                                color: 'var(--blue-0)',
+                                fontFamily: 'inherit',
+                                fontSize: 'var(--text-md)',
+                                transition: 'all 0.2s ease',
+                                outline: 'none'
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--accent-regular)';
+                                e.target.style.background = 'var(--blue-700)';
+                                e.target.style.boxShadow = '0 0 0 4px var(--accent-overlay)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'var(--blue-600)';
+                                e.target.style.background = 'var(--blue-800)';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        />
+                    </div>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                        <label htmlFor="content" style={{ color: 'var(--blue-200)', fontSize: 'var(--text-sm)', fontWeight: '500' }}>{t.placeholderComment}</label>
+                        <textarea
+                            id="content"
+                            placeholder="Write your thoughts here..."
+                            value={newComment.content}
+                            onChange={e => setNewComment({ ...newComment, content: e.target.value })}
+                            required
+                            rows={5}
+                            style={{
+                                padding: '0.85rem 1rem',
+                                borderRadius: '0.75rem',
+                                border: '2px solid var(--blue-600)',
+                                background: 'var(--blue-800)',
+                                color: 'var(--blue-0)',
+                                fontFamily: 'inherit',
+                                fontSize: 'var(--text-md)',
+                                resize: 'vertical',
+                                transition: 'all 0.2s ease',
+                                outline: 'none'
+                            }}
+                            onFocus={(e) => {
+                                e.target.style.borderColor = 'var(--accent-regular)';
+                                e.target.style.background = 'var(--blue-700)';
+                                e.target.style.boxShadow = '0 0 0 4px var(--accent-overlay)';
+                            }}
+                            onBlur={(e) => {
+                                e.target.style.borderColor = 'var(--blue-600)';
+                                e.target.style.background = 'var(--blue-800)';
+                                e.target.style.boxShadow = 'none';
+                            }}
+                        />
+                    </div>
                     <button type="submit" style={{
-                        padding: '0.75rem 1.5rem',
+                        padding: '1rem 2rem',
+                        marginTop: '0.5rem',
                         background: 'var(--accent-regular)',
-                        color: 'var(--accent-text-over)',
+                        color: 'white',
                         border: 'none',
                         borderRadius: '999rem',
                         cursor: 'pointer',
-                        fontWeight: 'bold',
-                        width: 'fit-content'
-                    }}>
+                        fontWeight: '600',
+                        fontSize: 'var(--text-md)',
+                        width: 'fit-content',
+                        boxShadow: 'var(--shadow-sm)',
+                        transition: 'transform 0.1s ease, background-color 0.2s ease'
+                    }}
+                    onMouseOver={(e) => e.currentTarget.style.background = 'var(--accent-dark)'}
+                    onMouseOut={(e) => e.currentTarget.style.background = 'var(--accent-regular)'}
+                    onMouseDown={(e) => e.currentTarget.style.transform = 'scale(0.98)'}
+                    onMouseUp={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                    >
                         {t.postButton}
                     </button>
                 </form>

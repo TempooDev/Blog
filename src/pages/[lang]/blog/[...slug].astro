@@ -130,20 +130,31 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
   }
 
   .content {
-    max-width: 85ch;
+    max-width: 70ch;
     margin-inline: auto;
+    font-size: var(--text-md);
+    line-height: 1.75;
+    color: var(--gray-200);
   }
 
   .content > :global(* + *) {
-    margin-top: 1rem;
+    margin-top: 1.5rem;
   }
 
-  .content :global(h1),
-  .content :global(h2),
-  .content :global(h3),
-  .content :global(h4),
-  .content :global(h5) {
-    margin: 1.5rem 0;
+  .content :global(h2) {
+    font-size: var(--text-2xl);
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .content :global(h3) {
+    font-size: var(--text-xl);
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .content :global(p) {
+    margin-bottom: 1.5rem;
   }
 
   .content :global(img) {
@@ -151,6 +162,7 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
     box-shadow: var(--shadow-sm);
     background: var(--gradient-subtle);
     border: 1px solid var(--gray-800);
+    margin: 2.5rem 0;
   }
 
   .content :global(blockquote) {
