@@ -4,6 +4,7 @@ import react from "@astrojs/react";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
 import expressiveCode from "astro-expressive-code";
 import sitemap from "@astrojs/sitemap";
+import keystatic from '@keystatic/astro';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import fs from 'node:fs';
@@ -45,6 +46,7 @@ export default defineConfig({
     expressiveCode(),
     mdx(),
     react(),
+    keystatic(),
     sitemap({
       changefreq: "weekly",
       priority: 0.7,
