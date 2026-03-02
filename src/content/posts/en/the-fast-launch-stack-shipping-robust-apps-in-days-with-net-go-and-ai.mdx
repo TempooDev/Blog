@@ -1,0 +1,68 @@
+---
+title: 'The Fast-Launch Stack: Shipping Robust Apps in Days with .NET, Go, and AI'
+translationId: personal-stack-to-ship-fast
+publishDate: 2026-02-28T18:15:00.000Z
+img: /assets/techstack-shipfast.webp
+img_alt: >-
+  Technical stack infographic showing a development workflow with Gemini AI and
+  Antigravity, .NET, Angular, and Go integration, PostgreSQL with PGvector and
+  Timescale extensions, and orchestration via .NET Aspire and VSCode.
+description: >-
+  Stop choosing between speed and stability. Discover how to leverage .NET,
+  Angular, and Go with Gemini AI and Antigravity to build secure,
+  high-performance products in record time—without the 'dependency hell' of JS.
+tags:
+  - .NET
+  - AI
+  - Google
+  - Antigravity
+  - Golang
+  - .NET Aspire
+  - 'Gemini '
+---
+# To Launch Fast or To Launch Well? My Stack for Shipping Products in Days with AI
+
+There’s a common misconception that "moving fast" always means using the latest JavaScript framework. Thanks to AI, we can now launch software in record time, but the technology you choose still matters. Not just for stability, but for something critical: **your ability to audit and understand the code the AI generates for you.**
+
+While AI often defaults to recommending React, I’ve found my productivity "sweet spot" in a territory many label as "too enterprise": **.NET and Angular.**
+
+## 1. The Power of an "Opinionated" Stack
+
+Many shy away from .NET and Angular, thinking they are too heavy. For me, they are my **accelerator**. Because these stacks come with so much built-in functionality, I don't waste time configuring basic libraries or debating folder structures.
+
+* **Security & Trust:** Compared to the "dependency hell" often found in NPM, **NuGet** packages (many backed by Microsoft) drastically reduce security vulnerabilities.
+* **Shipping with Guardrails:** This stack forces you into solid architectural patterns. When the AI generates a feature, it fits into a clean, scalable structure that I already know and trust.
+
+## 2. The Special Guest: Go (Surgical Performance)
+
+Lately, I’ve been integrating **Go** into my stack for specific microservices. It’s the perfect companion when I need:
+
+* **Native Concurrency:** Go’s *channels* are unbeatable for parallel processing.
+* **Resource Efficiency:** On my VPS, Go allows me to run heavy processes without wasting a single drop of RAM—something other languages struggle with.
+
+## 3. The Swiss Army Knife: Postgres + Extensions
+
+For every project, my database is non-negotiable: **PostgreSQL**. It’s not just a data store; it’s an entire platform thanks to its extensions:
+
+* **Timescale:** For anything requiring time-series data or advanced analytics.
+* **PGvector:** Essential today for storing AI embeddings and performing vector searches without leaving my primary database.
+
+## 4. My AI Workflow: The Balance Between Antigravity and VSCode
+
+For code generation, I use **Gemini with Antigravity** (leveraging the *Google AI Pro* subscription I get through my university). Its CLI and IDE are surprisingly powerful: if a feature is well-defined, it usually implements it in just one or two iterations.
+
+However, I still keep **VSCode** in the mix. While I enjoy testing other IDEs, I miss critical extensions like the **C# Dev Kit**, which Microsoft hasn't released for third-party tools.
+
+> **My Hybrid Flow:** I iterate and develop the bulk of the code in Antigravity with Gemini, but when it’s time to debug, I run `aspire run` in VSCode and have a full, native **debugging experience** ready to go.
+
+## 5. Orchestration with .NET Aspire
+
+To close the loop, I use **.NET Aspire** to orchestrate the entire ecosystem (.NET, Go, Postgres). It allows me to set up the infrastructure in just a few lines of code and, more importantly, gives me **full traceability and telemetry**. Shipping a product isn’t just about making the code "work"; it’s about knowing exactly what’s happening under the hood from day one.
+
+---
+
+### Conclusion
+
+Speed doesn't have to mean fragility. Using robust tools, optimizing resource consumption with Go, and pushing Postgres to its limits allows me to go from idea to deployment in days—with the peace of mind that my system is secure, scalable, and efficient.
+
+**What about you? Do you prefer a "lightweight" DIY stack, or do you lean on the power of "opinionated" tools to get the job done?**
