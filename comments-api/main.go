@@ -67,6 +67,10 @@ func main() {
 
 	// Public Routes
 	http.HandleFunc("/comments", handleComments) // GET (approved only), POST (create pending)
+	http.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("OK"))
+	})
 
 	// Admin Routes
 	http.HandleFunc("/dashboard", authMiddleware(handleDashboard))
@@ -74,7 +78,6 @@ func main() {
 	http.HandleFunc("/admin/approve", authMiddleware(handleAdminApprove))
 	http.HandleFunc("/admin/reject", authMiddleware(handleAdminReject))
 	http.HandleFunc("/admin/trigger-notify", authMiddleware(handleAdminTriggerNotify))
-
 	// Cron Jobs
 	scheduleCronJobs()
 
