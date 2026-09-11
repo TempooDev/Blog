@@ -10,12 +10,15 @@ const {
 	title = 'Antonio Bermúdez - Software Engineer',
 	description = 'I am a Computer Engineer specializing in enterprise Cloud solutions. Based in Málaga, Spain.',
 } = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 ---
 
 <meta charset="UTF-8" />
 <meta name="description" property="og:description" content={description} />
 <meta name="viewport" content="width=device-width" />
 <meta name="generator" content={Astro.generator} />
+<link rel="canonical" href={canonicalURL} />
 <title>{title}</title>
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

@@ -7,20 +7,22 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "fetch:fonts": "node scripts/fetch-fonts.mjs"
+    "fetch:fonts": "node scripts/fetch-fonts.mjs",
+    "directus:snapshot": "podman exec blog_directus_1 node cli.js schema snapshot /directus/extensions/schema.yaml --yes && podman cp blog_directus_1:/directus/extensions/schema.yaml ./directus-schema.yaml",
+    "directus:apply": "podman cp ./directus-schema.yaml blog_directus_1:/directus/extensions/schema.yaml && podman exec blog_directus_1 node cli.js schema apply /directus/extensions/schema.yaml --yes"
   },
   "dependencies": {
-    "@astrojs/mdx": "^4.3.13",
-    "@astrojs/node": "^9.5.4",
-    "@astrojs/react": "^4.4.2",
-    "@astrojs/sitemap": "^3.7.0",
-    "@keystatic/astro": "^5.0.6",
-    "@keystatic/core": "^0.5.48",
+    "@astrojs/markdown-remark": "^7.3.0",
+    "@astrojs/mdx": "^8.0.0",
+    "@astrojs/node": "^11.1.5",
+    "@astrojs/react": "^6.0.5",
+    "@astrojs/sitemap": "^3.7.4",
+    "@directus/sdk": "^25.0.1",
     "@mermaid-js/mermaid-cli": "^11.12.0",
     "@types/hast": "^3.0.4",
     "@types/lodash": "^4.17.23",
-    "astro": "^5.16.16",
-    "astro-expressive-code": "^0.41.6",
+    "astro": "^7.3.1",
+    "astro-expressive-code": "^0.44.2",
     "lodash": "^4.17.23",
     "playwright": "^1.58.0",
     "react": "^19.2.4",
@@ -33,6 +35,7 @@
   "devDependencies": {
     "@types/react": "^19.2.10",
     "@types/react-dom": "^19.2.3",
+    "gray-matter": "^4.0.3",
     "mermaid": "^11.12.2"
   },
   "resolutions": {

@@ -4,7 +4,7 @@ import react from "@astrojs/react";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
 import expressiveCode from "astro-expressive-code";
 import sitemap from "@astrojs/sitemap";
-import keystatic from '@keystatic/astro';
+import { unified } from '@astrojs/markdown-remark';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
 import fs from 'node:fs';
@@ -47,17 +47,21 @@ export default defineConfig({
     expressiveCode(),
     mdx(),
     react(),
-    // Keystatic is only used locally for content management.
-    // We only enable the integration during development to avoid forcing SSR in production builds.
-    process.env.NODE_ENV === 'development' || process.env.VITE_DEV === 'true' ? keystatic() : [],
     sitemap({
       changefreq: "weekly",
       priority: 0.7,
+      i18n: {
+        defaultLocale: "en",
+        locales: {
+          en: "en",
+          es: "es",
+        },
+      },
       filter: (page) => {
         const url = new URL(page);
         const path = url.pathname;
-        // Only include the root "/" and URLs with language prefix (/en/ or /es/)
-        if (path === '/') return true;
+        // Do not include the root "/" as it's just a redirect
+        if (path === '/') return false;
         return path.startsWith('/en/') || path.startsWith('/es/');
       },
     }),
@@ -68,7 +72,7 @@ export default defineConfig({
     routing: {
       prefixDefaultLocale: true,
       fallbackType: "redirect",
-      redirectToDefaultLocale: true,
+      redirectToDefaultLocale: false,
     },
     fallback: {
       es: "en",
@@ -82,7 +86,9 @@ export default defineConfig({
     '/work': '/en/work',
   },
   markdown: {
-    remarkPlugins: [remarkMermaid],
+    processor: unified({
+      remarkPlugins: [remarkMermaid],
+    }),
   },
   vite: {
     resolve: {
