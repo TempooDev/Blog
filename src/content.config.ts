@@ -1,20 +1,31 @@
 import { defineCollection, z } from 'astro:content';
 
-const DIRECTUS_URL = process.env.PUBLIC_DIRECTUS_URL || 'http://127.0.0.1:8055';
-
-function directusLoader(collectionName) {
+const directusLoader = (configOrCollection) => {
+  const collection = typeof configOrCollection === 'string' ? configOrCollection : configOrCollection.collection;
   return {
-    name: `directus-${collectionName}`,
-    async load({ store, parseData }) {
-      const res = await fetch(`${DIRECTUS_URL}/items/${collectionName}?limit=-1`);
-      if (!res.ok) {
-        throw new Error(`Failed to fetch ${collectionName} from Directus: ${res.statusText}`);
+    name: `directus-${collection}`,
+    load: async ({ store, logger, parseData, renderMarkdown }) => {
+      const DIRECTUS_URL = process.env.PUBLIC_DIRECTUS_URL || 'http://127.0.0.1:8055';
+      const response = await fetch(`${DIRECTUS_URL}/items/${collection}?limit=-1`);
+      
+      if (!response.ok) {
+        throw new Error(`Failed to fetch ${collection} from Directus: ${response.statusText}`);
       }
-      const data = await res.json();
+      
+      const data = await response.json();
       
       for (const item of data.data) {
         if (item.status !== 'published') continue;
         
+        let html = '';
+        if (typeof renderMarkdown === 'function') {
+           const result = await renderMarkdown(item.content || '');
+           html = result.html;
+        } else {
+           html = `<p>${item.content}</p>`; // Fallback
+        }
+        console.log(`Rendered HTML for ${item.slug}: ${html.length} characters`);
+
         store.set({
           id: `${item.language}/${item.slug}`,
           data: {
@@ -27,14 +38,13 @@ function directusLoader(collectionName) {
             img_alt: item.img_alt || '',
           },
           rendered: {
-             // In Astro 5+ you can provide rendered HTML, but if we provide `body`, Astro parses it
-          },
-          body: item.content || ''
+            html
+          }
         });
       }
     }
   };
-}
+};
 
 export const collections = {
 	work: defineCollection({
