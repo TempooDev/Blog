@@ -723,6 +723,96 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: posts
+    field: title
+    type: string
+    meta:
+      collection: posts
+      field: title
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: title
+      table: posts
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: posts
+    field: slug
+    type: string
+    meta:
+      collection: posts
+      field: slug
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: slug
+      table: posts
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: posts
+    field: translation_id
+    type: string
+    meta:
+      collection: posts
+      field: translation_id
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: translation_id
+      table: posts
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: work
+    field: title
+    type: string
+    meta:
+      collection: work
+      field: title
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: title
+      table: work
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: work
+    field: slug
+    type: string
+    meta:
+      collection: work
+      field: slug
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: slug
+      table: work
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: work
+    field: translation_id
+    type: string
+    meta:
+      collection: work
+      field: translation_id
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: translation_id
+      table: work
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
 systemFields:
   - collection: directus_activity
     field: timestamp

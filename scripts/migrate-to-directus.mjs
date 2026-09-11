@@ -52,9 +52,19 @@ async function uploadImage(imagePath, token) {
   return uploaded.id; // Returns UUID of uploaded file
 }
 
+async function clearCollection(colName, token) {
+  const items = await fetchAPI(`/items/${colName}`, 'GET', null, token);
+  for (const item of items) {
+    await fetchAPI(`/items/${colName}/${item.id}`, 'DELETE', null, token);
+  }
+  console.log(`s? Cleared all items from ${colName}`);
+}
+
 async function processCollection(colName, dirPath, token) {
   if (!fs.existsSync(dirPath)) return;
   
+  await clearCollection(colName, token);
+
   const langs = ['en', 'es'];
   for (const lang of langs) {
     const langDir = path.join(dirPath, lang);
