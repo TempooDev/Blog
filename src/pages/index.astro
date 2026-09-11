@@ -1,3 +1,27 @@
----
-return Astro.redirect("/en/");
----
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Redirecting...</title>
+  <!-- Fallback if JS is disabled -->
+  <meta http-equiv="refresh" content="0;url=/en/" />
+  <link rel="canonical" href="https://antoniobermudez.dev/en/" />
+  <meta name="robots" content="noindex">
+  <script>
+    (function() {
+      const saved = localStorage.getItem("language");
+      const browserLang = navigator.language.toLowerCase();
+      
+      let targetLang = 'en';
+      if (saved === 'es' || (!saved && browserLang.startsWith('es'))) {
+        targetLang = 'es';
+      }
+      
+      window.location.replace('/' + targetLang + '/');
+    })();
+  </script>
+</head>
+<body>
+  <a href="/en/">Continue to site</a>
+</body>
+</html>
