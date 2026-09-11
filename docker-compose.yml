@@ -36,8 +36,8 @@ services:
       - directus_extensions:/directus/extensions
       - ./directus-schema.yaml:/directus/extensions/schema.yaml
     environment:
-      KEY: 'replace-with-a-random-uuid'
-      SECRET: 'replace-with-a-random-string'
+      KEY: '${DIRECTUS_KEY}'
+      SECRET: '${DIRECTUS_SECRET}'
       ADMIN_EMAIL: '${ADMIN_DIRECTUS_EMAIL}'
       ADMIN_PASSWORD: '${ADMIN_DIRECTUS_PASSWORD}'
 
