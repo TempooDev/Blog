@@ -24,6 +24,7 @@ jobs:
         run: npm run build
         env:
           PUBLIC_COMMENTS_API: ${{ vars.PUBLIC_COMMENTS_API }}
+          PUBLIC_DIRECTUS_URL: "https://directus.antoniobermudez.dev"
       - name: Publish
         uses: cloudflare/wrangler-action@v3
         with:
