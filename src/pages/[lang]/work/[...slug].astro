@@ -66,9 +66,7 @@ const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
               <img src={entry.data.img} alt={entry.data.img_alt || ""} />
             )
           }
-          <div class="content">
-            <Content />
-          </div>
+          <div class="content" set:html={entry.rendered?.html || entry.body} />
         </div>
       </main>
     </div>

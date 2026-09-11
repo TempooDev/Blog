@@ -32,6 +32,10 @@ export async function getStaticPaths() {
 import { blogI18n } from "../../../i18n/pages/collections";
 
 const { entry } = Astro.props;
+console.log(`[DEBUG] Rendering post: ${entry.id}`);
+console.log(`[DEBUG] Has rendered.html? ${!!entry.rendered?.html}`);
+if (entry.rendered?.html) console.log(`[DEBUG] HTML length: ${entry.rendered.html.length}`);
+
 const { Content } = await render(entry);
 const { lang } = Astro.params;
 const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
@@ -71,10 +75,8 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
               <img src={entry.data.img} alt={entry.data.img_alt || ""} />
             )
           }
-          <div class="content">
-            <Content />
-          </div>
-          <hr />
+          <div class="content" set:html={entry.rendered?.html || entry.body} />
+            <hr />
           <Comments
             client:visible
             slug={entry.data.translationId}
