@@ -230,7 +230,7 @@ fields:
       foreign_key_column: null
   - collection: posts
     field: cover_image
-    type: string
+    type: uuid
     meta:
       collection: posts
       conditions: null
@@ -565,7 +565,7 @@ fields:
       foreign_key_column: null
   - collection: work
     field: cover_image
-    type: string
+    type: uuid
     meta:
       collection: work
       conditions: null
