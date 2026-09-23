@@ -862,4 +862,46 @@ systemFields:
     field: oauth_client
     schema:
       is_indexed: true
-relations: []
+relations:
+  - collection: posts
+    field: cover_image
+    related_collection: directus_files
+    meta:
+      many_collection: null
+      many_field: null
+      one_collection: posts
+      one_collection_field: null
+      one_deselect_action: null
+      one_field: cover_image
+      junction_field: null
+      sort_field: null
+      one_allowed_collections: null
+    schema:
+      table: posts
+      column: cover_image
+      foreign_key_table: directus_files
+      foreign_key_column: id
+      on_update: CASCADE
+      on_delete: SET NULL
+      constraint_name: posts_cover_image_foreign
+  - collection: work
+    field: cover_image
+    related_collection: directus_files
+    meta:
+      many_collection: null
+      many_field: null
+      one_collection: work
+      one_collection_field: null
+      one_deselect_action: null
+      one_field: cover_image
+      junction_field: null
+      sort_field: null
+      one_allowed_collections: null
+    schema:
+      table: work
+      column: cover_image
+      foreign_key_table: directus_files
+      foreign_key_column: id
+      on_update: CASCADE
+      on_delete: SET NULL
+      constraint_name: work_cover_image_foreign
