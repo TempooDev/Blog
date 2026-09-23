@@ -246,7 +246,8 @@ fields:
       required: false
       searchable: true
       sort: 5
-      special: null
+      special:
+        - file
       translations: null
       validation: null
       validation_message: null
@@ -580,7 +581,8 @@ fields:
       required: false
       searchable: true
       sort: 5
-      special: null
+      special:
+        - file
       translations: null
       validation: null
       validation_message: null
