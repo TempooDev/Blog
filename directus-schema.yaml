@@ -867,12 +867,9 @@ relations:
     field: cover_image
     related_collection: directus_files
     meta:
-      many_collection: null
-      many_field: null
-      one_collection: posts
       one_collection_field: null
-      one_deselect_action: null
-      one_field: cover_image
+      one_deselect_action: nullify
+      one_field: null
       junction_field: null
       sort_field: null
       one_allowed_collections: null
@@ -888,12 +885,9 @@ relations:
     field: cover_image
     related_collection: directus_files
     meta:
-      many_collection: null
-      many_field: null
-      one_collection: work
       one_collection_field: null
-      one_deselect_action: null
-      one_field: cover_image
+      one_deselect_action: nullify
+      one_field: null
       junction_field: null
       sort_field: null
       one_allowed_collections: null
