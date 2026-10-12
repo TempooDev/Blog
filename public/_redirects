@@ -1,0 +1,9 @@
+# Legacy unprefixed URLs -> English versions (real 301s handled by Cloudflare Pages)
+/blog        /en/blog/         301
+/blog/       /en/blog/         301
+/blog/*      /en/blog/:splat   301
+/work        /en/work/         301
+/work/       /en/work/         301
+/work/*      /en/work/:splat   301
+/about       /en/about/        301
+/about/      /en/about/        301

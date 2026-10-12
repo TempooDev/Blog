@@ -27,13 +27,13 @@ if (entry) {
     const slug = slugParts.join("/");
     // Construct link based on collection
     const basePath = collectionName === "work" ? "work" : "blog";
-    otherLink = `/${lang}/${basePath}/${slug}`;
+    otherLink = `/${lang}/${basePath}/${slug}/`;
   } else {
     // If no translation, link to the index of the collection
     const currentLang = currentPath.startsWith("/en") ? "en" : "es";
     const targetLang = currentLang === "en" ? "es" : "en";
     const basePath = collectionName === "work" ? "work" : "blog";
-    otherLink = `/${targetLang}/${basePath}`;
+    otherLink = `/${targetLang}/${basePath}/`;
   }
 } else {
   // Fallback for non-blog pages

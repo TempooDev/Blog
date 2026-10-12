@@ -2,6 +2,11 @@
 import MainHead from "@components/Common/MainHead.astro";
 import Nav from "@components/Common/Nav.astro";
 import Footer from "@components/Common/Footer.astro";
+import {
+  DEFAULT_LANG,
+  getAlternatePaths,
+  getLangFromPath,
+} from "../utils/routing";
 
 export interface Props {
   title?: string | undefined;
@@ -10,11 +15,27 @@ export interface Props {
 }
 
 const { title, description, entry } = Astro.props;
+
+const lang = getLangFromPath(Astro.url.pathname) ?? DEFAULT_LANG;
+const alternates = await getAlternatePaths(Astro.url.pathname, entry);
+// hreflang only makes sense when the page actually has another language version
+const hreflangs =
+  Object.keys(alternates).length > 1
+    ? [
+        ...Object.entries(alternates),
+        ["x-default", alternates[DEFAULT_LANG] ?? Object.values(alternates)[0]],
+      ]
+    : [];
 ---
 
-<html lang="en">
+<html lang={lang}>
   <head>
     <MainHead title={title} description={description} />
+    {
+      hreflangs.map(([hreflang, path]) => (
+        <link rel="alternate" hreflang={hreflang} href={new URL(path, Astro.site)} />
+      ))
+    }
     <link rel="sitemap" href="/sitemap-index.xml" />
     <script is:inline>
       (function () {

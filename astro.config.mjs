@@ -7,38 +7,9 @@ import sitemap from "@astrojs/sitemap";
 import { unified } from '@astrojs/markdown-remark';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
-import fs from 'node:fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-
-function getPostRedirects() {
-  const redirects = {};
-  const postsDir = './src/content/posts/en';
-
-  if (fs.existsSync(postsDir)) {
-    const files = fs.readdirSync(postsDir);
-    files.forEach(file => {
-      const slug = file.replace(/\.mdx?$/, '');
-      redirects[`/blog/${slug}`] = `/en/blog/${slug}`;
-    });
-  }
-  return redirects;
-}
-
-function getWorkRedirects() {
-  const redirects = {};
-  const workDir = './src/content/work/en';
-  
-  if (fs.existsSync(workDir)) {
-    const files = fs.readdirSync(workDir);
-    files.forEach(file => {
-      const slug = file.replace(/\.mdx?$/, '');
-      redirects[`/work/${slug}`] = `/en/work/${slug}`;
-    });
-  }
-  return redirects;
-}
 
 export default defineConfig({
   site: "https://antoniobermudez.dev/",
@@ -77,13 +48,6 @@ export default defineConfig({
     fallback: {
       es: "en",
     }
-  },
-  redirects: {
-    ...getPostRedirects(),
-    ...getWorkRedirects(),
-    '/about': '/en/about',
-    '/blog': '/en/blog',
-    '/work': '/en/work',
   },
   markdown: {
     processor: unified({
