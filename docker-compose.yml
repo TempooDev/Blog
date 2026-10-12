@@ -27,7 +27,7 @@ services:
 
   directus:
     image: directus/directus:latest
-    command: sh -c "node cli.js schema apply /directus/extensions/schema.yaml --yes && node docker-entrypoint.cjs"
+    command: sh -c "node cli.js schema apply /directus/extensions/schema.yaml --yes || echo 'WARN schema apply failed, starting with current schema'; node docker-entrypoint.cjs"
     ports:
       - 8055:8055
     volumes:
