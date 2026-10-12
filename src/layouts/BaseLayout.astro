@@ -7,6 +7,7 @@ import {
   getAlternatePaths,
   getLangFromPath,
 } from "../utils/routing";
+import { DEFAULT_IMAGE, getEntryJsonLd, getPersonJsonLd } from "../utils/seo";
 
 export interface Props {
   title?: string | undefined;
@@ -18,6 +19,14 @@ const { title, description, entry } = Astro.props;
 
 const lang = getLangFromPath(Astro.url.pathname) ?? DEFAULT_LANG;
 const alternates = await getAlternatePaths(Astro.url.pathname, entry);
+const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const image: string | undefined = entry?.data.img || undefined;
+const isHome = Astro.url.pathname === `/${lang}/`;
+const jsonLd = entry
+  ? getEntryJsonLd(entry, canonicalURL, lang, new URL(image ?? DEFAULT_IMAGE, Astro.site).href)
+  : isHome
+    ? getPersonJsonLd(Astro.site!)
+    : [];
 // hreflang only makes sense when the page actually has another language version
 const hreflangs =
   Object.keys(alternates).length > 1
@@ -30,7 +39,16 @@ const hreflangs =
 
 <html lang={lang}>
   <head>
-    <MainHead title={title} description={description} />
+    <MainHead
+      title={title}
+      description={description}
+      lang={lang}
+      alternateLangs={Object.keys(alternates) as (keyof typeof alternates)[]}
+      image={image}
+      imageAlt={entry ? entry.data.img_alt || entry.data.title : undefined}
+      article={entry ? { publishDate: entry.data.publishDate, tags: entry.data.tags } : undefined}
+      jsonLd={jsonLd}
+    />
     {
       hreflangs.map(([hreflang, path]) => (
         <link rel="alternate" hreflang={hreflang} href={new URL(path, Astro.site)} />

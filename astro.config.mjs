@@ -3,7 +3,6 @@ import mdx from "@astrojs/mdx";
 import react from "@astrojs/react";
 import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
 import expressiveCode from "astro-expressive-code";
-import sitemap from "@astrojs/sitemap";
 import { unified } from '@astrojs/markdown-remark';
 import { fileURLToPath } from 'url';
 import { dirname, resolve } from 'path';
@@ -18,24 +17,6 @@ export default defineConfig({
     expressiveCode(),
     mdx(),
     react(),
-    sitemap({
-      changefreq: "weekly",
-      priority: 0.7,
-      i18n: {
-        defaultLocale: "en",
-        locales: {
-          en: "en",
-          es: "es",
-        },
-      },
-      filter: (page) => {
-        const url = new URL(page);
-        const path = url.pathname;
-        // Do not include the root "/" as it's just a redirect
-        if (path === '/') return false;
-        return path.startsWith('/en/') || path.startsWith('/es/');
-      },
-    }),
   ].flat(),
   i18n: {
     defaultLocale: "en",
