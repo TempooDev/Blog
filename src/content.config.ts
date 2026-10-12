@@ -31,7 +31,7 @@ const directusLoader = (configOrCollection) => {
           data: {
             title: item.title,
             translationId: item.translation_id,
-            description: item.description || '',
+            description: (item.description || '').trim(),
             publishDate: item.publish_date ? new Date(item.publish_date) : new Date(),
             tags: item.tags || [],
             img: item.cover_image ? `${DIRECTUS_URL}/assets/${item.cover_image}` : "",
