@@ -26,10 +26,12 @@ services:
     restart: unless-stopped
 
   directus:
-    image: directus/directus:latest
+    # Pinned: `latest` can upgrade (and migrate the DB) on any redeploy
+    image: directus/directus:12.3.1
     command: sh -c "node cli.js schema apply /directus/extensions/schema.yaml --yes || echo 'WARN schema apply failed, starting with current schema'; node docker-entrypoint.cjs"
+    # Localhost only: in production Traefik reaches Directus over the Docker network
     ports:
-      - 8055:8055
+      - 127.0.0.1:8055:8055
     volumes:
       - directus_database:/directus/database
       - directus_uploads:/directus/uploads
