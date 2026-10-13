@@ -267,8 +267,8 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
+      foreign_key_table: directus_files
+      foreign_key_column: id
   - collection: posts
     field: description
     type: text
@@ -602,8 +602,8 @@ fields:
       is_generated: false
       generation_expression: null
       has_auto_increment: false
-      foreign_key_table: null
-      foreign_key_column: null
+      foreign_key_table: directus_files
+      foreign_key_column: id
   - collection: work
     field: description
     type: text
@@ -864,40 +864,4 @@ systemFields:
     field: oauth_client
     schema:
       is_indexed: true
-relations:
-  - collection: posts
-    field: cover_image
-    related_collection: directus_files
-    meta:
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      junction_field: null
-      sort_field: null
-      one_allowed_collections: null
-    schema:
-      table: posts
-      column: cover_image
-      foreign_key_table: directus_files
-      foreign_key_column: id
-      on_update: CASCADE
-      on_delete: SET NULL
-      constraint_name: posts_cover_image_foreign
-  - collection: work
-    field: cover_image
-    related_collection: directus_files
-    meta:
-      one_collection_field: null
-      one_deselect_action: nullify
-      one_field: null
-      junction_field: null
-      sort_field: null
-      one_allowed_collections: null
-    schema:
-      table: work
-      column: cover_image
-      foreign_key_table: directus_files
-      foreign_key_column: id
-      on_update: CASCADE
-      on_delete: SET NULL
-      constraint_name: work_cover_image_foreign
+relations: []
