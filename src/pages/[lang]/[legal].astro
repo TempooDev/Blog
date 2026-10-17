@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Hero from "@components/Common/Hero.astro";
 import { LANGS, type Lang } from "../../utils/routing";
-import { LEGAL_PAGES, legalI18n, type LegalPage } from "../../i18n/pages/legal";
+import { LEGAL_PAGES, consentI18n, legalI18n, type LegalPage } from "../../i18n/pages/legal";
 
 export function getStaticPaths() {
   return LANGS.flatMap((lang) => LEGAL_PAGES.map((legal) => ({ params: { lang, legal } })));
@@ -10,17 +10,13 @@ export function getStaticPaths() {
 
 const { lang, legal } = Astro.params as { lang: Lang; legal: LegalPage };
 const content = legalI18n[lang][legal];
-const updatedLabel = lang === "es" ? "Última actualización" : "Last updated";
-const consentLabels =
-  lang === "es"
-    ? { accept: "Aceptar analítica", reject: "Rechazar analítica", current: "Tu elección actual" }
-    : { accept: "Accept analytics", reject: "Reject analytics", current: "Your current choice" };
+const t = consentI18n[lang];
 ---
 
 <BaseLayout title={content.metaTitle} description={content.description} noindex>
   <main class="wrapper stack gap-8 legal">
     <Hero title={content.title} align="start" />
-    <p class="updated">{updatedLabel}: <time datetime={content.updated}>{content.updated}</time></p>
+    <p class="updated">{t.updated}: <time datetime={content.updated}>{content.updated}</time></p>
     {
       content.sections.map((section) => (
         <section class="stack gap-2">
@@ -33,10 +29,10 @@ const consentLabels =
       legal === "cookies" && (
         <div class="consent-controls">
           <p>
-            {consentLabels.current}: <strong data-consent-state>—</strong>
+            {t.current}: <strong data-consent-state>—</strong>
           </p>
-          <button type="button" data-consent="granted">{consentLabels.accept}</button>
-          <button type="button" data-consent="denied">{consentLabels.reject}</button>
+          <button type="button" data-consent="granted">{t.acceptAnalytics}</button>
+          <button type="button" data-consent="denied">{t.rejectAnalytics}</button>
         </div>
       )
     }

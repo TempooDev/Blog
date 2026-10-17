@@ -20,10 +20,39 @@ interface LegalContent {
 const CONTACT = '<a href="mailto:contact@antoniobermudez.dev">contact@antoniobermudez.dev</a>';
 const UPDATED = "2026-10-17";
 
-export const legalLinksI18n: Record<Lang, Record<LegalPage, string>> = {
-    es: { legal: "Aviso legal", privacy: "Privacidad", cookies: "Cookies" },
-    en: { legal: "Legal notice", privacy: "Privacy", cookies: "Cookies" },
+export const legalLinksI18n: Record<Lang, Record<LegalPage | "label", string>> = {
+    es: { label: "Información legal", legal: "Aviso legal", privacy: "Privacidad", cookies: "Cookies" },
+    en: { label: "Legal information", legal: "Legal notice", privacy: "Privacy", cookies: "Cookies" },
 };
+
+export const consentI18n = {
+    es: {
+        label: "Consentimiento de analítica",
+        text: "Uso una analítica sin cookies para saber qué artículos se leen. Solo se activa si aceptas.",
+        more: "Más información",
+        accept: "Aceptar",
+        reject: "Rechazar",
+        acceptAnalytics: "Aceptar analítica",
+        rejectAnalytics: "Rechazar analítica",
+        current: "Tu elección actual",
+        granted: "Aceptada",
+        denied: "Rechazada",
+        updated: "Última actualización",
+    },
+    en: {
+        label: "Analytics consent",
+        text: "I use cookie-free analytics to see which articles get read. It only runs if you accept.",
+        more: "Learn more",
+        accept: "Accept",
+        reject: "Reject",
+        acceptAnalytics: "Accept analytics",
+        rejectAnalytics: "Reject analytics",
+        current: "Your current choice",
+        granted: "Accepted",
+        denied: "Rejected",
+        updated: "Last updated",
+    },
+} satisfies Record<Lang, Record<string, string>>;
 
 export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
     es: {

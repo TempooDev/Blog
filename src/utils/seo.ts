@@ -66,7 +66,9 @@ export function getEntryJsonLd(
  * body would add a second one, so they are rendered as <h2>.
  */
 export function demoteHeadings(html: string) {
-    return html.replace(/<(\/?)h1(?=[\s>])/gi, "<$1h2");
+    if (!/<h1[\s>]/i.test(html)) return html;
+    // Shift every level down so sub-sections keep their nesting (h6 stays h6).
+    return html.replace(/<(\/?)h([1-5])(?=[\s>])/gi, (_, slash, level) => `<${slash}h${Number(level) + 1}`);
 }
 
 /** Collapses whitespace and cuts at a word boundary so search results don't truncate mid-word. */
@@ -74,5 +76,7 @@ export function toMetaDescription(text: string, max = 160) {
     const clean = text.replace(/\s+/g, " ").trim();
     if (clean.length <= max) return clean;
     const cut = clean.slice(0, max - 1);
-    return `${cut.slice(0, cut.lastIndexOf(" ")).replace(/[\s,.;:]+$/, "")}…`;
+    const lastSpace = clean[max - 1] === " " ? cut.length : cut.lastIndexOf(" ");
+    const trimmed = lastSpace > 0 ? cut.slice(0, lastSpace) : cut;
+    return `${trimmed.replace(/[\s,.;:]+$/, "")}…`;
 }

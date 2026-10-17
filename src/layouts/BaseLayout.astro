@@ -31,7 +31,7 @@ const jsonLd = entry
     : [];
 // hreflang only makes sense when the page actually has another language version
 const hreflangs =
-  Object.keys(alternates).length > 1
+  !noindex && Object.keys(alternates).length > 1
     ? [
         ...Object.entries(alternates),
         ["x-default", alternates[DEFAULT_LANG] ?? Object.values(alternates)[0]],
@@ -85,7 +85,7 @@ const hreflangs =
     <div class="stack backgrounds">
       <Nav entry={entry} />
       <slot />
-      <Footer />
+      <Footer lang={lang} />
     </div>
     <ConsentBanner lang={lang} />
 

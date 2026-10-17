@@ -4,15 +4,20 @@ import { footerI18n } from "../../i18n/components";
 import { LEGAL_PAGES, legalLinksI18n } from "../../i18n/pages/legal";
 
 const currentYear = new Date().getFullYear();
-const { pathname } = Astro.url;
-const lang = pathname.startsWith("/en") ? "en" : "es";
+import type { Lang } from "../../utils/routing";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
 const t = footerI18n[lang as keyof typeof footerI18n];
 ---
 
 <footer>
   <div class="group">
     <p>&copy; {currentYear} {t.copyright}</p>
-    <nav class="legal" aria-label="Legal">
+    <nav class="legal" aria-label={legalLinksI18n[lang].label}>
       {LEGAL_PAGES.map((page) => <a href={`/${lang}/${page}/`}>{legalLinksI18n[lang][page]}</a>)}
     </nav>
   </div>
