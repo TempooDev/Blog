@@ -1,6 +1,7 @@
 ---
 import Icon from "./Icon.astro";
 import { footerI18n } from "../../i18n/components";
+import { LEGAL_PAGES, legalLinksI18n } from "../../i18n/pages/legal";
 
 const currentYear = new Date().getFullYear();
 const { pathname } = Astro.url;
@@ -11,6 +12,9 @@ const t = footerI18n[lang as keyof typeof footerI18n];
 <footer>
   <div class="group">
     <p>&copy; {currentYear} {t.copyright}</p>
+    <nav class="legal" aria-label="Legal">
+      {LEGAL_PAGES.map((page) => <a href={`/${lang}/${page}/`}>{legalLinksI18n[lang][page]}</a>)}
+    </nav>
   </div>
   <p class="socials">
     <a href="https://github.com/TempooDev"> GitHub</a>
@@ -45,6 +49,13 @@ const t = footerI18n[lang as keyof typeof footerI18n];
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+  }
+
+  .legal {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    flex-wrap: wrap;
   }
 
   .socials {

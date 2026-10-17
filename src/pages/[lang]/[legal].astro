@@ -1,0 +1,89 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Hero from "@components/Common/Hero.astro";
+import { LANGS, type Lang } from "../../utils/routing";
+import { LEGAL_PAGES, legalI18n, type LegalPage } from "../../i18n/pages/legal";
+
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) => LEGAL_PAGES.map((legal) => ({ params: { lang, legal } })));
+}
+
+const { lang, legal } = Astro.params as { lang: Lang; legal: LegalPage };
+const content = legalI18n[lang][legal];
+const updatedLabel = lang === "es" ? "Última actualización" : "Last updated";
+const consentLabels =
+  lang === "es"
+    ? { accept: "Aceptar analítica", reject: "Rechazar analítica", current: "Tu elección actual" }
+    : { accept: "Accept analytics", reject: "Reject analytics", current: "Your current choice" };
+---
+
+<BaseLayout title={content.metaTitle} description={content.description} noindex>
+  <main class="wrapper stack gap-8 legal">
+    <Hero title={content.title} align="start" />
+    <p class="updated">{updatedLabel}: <time datetime={content.updated}>{content.updated}</time></p>
+    {
+      content.sections.map((section) => (
+        <section class="stack gap-2">
+          <h2>{section.title}</h2>
+          {section.body.map((p) => <p set:html={p} />)}
+        </section>
+      ))
+    }
+    {
+      legal === "cookies" && (
+        <div class="consent-controls">
+          <p>
+            {consentLabels.current}: <strong data-consent-state>—</strong>
+          </p>
+          <button type="button" data-consent="granted">{consentLabels.accept}</button>
+          <button type="button" data-consent="denied">{consentLabels.reject}</button>
+        </div>
+      )
+    }
+  </main>
+</BaseLayout>
+
+<style>
+  .legal {
+    max-width: 70ch;
+    padding-bottom: 5rem;
+    color: var(--blue-200);
+    line-height: 1.7;
+  }
+
+  .legal h2 {
+    font-size: var(--text-xl);
+    color: var(--blue-0);
+    margin-top: 1rem;
+  }
+
+  .legal :global(a) {
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .updated {
+    color: var(--blue-400);
+    font-size: var(--text-sm);
+  }
+
+  .consent-controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .consent-controls p {
+    flex-basis: 100%;
+  }
+
+  .consent-controls button {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999rem;
+    border: 1px solid var(--blue-800);
+    background: var(--blue-999);
+    color: var(--blue-0);
+    cursor: pointer;
+  }
+</style>

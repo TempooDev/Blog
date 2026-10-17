@@ -2,6 +2,7 @@
 import MainHead from "@components/Common/MainHead.astro";
 import Nav from "@components/Common/Nav.astro";
 import Footer from "@components/Common/Footer.astro";
+import ConsentBanner from "@components/Common/ConsentBanner.astro";
 import {
   DEFAULT_LANG,
   getAlternatePaths,
@@ -78,11 +79,6 @@ const hreflangs =
         }
       })();
     </script>
-    <script
-      defer
-      src="https://cdn.tempooanalytics.eu/analytics.js"
-      data-site="antoniobermudez-blog-RZq3-A"
-      data-key="N71Rfehcz5PGzekWKqf4wWX2GXNYhbbFwv1whFQR8Wo"></script>
   </head>
 
   <body>
@@ -91,6 +87,7 @@ const hreflangs =
       <slot />
       <Footer />
     </div>
+    <ConsentBanner lang={lang} />
 
     <script>
       addEventListener("load", () =>

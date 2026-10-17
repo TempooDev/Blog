@@ -26,7 +26,9 @@ const translations = {
         postButton: 'Post Comment',
         successMsg: 'Comment submitted for checking! It will appear after approval.',
         errorMsg: 'Failed to submit comment.',
-        networkError: 'Error submitting comment.'
+        networkError: 'Error submitting comment.',
+        privacy: 'Your name and comment will be published once approved. More in the',
+        privacyLink: 'privacy policy',
     },
     es: {
         title: 'Comentarios',
@@ -39,7 +41,9 @@ const translations = {
         postButton: 'Publicar Comentario',
         successMsg: '¡Comentario enviado para revisión! Aparecerá después de ser aprobado.',
         errorMsg: 'Error al enviar el comentario.',
-        networkError: 'Error de red al enviar el comentario.'
+        networkError: 'Error de red al enviar el comentario.',
+        privacy: 'Tu nombre y tu comentario se publicarán cuando los apruebe. Más información en la',
+        privacyLink: 'política de privacidad',
     }
 };
 
@@ -280,6 +284,9 @@ export default function Comments({ slug, lang = 'en', apiBase = import.meta.env.
                             }}
                         />
                     </div>
+                    <p style={{ fontSize: 'var(--text-sm)', color: 'var(--gray-400)', margin: 0 }}>
+                        {t.privacy} <a href={`/${currentLang}/privacy/`} style={{ textDecoration: 'underline' }}>{t.privacyLink}</a>.
+                    </p>
                     <button type="submit" style={{
                         padding: '1rem 2rem',
                         marginTop: '0.5rem',
