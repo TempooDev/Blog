@@ -22,7 +22,7 @@ const content = blogI18n[lang as keyof typeof blogI18n];
 ---
 
 <BaseLayout
-  title={`Antonio Bermúdez - ${content.title}`}
+  title={content.metaTitle}
   description={content.tagline}
 >
   <div class="stack gap-20">

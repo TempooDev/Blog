@@ -2,6 +2,7 @@
 import MainHead from "@components/Common/MainHead.astro";
 import Nav from "@components/Common/Nav.astro";
 import Footer from "@components/Common/Footer.astro";
+import ConsentBanner from "@components/Common/ConsentBanner.astro";
 import {
   DEFAULT_LANG,
   getAlternatePaths,
@@ -13,9 +14,10 @@ export interface Props {
   title?: string | undefined;
   description?: string | undefined;
   entry?: any;
+  noindex?: boolean;
 }
 
-const { title, description, entry } = Astro.props;
+const { title, description, entry, noindex = false } = Astro.props;
 
 const lang = getLangFromPath(Astro.url.pathname) ?? DEFAULT_LANG;
 const alternates = await getAlternatePaths(Astro.url.pathname, entry);
@@ -29,7 +31,7 @@ const jsonLd = entry
     : [];
 // hreflang only makes sense when the page actually has another language version
 const hreflangs =
-  Object.keys(alternates).length > 1
+  !noindex && Object.keys(alternates).length > 1
     ? [
         ...Object.entries(alternates),
         ["x-default", alternates[DEFAULT_LANG] ?? Object.values(alternates)[0]],
@@ -48,6 +50,7 @@ const hreflangs =
       imageAlt={entry ? entry.data.img_alt || entry.data.title : undefined}
       article={entry ? { publishDate: entry.data.publishDate, tags: entry.data.tags } : undefined}
       jsonLd={jsonLd}
+      noindex={noindex}
     />
     {
       hreflangs.map(([hreflang, path]) => (
@@ -76,18 +79,15 @@ const hreflangs =
         }
       })();
     </script>
-    <script
-      src="https://cdn.tempooanalytics.eu/analytics.js"
-      data-site="antoniobermudez-blog-RZq3-A"
-      data-key="N71Rfehcz5PGzekWKqf4wWX2GXNYhbbFwv1whFQR8Wo"></script>
   </head>
 
   <body>
     <div class="stack backgrounds">
       <Nav entry={entry} />
       <slot />
-      <Footer />
+      <Footer lang={lang} />
     </div>
+    <ConsentBanner lang={lang} />
 
     <script>
       addEventListener("load", () =>
@@ -96,8 +96,13 @@ const hreflangs =
     </script>
 
     <script>
-      import mermaid from "mermaid";
-      mermaid.initialize({ startOnLoad: true, theme: "neutral" });
+      // Mermaid is large, so it is only downloaded on pages that have diagrams.
+      if (document.querySelector(".mermaid")) {
+        import("mermaid").then(({ default: mermaid }) => {
+          mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+          mermaid.run();
+        });
+      }
     </script>
 
     <style>

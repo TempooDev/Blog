@@ -7,6 +7,7 @@ import Hero from "@components/Common/Hero.astro";
 import Icon from "@components/Common/Icon.astro";
 import Pill from "@components/Common/Pill.astro";
 import { render } from "astro:content";
+import { demoteHeadings } from "../../../utils/seo";
 
 interface Props {
   entry: CollectionEntry<"work">;
@@ -63,10 +64,15 @@ const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
         <div class="stack gap-10 content">
           {
             entry.data.img && entry.data.img != "" && (
-              <img src={entry.data.img} alt={entry.data.img_alt || ""} />
+              <img
+                src={entry.data.img}
+                alt={entry.data.img_alt || entry.data.title}
+                fetchpriority="high"
+                decoding="async"
+              />
             )
           }
-          <div class="content" set:html={entry.rendered?.html || entry.body} />
+          <div class="content" set:html={demoteHeadings(entry.rendered?.html || entry.body || "")} />
         </div>
       </main>
     </div>

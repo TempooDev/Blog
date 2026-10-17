@@ -1,0 +1,128 @@
+---
+import type { Lang } from "../../utils/routing";
+import { consentI18n } from "../../i18n/pages/legal";
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const t = consentI18n[lang];
+---
+
+<div class="consent-banner" role="region" aria-label={t.label} hidden data-labels={JSON.stringify({ granted: t.granted, denied: t.denied })}>
+  <p>{t.text} <a href={`/${lang}/cookies/`}>{t.more}</a></p>
+  <div class="actions">
+    <button type="button" data-consent="denied">{t.reject}</button>
+    <button type="button" data-consent="granted" class="primary">{t.accept}</button>
+  </div>
+</div>
+
+<script is:inline>
+  (function () {
+    var KEY = "consent";
+    var banner = document.querySelector(".consent-banner");
+    var labels = JSON.parse(banner.dataset.labels);
+
+    function read() {
+      try {
+        return localStorage.getItem(KEY);
+      } catch (e) {
+        return null;
+      }
+    }
+
+    function loadAnalytics() {
+      if (document.getElementById("tempoo-analytics")) return;
+      var s = document.createElement("script");
+      s.id = "tempoo-analytics";
+      s.src = "https://cdn.tempooanalytics.eu/analytics.js";
+      s.dataset.site = "antoniobermudez-blog-RZq3-A";
+      s.dataset.key = "N71Rfehcz5PGzekWKqf4wWX2GXNYhbbFwv1whFQR8Wo";
+      document.head.appendChild(s);
+    }
+
+    function render(state) {
+      banner.hidden = state === "granted" || state === "denied";
+      document.querySelectorAll("[data-consent-state]").forEach(function (el) {
+        el.textContent = state ? labels[state] : "—";
+      });
+    }
+
+    function set(state) {
+      try {
+        localStorage.setItem(KEY, state);
+        if (state === "denied") {
+          localStorage.removeItem("tempoo_visitor");
+          sessionStorage.removeItem("tempoo_session");
+        }
+      } catch (e) {}
+      // The Tempoo script can't be stopped once running, so withdrawing consent reloads without it.
+      if (state === "denied" && document.getElementById("tempoo-analytics")) {
+        location.reload();
+        return;
+      }
+      render(state);
+      if (state === "granted") loadAnalytics();
+    }
+
+    document.addEventListener("click", function (e) {
+      var btn = e.target.closest("[data-consent]");
+      if (btn) set(btn.dataset.consent);
+    });
+
+    var state = read();
+    render(state);
+    if (state === "granted") loadAnalytics();
+  })();
+</script>
+
+<style>
+  .consent-banner {
+    position: fixed;
+    inset: auto 1rem 1rem 1rem;
+    z-index: 100;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    max-width: 48rem;
+    margin-inline: auto;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--blue-800);
+    border-radius: 1rem;
+    background: var(--blue-999);
+    box-shadow: var(--shadow-md);
+    color: var(--blue-200);
+    font-size: var(--text-sm);
+  }
+
+  .consent-banner[hidden] {
+    display: none;
+  }
+
+  .consent-banner a {
+    text-decoration: underline;
+  }
+
+  .actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .actions button {
+    padding: 0.5rem 1.25rem;
+    border-radius: 999rem;
+    border: 1px solid var(--blue-800);
+    background: transparent;
+    color: var(--blue-0);
+    cursor: pointer;
+  }
+
+  .actions .primary {
+    background: var(--accent-regular);
+    border-color: var(--accent-regular);
+    color: var(--accent-text-over);
+  }
+</style>

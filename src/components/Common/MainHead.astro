@@ -1,7 +1,7 @@
 ---
 import '@styles/global.css';
 import type { Lang } from '../../utils/routing';
-import { DEFAULT_IMAGE, OG_LOCALES, SITE_NAME } from '../../utils/seo';
+import { DEFAULT_IMAGE, OG_LOCALES, SITE_NAME, toMetaDescription } from '../../utils/seo';
 
 interface Props {
 	title?: string | undefined;
@@ -12,6 +12,7 @@ interface Props {
 	imageAlt?: string | undefined;
 	article?: { publishDate: Date; tags: string[] } | undefined;
 	jsonLd?: object[];
+	noindex?: boolean;
 }
 
 const {
@@ -23,23 +24,25 @@ const {
 	imageAlt,
 	article,
 	jsonLd = [],
+	noindex = false,
 } = Astro.props;
 
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const imageURL = new URL(image || DEFAULT_IMAGE, Astro.site);
+const metaDescription = toMetaDescription(description);
 ---
 
 <meta charset="UTF-8" />
-<meta name="description" content={description} />
-<meta name="viewport" content="width=device-width" />
+<meta name="description" content={metaDescription} />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="generator" content={Astro.generator} />
-<link rel="canonical" href={canonicalURL} />
+{noindex ? <meta name="robots" content="noindex, follow" /> : <link rel="canonical" href={canonicalURL} />}
 <title>{title}</title>
 
 <meta property="og:type" content={article ? 'article' : 'website'} />
 <meta property="og:site_name" content={SITE_NAME} />
 <meta property="og:title" content={title} />
-<meta property="og:description" content={description} />
+<meta property="og:description" content={metaDescription} />
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:image" content={imageURL} />
 {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
@@ -60,7 +63,7 @@ const imageURL = new URL(image || DEFAULT_IMAGE, Astro.site);
 
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content={title} />
-<meta name="twitter:description" content={description} />
+<meta name="twitter:description" content={metaDescription} />
 <meta name="twitter:image" content={imageURL} />
 {imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
 
