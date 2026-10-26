@@ -48,6 +48,17 @@ const translations = {
     },
 };
 
+// Tempoo Analytics only loads after analytics consent, so without it this does nothing.
+// The script loads async, so wait a few seconds for it before giving up.
+function trackEvent(name: string, data: Record<string, string>, attempts = 10) {
+    const tempoo = (window as any).tempoo;
+    if (tempoo?.track) {
+        tempoo.track(name, data);
+    } else if (attempts > 0) {
+        setTimeout(() => trackEvent(name, data, attempts - 1), 500);
+    }
+}
+
 const languageNames = { es: 'Español', en: 'English' };
 
 const inputStyle: React.CSSProperties = {
@@ -79,6 +90,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
         const status = new URLSearchParams(window.location.search).get('status');
         if (status && status in t.status) {
             setMessage(t.status[status as keyof typeof t.status]);
+            if (status === 'confirmed') trackEvent('newsletter_confirmed', { lang: currentLang });
         }
     }, [showStatus]);
 
@@ -93,6 +105,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                 body: JSON.stringify({ email, lang: issueLang, consent, website }),
             });
             if (res.ok) {
+                trackEvent('newsletter_signup', { lang: issueLang, page: window.location.pathname });
                 setMessage(t.success);
                 setEmail('');
                 setConsent(false);
