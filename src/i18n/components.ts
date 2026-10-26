@@ -46,12 +46,14 @@ export const navI18n = {
         home: "Home",
         work: "Work",
         blog: "Blog",
+        newsletter: "Newsletter",
         about: "About",
     },
     es: {
         home: "Inicio",
         work: "Proyectos",
         blog: "Blog",
+        newsletter: "Newsletter",
         about: "Sobre mí",
     },
 };

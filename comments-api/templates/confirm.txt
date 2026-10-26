@@ -1,0 +1,5 @@
+{{.T.confirmIntro}}
+
+{{.T.confirmButton}}: {{.URL}}
+
+{{.T.confirmIgnore}}

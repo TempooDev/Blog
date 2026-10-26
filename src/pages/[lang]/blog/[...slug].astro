@@ -8,6 +8,7 @@ import Hero from "../../../components/Common/Hero.astro";
 import Icon from "../../../components/Common/Icon.astro";
 import Pill from "../../../components/Common/Pill.astro";
 import Comments from "../../../components/Comments";
+import NewsletterSignup from "../../../components/NewsletterSignup";
 import { render } from "astro:content";
 import { demoteHeadings } from "../../../utils/seo";
 
@@ -79,6 +80,7 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
           }
           <div class="content" set:html={demoteHeadings(entry.rendered?.html || entry.body || "")} />
             <hr />
+          <NewsletterSignup client:visible lang={lang} />
           <Comments
             client:visible
             slug={entry.data.translationId}

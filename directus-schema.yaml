@@ -54,6 +54,32 @@ collections:
       versioning: false
     schema:
       name: work
+  - collection: digests
+    meta:
+      accountability: all
+      archive_app_filter: true
+      archive_field: null
+      archive_value: null
+      autosave_revision_interval: null
+      collapse: open
+      collection: digests
+      color: null
+      display_template: null
+      group: null
+      hidden: false
+      icon: mail
+      item_duplication_fields: null
+      note: Weekly AI & tech newsletter issues
+      preview_url: null
+      singleton: false
+      sort: null
+      sort_field: null
+      status: active
+      translations: null
+      unarchive_value: null
+      versioning: false
+    schema:
+      name: digests
 fields:
   - collection: posts
     field: id
@@ -815,6 +841,562 @@ fields:
       data_type: varchar
       max_length: 255
       is_nullable: true
+  - collection: digests
+    field: id
+    type: integer
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: id
+      group: null
+      hidden: true
+      interface: numeric
+      note: null
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 1
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: id
+      table: digests
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: false
+      is_unique: false
+      is_indexed: false
+      is_primary_key: true
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: true
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: status
+    type: string
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: status
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+        - text: Draft
+          value: draft
+        - text: Published
+          value: published
+        - text: Archived
+          value: archived
+      readonly: false
+      required: false
+      searchable: true
+      sort: 2
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: status
+      table: digests
+      data_type: varchar
+      default_value: draft
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: language
+    type: string
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: language
+      group: null
+      hidden: false
+      interface: select-dropdown
+      note: null
+      options:
+        choices:
+        - text: English
+          value: en
+        - text: Español
+          value: es
+      readonly: false
+      required: false
+      searchable: true
+      sort: 3
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: language
+      table: digests
+      data_type: varchar
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: publish_date
+    type: timestamp
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: publish_date
+      group: null
+      hidden: false
+      interface: null
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 4
+      special:
+      - cast-timestamp
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: publish_date
+      table: digests
+      data_type: datetime
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: cover_image
+    type: uuid
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: cover_image
+      group: null
+      hidden: false
+      interface: file-image
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 5
+      special:
+      - file
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: cover_image
+      table: digests
+      data_type: char
+      default_value: null
+      max_length: 36
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: directus_files
+      foreign_key_column: id
+  - collection: digests
+    field: description
+    type: text
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: description
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: null
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 6
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: description
+      table: digests
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: title
+    type: string
+    meta:
+      collection: digests
+      field: title
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: title
+      table: digests
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: digests
+    field: slug
+    type: string
+    meta:
+      collection: digests
+      field: slug
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: slug
+      table: digests
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: digests
+    field: translation_id
+    type: string
+    meta:
+      collection: digests
+      field: translation_id
+      hidden: false
+      interface: input
+      sort: 1
+    schema:
+      name: translation_id
+      table: digests
+      data_type: varchar
+      max_length: 255
+      is_nullable: true
+  - collection: digests
+    field: intro
+    type: text
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: intro
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: Opening paragraphs (plain text, blank line between paragraphs)
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 7
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: intro
+      table: digests
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: outro
+    type: text
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: outro
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: Closing paragraphs (optional)
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 8
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: outro
+      table: digests
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: items
+    type: json
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: items
+      group: null
+      hidden: false
+      interface: list
+      note: News items
+      options:
+        template: '{{category}} · {{title}}'
+        fields:
+        - field: title
+          name: title
+          type: string
+          meta:
+            field: title
+            type: string
+            interface: input
+            width: full
+            required: true
+        - field: url
+          name: url
+          type: string
+          meta:
+            field: url
+            type: string
+            interface: input
+            width: full
+            required: true
+        - field: source
+          name: source
+          type: string
+          meta:
+            field: source
+            type: string
+            interface: input
+            width: half
+            required: false
+        - field: category
+          name: category
+          type: string
+          meta:
+            field: category
+            type: string
+            interface: input
+            width: half
+            required: false
+        - field: summary
+          name: summary
+          type: text
+          meta:
+            field: summary
+            type: text
+            interface: input-multiline
+            width: full
+            required: true
+        - field: why_it_matters
+          name: why_it_matters
+          type: text
+          meta:
+            field: why_it_matters
+            type: text
+            interface: input-multiline
+            width: full
+            required: false
+      readonly: false
+      required: false
+      searchable: true
+      sort: 9
+      special:
+      - cast-json
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: items
+      table: digests
+      data_type: json
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: issue_number
+    type: integer
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: issue_number
+      group: null
+      hidden: false
+      interface: numeric
+      note: Issue number, same for both languages
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 10
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: issue_number
+      table: digests
+      data_type: integer
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: sent_at
+    type: timestamp
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: sent_at
+      group: null
+      hidden: false
+      interface: null
+      note: Set by the newsletter sender
+      options: null
+      readonly: true
+      required: false
+      searchable: true
+      sort: 11
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: sent_at
+      table: digests
+      data_type: datetime
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
 systemFields:
   - collection: directus_activity
     field: timestamp
@@ -901,6 +1483,27 @@ relations:
       sort_field: null
     schema:
       table: work
+      column: cover_image
+      foreign_key_table: directus_files
+      foreign_key_column: id
+      constraint_name: null
+      on_update: NO ACTION
+      on_delete: NO ACTION
+  - collection: digests
+    field: cover_image
+    related_collection: directus_files
+    meta:
+      junction_field: null
+      many_collection: digests
+      many_field: cover_image
+      one_allowed_collections: null
+      one_collection: directus_files
+      one_collection_field: null
+      one_deselect_action: nullify
+      one_field: null
+      sort_field: null
+    schema:
+      table: digests
       column: cover_image
       foreign_key_table: directus_files
       foreign_key_column: id

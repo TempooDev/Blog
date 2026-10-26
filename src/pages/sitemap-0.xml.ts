@@ -15,7 +15,11 @@ const escapeXml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 
 export const GET: APIRoute = async ({ site }) => {
-  const [posts, work] = await Promise.all([getCollection("blog"), getCollection("work")]);
+  const [posts, work, issues] = await Promise.all([
+    getCollection("blog"),
+    getCollection("work"),
+    getCollection("newsletter"),
+  ]);
   const urls: SitemapUrl[] = [];
 
   for (const lang of LANGS) {
@@ -23,11 +27,13 @@ export const GET: APIRoute = async ({ site }) => {
       entries.filter((e) => e.id.startsWith(`${lang}/`));
     const postDates = inLang(posts).map((p) => p.data.publishDate);
     const workDates = inLang(work).map((w) => w.data.publishDate);
+    const issueDates = inLang(issues).map((i) => i.data.publishDate);
 
     const pages: [string, Date | undefined][] = [
       [`/${lang}/`, latest([...postDates, ...workDates])],
       [`/${lang}/blog/`, latest(postDates)],
       [`/${lang}/work/`, latest(workDates)],
+      [`/${lang}/newsletter/`, latest(issueDates)],
       [`/${lang}/about/`, undefined],
     ];
     for (const [path, lastmod] of pages) {
@@ -35,7 +41,7 @@ export const GET: APIRoute = async ({ site }) => {
     }
   }
 
-  for (const entry of [...posts, ...work]) {
+  for (const entry of [...posts, ...work, ...issues]) {
     const alternates = await getAlternatePaths("", entry);
     const [lang] = entry.id.split("/") as [Lang];
     urls.push({ path: alternates[lang]!, lastmod: entry.data.publishDate, alternates });

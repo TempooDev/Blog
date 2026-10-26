@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/subtle"
 	_ "embed"
 	"encoding/json"
 	"log"
@@ -64,9 +65,15 @@ func main() {
 	}
 
 	collection = client.Database("blog_comments").Collection("comments")
+	setupNewsletter(client.Database("blog_comments"))
 
 	// Public Routes
 	http.HandleFunc("/comments", handleComments) // GET (approved only), POST (create pending)
+
+	// Newsletter (public)
+	http.HandleFunc("/newsletter/subscribe", handleSubscribe)
+	http.HandleFunc("/newsletter/confirm", handleConfirm)
+	http.HandleFunc("/newsletter/unsubscribe", handleUnsubscribe)
 
 	// Admin Routes
 	http.HandleFunc("/dashboard", authMiddleware(handleDashboard))
@@ -74,6 +81,8 @@ func main() {
 	http.HandleFunc("/admin/approve", authMiddleware(handleAdminApprove))
 	http.HandleFunc("/admin/reject", authMiddleware(handleAdminReject))
 	http.HandleFunc("/admin/trigger-notify", authMiddleware(handleAdminTriggerNotify))
+	http.HandleFunc("/admin/newsletter/subscribers", authMiddleware(handleAdminSubscribers))
+	http.HandleFunc("/admin/newsletter/send", authMiddleware(handleAdminSend))
 
 	// Cron Jobs
 	scheduleCronJobs()
@@ -93,6 +102,9 @@ func main() {
 	log.Fatal(http.ListenAndServe(":"+port, nil))
 }
 
+// Failed admin logins allowed per IP before it is locked out for the rest of the window.
+var loginLimiter = newRateLimiter(5, 15*time.Minute)
+
 // Middleware for Basic Auth
 func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -106,8 +118,22 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			adminPass = "admin" // Default for dev, user should set env var
 		}
 
+		ip := clientIP(r)
+		if loginLimiter.Blocked(ip) {
+			w.Header().Set("Retry-After", "900")
+			http.Error(w, "Too many failed login attempts, try again later", http.StatusTooManyRequests)
+			return
+		}
+
 		user, pass, ok := r.BasicAuth()
-		if !ok || user != adminUser || pass != adminPass {
+		userOK := subtle.ConstantTimeCompare([]byte(user), []byte(adminUser)) == 1
+		passOK := subtle.ConstantTimeCompare([]byte(pass), []byte(adminPass)) == 1
+		if !ok || !userOK || !passOK {
+			// The browser's first request carries no credentials; only wrong ones count as a failure
+			if ok {
+				loginLimiter.Record(ip)
+				log.Printf("Failed admin login from %s\n", ip)
+			}
 			w.Header().Set("WWW-Authenticate", `Basic realm="Restricted"`)
 			http.Error(w, "Unauthorized", http.StatusUnauthorized)
 			return
@@ -380,6 +406,17 @@ func scheduleCronJobs() {
 		err := checkAndNotifyPendingComments()
 		if err != nil {
 			log.Printf("Error in cron job: %v\n", err)
+		}
+	})
+	if err != nil {
+		log.Fatalf("Error scheduling cron job: %v\n", err)
+	}
+	// Every day at 03:00
+	_, err = c.AddFunc("0 3 * * *", func() {
+		limiter.Prune()
+		loginLimiter.Prune()
+		if err := cleanupSubscribers(); err != nil {
+			log.Printf("Error in newsletter cleanup: %v\n", err)
 		}
 	})
 	if err != nil {

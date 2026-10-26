@@ -30,3 +30,28 @@ export const workI18n = {
         backLinkTitle: "Proyectos",
     },
 };
+
+export const newsletterI18n = {
+    en: {
+        title: "Newsletter",
+        metaTitle: "Weekly AI and tech newsletter | Antonio Bermúdez",
+        tagline: "Every Monday, the week's most relevant AI and tech news with sources and why each one matters. Past issues are below.",
+        archiveTitle: "Past issues",
+        empty: "The first issue is on its way.",
+        backLinkTitle: "Newsletter",
+        issue: "Issue",
+        whyItMatters: "Why it matters",
+        source: "Source",
+    },
+    es: {
+        title: "Newsletter",
+        metaTitle: "Newsletter semanal de IA y tecnología | Antonio Bermúdez",
+        tagline: "Cada lunes, las noticias de IA y tecnología más relevantes de la semana, con su fuente y por qué importan. Debajo tienes los números anteriores.",
+        archiveTitle: "Números anteriores",
+        empty: "El primer número está en camino.",
+        backLinkTitle: "Newsletter",
+        issue: "Número",
+        whyItMatters: "Por qué importa",
+        source: "Fuente",
+    },
+};

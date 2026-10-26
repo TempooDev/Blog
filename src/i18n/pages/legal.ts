@@ -18,7 +18,7 @@ interface LegalContent {
 }
 
 const CONTACT = '<a href="mailto:contact@antoniobermudez.dev">contact@antoniobermudez.dev</a>';
-const UPDATED = "2026-10-17";
+const UPDATED = "2026-10-26";
 
 export const legalLinksI18n: Record<Lang, Record<LegalPage | "label", string>> = {
     es: { label: "Información legal", legal: "Aviso legal", privacy: "Privacidad", cookies: "Cookies" },
@@ -112,6 +112,14 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                     body: [
                         "Si dejas un comentario guardo el nombre que escribas, el texto del comentario, el artículo en el que lo publicas y la fecha. No pido correo electrónico. El nombre y el comentario se publican en el artículo una vez los apruebo.",
                         "La base legal es tu consentimiento, que das al enviar el comentario. Los conservo mientras el comentario siga publicado o hasta que me pidas borrarlo. Cuando hay comentarios pendientes de revisar recibo un aviso por Telegram que solo indica en qué artículo hay comentarios y cuántos; no incluye tu nombre ni el texto.",
+                    ],
+                },
+                {
+                    title: "Newsletter",
+                    body: [
+                        "Si te suscribes a la newsletter guardo tu correo electrónico, el idioma que elijas, la fecha en que diste el consentimiento y la versión del texto que aceptaste. Solo la uso para enviarte la newsletter semanal. Hasta que no confirmas desde el enlace que te llega por correo no recibes nada, y si no confirmas, tu dirección se borra a los 7 días.",
+                        "La base legal es tu consentimiento. Puedes darte de baja cuando quieras desde el enlace que aparece en cada correo, y tu dirección se borra a los 30 días de la baja. Los correos no llevan píxeles de seguimiento ni enlaces que registren si los abres o en qué pulsas.",
+                        "Los datos se guardan en servidores que gestiono yo. Para entregar los correos uso un proveedor de envío de email que actúa como encargado del tratamiento y solo recibe tu dirección y el contenido de cada envío.",
                     ],
                 },
                 {
@@ -221,6 +229,14 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                     body: [
                         "If you leave a comment I store the name you enter, the comment text, the article it belongs to and the date. I don't ask for your email. Your name and comment are shown on the article once I approve them.",
                         "The legal basis is your consent, given when you submit the comment. I keep it for as long as the comment stays published or until you ask me to delete it. When comments are waiting for review I get a Telegram alert that only says which articles have pending comments and how many; it doesn't include your name or text.",
+                    ],
+                },
+                {
+                    title: "Newsletter",
+                    body: [
+                        "If you subscribe to the newsletter I store your email address, the language you choose, the date you gave consent and the version of the text you accepted. I only use it to send you the weekly newsletter. Nothing is sent until you confirm from the link in the email you receive, and if you don't confirm, your address is deleted after 7 days.",
+                        "The legal basis is your consent. You can unsubscribe at any time from the link in every email, and your address is deleted 30 days after you unsubscribe. The emails have no tracking pixels and no links that record whether you open them or what you click.",
+                        "The data is stored on servers I run myself. To deliver the emails I use an email sending provider that acts as a data processor and only receives your address and the content of each email.",
                     ],
                 },
                 {

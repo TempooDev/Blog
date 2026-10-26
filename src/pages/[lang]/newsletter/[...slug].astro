@@ -1,0 +1,177 @@
+---
+import { type CollectionEntry, getCollection, render } from "astro:content";
+import BaseLayout from "../../../layouts/BaseLayout.astro";
+import Hero from "../../../components/Common/Hero.astro";
+import Icon from "../../../components/Common/Icon.astro";
+import Pill from "../../../components/Common/Pill.astro";
+import NewsletterSignup from "../../../components/NewsletterSignup";
+import { demoteHeadings } from "../../../utils/seo";
+import { newsletterI18n } from "../../../i18n/pages/collections";
+
+interface Props {
+  entry: CollectionEntry<"newsletter">;
+}
+
+export async function getStaticPaths() {
+  const issues = await getCollection("newsletter");
+  return issues.map((entry) => {
+    const [lang, ...slugParts] = entry.id.split("/");
+    return { params: { lang, slug: slugParts.join("/") }, props: { entry } };
+  });
+}
+
+const { entry } = Astro.props;
+const { lang } = Astro.params;
+const t = newsletterI18n[lang as keyof typeof newsletterI18n];
+const intro = entry.rendered?.html || "";
+---
+
+<BaseLayout title={entry.data.title} description={entry.data.description} entry={entry}>
+  <div class="stack gap-20">
+    <div class="stack gap-15">
+      <header>
+        <div class="wrapper stack gap-2">
+          <a class="back-link" href={`/${lang}/newsletter/`}><Icon icon="arrow-left" /> {t.backLinkTitle}</a>
+          <Hero title={entry.data.title} align="start">
+            <div class="tags">
+              {entry.data.issueNumber && <Pill>{`${t.issue} ${entry.data.issueNumber}`}</Pill>}
+              {entry.data.tags.map((tag) => <Pill>{tag}</Pill>)}
+            </div>
+            {entry.data.description && <p class="description">{entry.data.description}</p>}
+          </Hero>
+        </div>
+      </header>
+      <main class="wrapper">
+        <div class="content stack gap-10">
+          {intro && <div class="intro" set:html={demoteHeadings(intro)} />}
+          <ol class="items">
+            {
+              entry.data.items.map((item) => (
+                <li class="item">
+                  {item.category && <p class="category">{item.category}</p>}
+                  <h2>
+                    <a href={item.url} rel="noopener">{item.title}</a>
+                  </h2>
+                  <p>{item.summary}</p>
+                  {item.whyItMatters && (
+                    <p>
+                      <strong>{t.whyItMatters}:</strong> {item.whyItMatters}
+                    </p>
+                  )}
+                  {item.source && (
+                    <p class="source">
+                      {t.source}: <a href={item.url} rel="noopener">{item.source}</a>
+                    </p>
+                  )}
+                </li>
+              ))
+            }
+          </ol>
+          {entry.data.outroHtml && <div class="outro" set:html={demoteHeadings(entry.data.outroHtml)} />}
+          <NewsletterSignup client:visible lang={lang} />
+        </div>
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style>
+  header {
+    padding-bottom: 2.5rem;
+    border-bottom: 1px solid var(--gray-800);
+  }
+
+  .back-link {
+    display: none;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    font-size: 0.85em;
+    opacity: 0.7;
+  }
+
+  .description {
+    font-size: var(--text-lg);
+    max-width: 54ch;
+  }
+
+  .content {
+    max-width: 70ch;
+    margin-inline: auto;
+    font-size: var(--text-md);
+    line-height: 1.75;
+    color: var(--gray-200);
+  }
+
+  .intro :global(p),
+  .outro :global(p) {
+    margin-bottom: 1.5rem;
+  }
+
+  .items {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem;
+  }
+
+  .item {
+    padding-top: 2rem;
+    border-top: 1px solid var(--gray-800);
+  }
+
+  .item h2 {
+    font-size: var(--text-xl);
+    margin-bottom: 0.75rem;
+  }
+
+  .item p + p {
+    margin-top: 0.75rem;
+  }
+
+  .category {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--accent-regular);
+    margin-bottom: 0.5rem;
+  }
+
+  .source {
+    font-size: var(--text-sm);
+    color: var(--gray-400);
+  }
+
+  .back-link,
+  .content a {
+    text-decoration: 1px solid underline transparent;
+    text-underline-offset: 0.25em;
+    transition: text-decoration-color var(--theme-transition);
+  }
+
+  .content a:hover,
+  .content a:focus,
+  .back-link:hover,
+  .back-link:focus {
+    text-decoration-color: currentColor;
+  }
+
+  @media (min-width: 50em) {
+    .back-link {
+      display: block;
+      align-self: flex-start;
+    }
+  }
+
+  @media (max-width: 50em) {
+    .content {
+      max-width: 100%;
+      padding-inline: 0.5rem;
+      box-sizing: border-box;
+    }
+  }
+</style>

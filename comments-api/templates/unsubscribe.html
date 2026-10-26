@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html lang="{{.Lang}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex">
+  <title>{{.T.unsubTitle}}</title>
+</head>
+<body style="margin:0;padding:48px 16px;background:#f4f4f7;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#1d2433;">
+  <main style="max-width:480px;margin:0 auto;background:#ffffff;border-radius:8px;padding:32px;">
+    <h1 style="font-size:22px;margin:0 0 12px;">{{.T.unsubTitle}}</h1>
+    <p style="font-size:16px;line-height:1.5;margin:0 0 24px;">{{.T.unsubText}}</p>
+    <form method="POST" action="{{.Action}}">
+      <button type="submit" style="background:#3b4bd8;color:#ffffff;border:0;padding:12px 20px;border-radius:6px;font-size:16px;font-weight:600;cursor:pointer;">{{.T.unsubButton}}</button>
+    </form>
+  </main>
+</body>
+</html>

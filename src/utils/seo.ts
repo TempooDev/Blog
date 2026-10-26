@@ -38,7 +38,7 @@ export function getPersonJsonLd(site: URL) {
 }
 
 export function getEntryJsonLd(
-    entry: CollectionEntry<"blog" | "work">,
+    entry: CollectionEntry<"blog" | "work" | "newsletter">,
     url: URL,
     lang: Lang,
     image: string,
@@ -46,7 +46,7 @@ export function getEntryJsonLd(
     return [
         {
             "@context": "https://schema.org",
-            "@type": entry.collection === "blog" ? "BlogPosting" : "CreativeWork",
+            "@type": entry.collection === "work" ? "CreativeWork" : "BlogPosting",
             headline: entry.data.title,
             description: entry.data.description,
             image,
