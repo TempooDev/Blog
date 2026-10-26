@@ -169,6 +169,11 @@ const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
     max-width: none;
   }
 
+  /* Dark scrollbar for wide diagrams in dark mode */
+  :global(.theme-dark) .content :global(.mermaid) {
+    color-scheme: dark;
+  }
+
   .content :global(blockquote) {
     font-size: var(--text-lg);
     font-family: var(--font-brand);
