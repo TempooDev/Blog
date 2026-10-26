@@ -64,9 +64,15 @@ func main() {
 	}
 
 	collection = client.Database("blog_comments").Collection("comments")
+	setupNewsletter(client.Database("blog_comments"))
 
 	// Public Routes
 	http.HandleFunc("/comments", handleComments) // GET (approved only), POST (create pending)
+
+	// Newsletter (public)
+	http.HandleFunc("/newsletter/subscribe", handleSubscribe)
+	http.HandleFunc("/newsletter/confirm", handleConfirm)
+	http.HandleFunc("/newsletter/unsubscribe", handleUnsubscribe)
 
 	// Admin Routes
 	http.HandleFunc("/dashboard", authMiddleware(handleDashboard))
@@ -74,6 +80,8 @@ func main() {
 	http.HandleFunc("/admin/approve", authMiddleware(handleAdminApprove))
 	http.HandleFunc("/admin/reject", authMiddleware(handleAdminReject))
 	http.HandleFunc("/admin/trigger-notify", authMiddleware(handleAdminTriggerNotify))
+	http.HandleFunc("/admin/newsletter/subscribers", authMiddleware(handleAdminSubscribers))
+	http.HandleFunc("/admin/newsletter/send", authMiddleware(handleAdminSend))
 
 	// Cron Jobs
 	scheduleCronJobs()
@@ -380,6 +388,16 @@ func scheduleCronJobs() {
 		err := checkAndNotifyPendingComments()
 		if err != nil {
 			log.Printf("Error in cron job: %v\n", err)
+		}
+	})
+	if err != nil {
+		log.Fatalf("Error scheduling cron job: %v\n", err)
+	}
+	// Every day at 03:00
+	_, err = c.AddFunc("0 3 * * *", func() {
+		limiter.Prune()
+		if err := cleanupSubscribers(); err != nil {
+			log.Printf("Error in newsletter cleanup: %v\n", err)
 		}
 	})
 	if err != nil {

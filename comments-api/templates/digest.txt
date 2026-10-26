@@ -1,0 +1,19 @@
+{{.Digest.Title}}
+{{.T.readOnline}}: {{.OnlineURL}}
+
+{{range .Intro}}{{.}}
+
+{{end}}{{range .Digest.Items}}---
+{{if .Category}}[{{.Category}}] {{end}}{{.Title}}
+{{.URL}}
+
+{{.Summary}}
+{{if .WhyItMatters}}
+{{$.T.whyItMatters}}: {{.WhyItMatters}}
+{{end}}{{if .Source}}({{.Source}})
+{{end}}
+{{end}}{{range .Outro}}{{.}}
+
+{{end}}--
+{{.T.footer}}
+{{.T.unsubscribe}}: {{.UnsubscribeURL}}
