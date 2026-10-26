@@ -159,6 +159,16 @@ const backLinkTitle = workI18n[lang as keyof typeof workI18n].backLinkTitle;
     margin: 2.5rem 0;
   }
 
+  /* Wide diagrams scroll instead of shrinking until the labels are unreadable */
+  .content :global(.mermaid) {
+    overflow-x: auto;
+    margin: 2rem 0;
+  }
+
+  .content :global(.mermaid svg) {
+    max-width: none;
+  }
+
   .content :global(blockquote) {
     font-size: var(--text-lg);
     font-family: var(--font-brand);

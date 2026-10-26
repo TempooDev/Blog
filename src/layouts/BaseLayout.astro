@@ -99,7 +99,15 @@ const hreflangs =
       // Mermaid is large, so it is only downloaded on pages that have diagrams.
       if (document.querySelector(".mermaid")) {
         import("mermaid").then(({ default: mermaid }) => {
-          mermaid.initialize({ startOnLoad: false, theme: "neutral" });
+          // Render diagrams at their natural size (wide ones scroll inside .mermaid
+          // instead of shrinking until the text is unreadable) and match the site theme.
+          const dark = document.documentElement.classList.contains("theme-dark");
+          mermaid.initialize({
+            startOnLoad: false,
+            theme: dark ? "dark" : "neutral",
+            flowchart: { useMaxWidth: false },
+            sequence: { useMaxWidth: false },
+          });
           mermaid.run();
         });
       }
