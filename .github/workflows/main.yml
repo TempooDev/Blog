@@ -1,12 +1,16 @@
 on:
   workflow_dispatch:
+  # Mondays 16:30 UTC (17:30 or 18:30 in Madrid): puts the newsletter issue published in Directus
+  # online before the comments-api sends it at 19:00.
+  schedule:
+    - cron: "30 16 * * 1"
   pull_request:
     types: [closed]
     branches:
       - master
 jobs:
   deploy:
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     environment: PROD
     permissions:

@@ -42,6 +42,7 @@ export const newsletterI18n = {
         issue: "Issue",
         whyItMatters: "Why it matters",
         source: "Source",
+        promoCta: "Learn more",
     },
     es: {
         title: "Newsletter",
@@ -53,5 +54,6 @@ export const newsletterI18n = {
         issue: "Número",
         whyItMatters: "Por qué importa",
         source: "Fuente",
+        promoCta: "Más información",
     },
 };

@@ -1,14 +1,18 @@
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"net"
 	"net/http"
 	"net/http/httptest"
 	"net/textproto"
+	"net/url"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 func TestNormalizeEmail(t *testing.T) {
@@ -240,5 +244,75 @@ func TestAdminLoginRateLimit(t *testing.T) {
 	// Other IPs are not affected
 	if code := call("10.0.0.2", "admin", "secret", true); code != http.StatusOK {
 		t.Fatalf("other IP: got %d", code)
+	}
+}
+
+func TestDigestEmailPromo(t *testing.T) {
+	d := Digest{ID: 1, Title: "AI & tech #2", Slug: "ai-tech-2", Language: "en",
+		Items:      []DigestItem{{Title: "News", URL: "https://example.com/a", Summary: "Summary"}},
+		PromoTitle: "Tempoo Analytics", PromoText: "Privacy-first analytics.", PromoURL: "https://tempooanalytics.eu"}
+	e, err := digestEmail(d, "ana@example.com", "tok")
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"Tempoo Analytics", "Privacy-first analytics.", `href="https://tempooanalytics.eu"`, "Learn more"} {
+		if !strings.Contains(e.HTML, want) {
+			t.Errorf("HTML missing %q", want)
+		}
+	}
+	if !strings.Contains(e.Text, "Learn more: https://tempooanalytics.eu") {
+		t.Errorf("text version missing promo link:\n%s", e.Text)
+	}
+
+	d.PromoTitle, d.PromoURL = "", "javascript:alert(1)"
+	if e, _ = digestEmail(d, "ana@example.com", "tok"); strings.Contains(e.HTML, "Privacy-first") {
+		t.Error("promo block must not render without a title")
+	}
+	d.PromoTitle = "Bad link"
+	if e, _ = digestEmail(d, "ana@example.com", "tok"); strings.Contains(e.HTML, "javascript:") {
+		t.Error("unsafe promo URL must be sanitised")
+	}
+}
+
+func TestFetchDueDigests(t *testing.T) {
+	var query url.Values
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		query = r.URL.Query()
+		if r.Header.Get("Authorization") != "Bearer secret" {
+			t.Errorf("missing token")
+		}
+		w.Write([]byte(`{"data":[{"id":7,"language":"es","status":"published","sent_at":null,"promo_title":"P"}]}`))
+	}))
+	defer srv.Close()
+	t.Setenv("DIRECTUS_URL", srv.URL)
+	t.Setenv("DIRECTUS_TOKEN", "secret")
+
+	due, err := fetchDueDigests(context.Background(), "2026-11-02")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if len(due) != 1 || due[0].ID != 7 || due[0].PromoTitle != "P" {
+		t.Errorf("got %+v", due)
+	}
+	for k, v := range map[string]string{
+		"filter[status][_eq]":        "published",
+		"filter[sent_at][_null]":     "true",
+		"filter[publish_date][_lte]": "2026-11-02",
+	} {
+		if query.Get(k) != v {
+			t.Errorf("%s = %q, want %q", k, query.Get(k), v)
+		}
+	}
+}
+
+func TestNewsletterSchedule(t *testing.T) {
+	sched, err := cron.ParseStandard(newsletterSchedule())
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Sunday 1 Nov 2026 12:00 UTC: next run is Monday 2 Nov at 19:00 Madrid (18:00 UTC, winter time)
+	next := sched.Next(time.Date(2026, 11, 1, 12, 0, 0, 0, time.UTC))
+	if want := time.Date(2026, 11, 2, 18, 0, 0, 0, time.UTC); !next.Equal(want) {
+		t.Errorf("next run %v, want %v", next.UTC(), want)
 	}
 }

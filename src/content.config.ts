@@ -87,6 +87,14 @@ const digestsLoader = () => ({
             whyItMatters: i.why_it_matters || '',
           })),
           outroHtml: outro.html,
+          promo: item.promo_title
+            ? {
+                title: item.promo_title,
+                text: (item.promo_text || '').trim(),
+                url: item.promo_url || '',
+                cta: item.promo_cta || '',
+              }
+            : undefined,
         },
         rendered: { html: intro.html },
       });
@@ -139,6 +147,12 @@ export const collections = {
 				whyItMatters: z.string(),
 			})),
 			outroHtml: z.string(),
+			promo: z.object({
+				title: z.string(),
+				text: z.string(),
+				url: z.string(),
+				cta: z.string(),
+			}).optional(),
 		}),
 	}),
 };

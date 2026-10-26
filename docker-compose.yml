@@ -26,6 +26,7 @@ services:
       # Reads published digests and writes back sent_at
       - DIRECTUS_URL=http://directus:8055
       - DIRECTUS_TOKEN=${NEWSLETTER_DIRECTUS_TOKEN:-}
+      - NEWSLETTER_SEND_SCHEDULE=${NEWSLETTER_SEND_SCHEDULE:-}
     depends_on:
       - mongo
     networks:

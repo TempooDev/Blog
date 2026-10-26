@@ -10,6 +10,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	textTemplate "text/template"
@@ -38,7 +39,15 @@ type Digest struct {
 	Intro       string       `json:"intro"`
 	Items       []DigestItem `json:"items"`
 	Outro       string       `json:"outro"`
+	PublishDate string       `json:"publish_date"`
+	SentAt      *string      `json:"sent_at"`
+	PromoTitle  string       `json:"promo_title"`
+	PromoText   string       `json:"promo_text"`
+	PromoURL    string       `json:"promo_url"`
+	PromoCTA    string       `json:"promo_cta"`
 }
+
+const digestFields = "id,title,slug,language,issue_number,status,intro,items,outro,publish_date,sent_at,promo_title,promo_text,promo_url,promo_cta"
 
 type DigestItem struct {
 	Title        string `json:"title"`
@@ -62,6 +71,7 @@ var emailStrings = map[string]map[string]string{
 		"unsubTitle":     "Darse de baja de la newsletter",
 		"unsubText":      "Pulsa el botón para dejar de recibir la newsletter.",
 		"unsubButton":    "Darme de baja",
+		"promoCta":       "Más información",
 	},
 	"en": {
 		"confirmSubject": "Confirm your newsletter subscription",
@@ -75,6 +85,7 @@ var emailStrings = map[string]map[string]string{
 		"unsubTitle":     "Unsubscribe from the newsletter",
 		"unsubText":      "Press the button to stop receiving the newsletter.",
 		"unsubButton":    "Unsubscribe",
+		"promoCta":       "Learn more",
 	},
 }
 
@@ -116,6 +127,7 @@ func digestEmail(d Digest, to, unsubToken string) (Email, error) {
 		"Digest":         d,
 		"Intro":          paragraphs(d.Intro),
 		"Outro":          paragraphs(d.Outro),
+		"Promo":          paragraphs(d.PromoText),
 		"OnlineURL":      fmt.Sprintf("%s/%s/newsletter/%s/", siteURL(), lang, d.Slug),
 		"UnsubscribeURL": unsubscribeURL(unsubToken),
 	}
@@ -135,42 +147,59 @@ func renderUnsubscribePage(w io.Writer, lang, action string) {
 	}
 }
 
-func fetchDigest(ctx context.Context, id string) (Digest, error) {
-	base := strings.TrimSuffix(os.Getenv("DIRECTUS_URL"), "/")
-	if base == "" {
-		base = "http://directus:8055"
+func directusURL() string {
+	if base := strings.TrimSuffix(os.Getenv("DIRECTUS_URL"), "/"); base != "" {
+		return base
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet,
-		base+"/items/digests/"+id+"?fields=id,title,slug,language,issue_number,status,intro,items,outro", nil)
+	return "http://directus:8055"
+}
+
+func directusGet(ctx context.Context, path string, out interface{}) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, directusURL()+path, nil)
 	if err != nil {
-		return Digest{}, err
+		return err
 	}
 	if token := os.Getenv("DIRECTUS_TOKEN"); token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
 	resp, err := http.DefaultClient.Do(req)
 	if err != nil {
-		return Digest{}, err
+		return err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusOK {
-		return Digest{}, fmt.Errorf("directus returned %s", resp.Status)
+		return fmt.Errorf("directus returned %s", resp.Status)
 	}
+	return json.NewDecoder(resp.Body).Decode(out)
+}
+
+func fetchDigest(ctx context.Context, id string) (Digest, error) {
 	var body struct {
 		Data Digest `json:"data"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&body); err != nil {
-		return Digest{}, err
+	err := directusGet(ctx, "/items/digests/"+url.PathEscape(id)+"?fields="+digestFields, &body)
+	return body.Data, err
+}
+
+// fetchDueDigests returns the published issues that haven't been sent and whose publish date has come.
+// Drafts are never returned: publishing in Directus is the "reviewed, ready to go" step.
+func fetchDueDigests(ctx context.Context, today string) ([]Digest, error) {
+	q := url.Values{}
+	q.Set("fields", digestFields)
+	q.Set("limit", "-1")
+	q.Set("filter[status][_eq]", "published")
+	q.Set("filter[sent_at][_null]", "true")
+	q.Set("filter[publish_date][_lte]", today)
+	var body struct {
+		Data []Digest `json:"data"`
 	}
-	return body.Data, nil
+	err := directusGet(ctx, "/items/digests?"+q.Encode(), &body)
+	return body.Data, err
 }
 
 // markDigestSent writes sent_at back to Directus so the editor can see it. Best effort.
 func markDigestSent(id int) {
-	base := strings.TrimSuffix(os.Getenv("DIRECTUS_URL"), "/")
-	if base == "" {
-		base = "http://directus:8055"
-	}
+	base := directusURL()
 	payload, _ := json.Marshal(map[string]string{"sent_at": time.Now().UTC().Format(time.RFC3339)})
 	req, err := http.NewRequest(http.MethodPatch, fmt.Sprintf("%s/items/digests/%d", base, id), bytes.NewReader(payload))
 	if err != nil {
@@ -242,9 +271,7 @@ func handleAdminSend(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Digest is not published", http.StatusConflict)
 		return
 	}
-	// The unique index on digestId makes sure an issue is only sent once,
-	// even if Directus fires the flow twice.
-	_, err = sends.InsertOne(ctx, bson.M{"digestId": d.ID, "lang": normalizeLang(d.Language), "startedAt": time.Now()})
+	err = claimSend(ctx, d)
 	if mongo.IsDuplicateKeyError(err) {
 		http.Error(w, "Digest already sent", http.StatusConflict)
 		return
@@ -257,6 +284,57 @@ func handleAdminSend(w http.ResponseWriter, r *http.Request) {
 	go sendDigest(d, r.URL.Query().Get("wait") != "false")
 	w.WriteHeader(http.StatusAccepted)
 	w.Write([]byte("Sending"))
+}
+
+// claimSend records that an issue is being sent. The unique index on digestId makes sure
+// an issue is only sent once, even if the manual endpoint and the weekly job both fire.
+func claimSend(ctx context.Context, d Digest) error {
+	_, err := sends.InsertOne(ctx, bson.M{"digestId": d.ID, "lang": normalizeLang(d.Language), "startedAt": time.Now()})
+	return err
+}
+
+// newsletterSchedule is when the weekly job sends the issues that are ready. Monday 19:00 Madrid time
+// leaves the day to review the Monday draft in Directus. Override with NEWSLETTER_SEND_SCHEDULE
+// (cron syntax, "off" disables it).
+func newsletterSchedule() string {
+	if v := strings.TrimSpace(os.Getenv("NEWSLETTER_SEND_SCHEDULE")); v != "" {
+		return v
+	}
+	return "CRON_TZ=Europe/Madrid 0 19 * * 1"
+}
+
+// sendDueDigests sends every published issue that hasn't gone out yet. Issues still in draft
+// are left alone, so an issue only goes out once it has been reviewed and published.
+func sendDueDigests() {
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+	madrid, err := time.LoadLocation("Europe/Madrid")
+	if err != nil {
+		madrid = time.UTC
+	}
+	due, err := fetchDueDigests(ctx, time.Now().In(madrid).Format("2006-01-02"))
+	if err != nil {
+		log.Printf("Newsletter: could not load due issues: %v\n", err)
+		notifyTelegram("Newsletter: no he podido leer los números de Directus, no se ha enviado nada: " + err.Error())
+		return
+	}
+	if len(due) == 0 {
+		log.Println("Newsletter: no published issue waiting to be sent")
+		notifyTelegram("Newsletter: no hay ningún número publicado pendiente de enviar. Si había uno en borrador, publícalo y envíalo a mano.")
+		return
+	}
+	for _, d := range due {
+		err := claimSend(ctx, d)
+		if mongo.IsDuplicateKeyError(err) {
+			continue
+		}
+		if err != nil {
+			log.Printf("Newsletter: could not start sending digest %d: %v\n", d.ID, err)
+			continue
+		}
+		log.Printf("Newsletter: sending digest %d (%s)\n", d.ID, d.Language)
+		go sendDigest(d, true)
+	}
 }
 
 // releaseSend drops the send record when nothing was sent, so the issue can be sent again.
