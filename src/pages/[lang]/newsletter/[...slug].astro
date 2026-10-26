@@ -44,6 +44,19 @@ const promo = entry.data.promo;
       </header>
       <main class="wrapper">
         <div class="content stack gap-10">
+          {
+            entry.data.img && (
+              <img
+                class="cover"
+                src={entry.data.img}
+                alt={entry.data.img_alt || entry.data.title}
+                width="1600"
+                height="840"
+                fetchpriority="high"
+                decoding="async"
+              />
+            )
+          }
           {intro && <div class="intro" set:html={demoteHeadings(intro)} />}
           <ol class="items">
             {
@@ -114,6 +127,14 @@ const promo = entry.data.promo;
     font-size: var(--text-md);
     line-height: 1.75;
     color: var(--gray-200);
+  }
+
+  .cover {
+    width: 100%;
+    height: auto;
+    border-radius: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-800);
   }
 
   .intro :global(p),
