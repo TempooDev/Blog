@@ -4,9 +4,12 @@ import (
 	"bytes"
 	"crypto/rand"
 	"encoding/hex"
+	"encoding/json"
 	"fmt"
+	"log"
 	"mime"
 	"mime/quotedprintable"
+	"net/http"
 	"net/smtp"
 	"os"
 	"strings"
@@ -22,8 +25,29 @@ type Email struct {
 	UnsubscribeURL string // adds List-Unsubscribe headers (RFC 8058) when set
 }
 
-// Mailer sends through any SMTP provider with STARTTLS (Mailjet, Brevo, Scaleway, SES...).
-type Mailer struct {
+// Sender delivers one email. The driver is picked with MAIL_DRIVER, so the provider can be
+// swapped (SMTP provider, Amazon SES, an own service) without touching the newsletter code.
+type Sender interface {
+	Send(e Email) error
+	Configured() bool
+}
+
+// newSenderFromEnv: MAIL_DRIVER=smtp (default) | http | log
+func newSenderFromEnv() Sender {
+	from := os.Getenv("NEWSLETTER_FROM")
+	switch os.Getenv("MAIL_DRIVER") {
+	case "http":
+		return &HTTPSender{URL: os.Getenv("MAIL_HTTP_URL"), Token: os.Getenv("MAIL_HTTP_TOKEN"), From: from}
+	case "log":
+		return &LogSender{}
+	default:
+		return newSMTPSenderFromEnv()
+	}
+}
+
+// SMTPSender sends through any SMTP server with STARTTLS: Mailjet, Brevo, Scaleway TEM,
+// Amazon SES (SMTP interface) or a self-hosted MTA.
+type SMTPSender struct {
 	Host     string
 	Port     string
 	User     string
@@ -31,12 +55,12 @@ type Mailer struct {
 	From     string // e.g. "Antonio Bermúdez <newsletter@antoniobermudez.dev>"
 }
 
-func newMailerFromEnv() *Mailer {
+func newSMTPSenderFromEnv() *SMTPSender {
 	port := os.Getenv("SMTP_PORT")
 	if port == "" {
 		port = "587"
 	}
-	return &Mailer{
+	return &SMTPSender{
 		Host:     os.Getenv("SMTP_HOST"),
 		Port:     port,
 		User:     os.Getenv("SMTP_USER"),
@@ -45,11 +69,11 @@ func newMailerFromEnv() *Mailer {
 	}
 }
 
-func (m *Mailer) Configured() bool {
+func (m *SMTPSender) Configured() bool {
 	return m.Host != "" && m.From != ""
 }
 
-func (m *Mailer) Send(e Email) error {
+func (m *SMTPSender) Send(e Email) error {
 	if !m.Configured() {
 		return fmt.Errorf("SMTP is not configured (SMTP_HOST / NEWSLETTER_FROM)")
 	}
@@ -62,6 +86,64 @@ func (m *Mailer) Send(e Email) error {
 		auth = smtp.PlainAuth("", m.User, m.Password, m.Host)
 	}
 	return smtp.SendMail(m.Host+":"+m.Port, auth, envelopeAddress(m.From), []string{e.To}, msg)
+}
+
+// HTTPSender POSTs each email as JSON to an HTTP endpoint (an own mail service, or an adapter
+// in front of a provider API). Any 2xx answer counts as delivered.
+//
+//	{"from": "...", "to": "...", "subject": "...", "text": "...", "html": "...", "headers": {"List-Unsubscribe": "..."}}
+type HTTPSender struct {
+	URL   string
+	Token string // sent as "Authorization: Bearer <token>" when set
+	From  string
+}
+
+func (h *HTTPSender) Configured() bool {
+	return h.URL != "" && h.From != ""
+}
+
+func (h *HTTPSender) Send(e Email) error {
+	if !h.Configured() {
+		return fmt.Errorf("HTTP mail driver is not configured (MAIL_HTTP_URL / NEWSLETTER_FROM)")
+	}
+	headers := map[string]string{}
+	if e.UnsubscribeURL != "" {
+		headers["List-Unsubscribe"] = "<" + e.UnsubscribeURL + ">"
+		headers["List-Unsubscribe-Post"] = "List-Unsubscribe=One-Click"
+	}
+	payload, err := json.Marshal(map[string]interface{}{
+		"from": h.From, "to": e.To, "subject": e.Subject, "text": e.Text, "html": e.HTML, "headers": headers,
+	})
+	if err != nil {
+		return err
+	}
+	req, err := http.NewRequest(http.MethodPost, h.URL, bytes.NewReader(payload))
+	if err != nil {
+		return err
+	}
+	req.Header.Set("Content-Type", "application/json")
+	if h.Token != "" {
+		req.Header.Set("Authorization", "Bearer "+h.Token)
+	}
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode < 200 || resp.StatusCode > 299 {
+		return fmt.Errorf("mail service returned %s", resp.Status)
+	}
+	return nil
+}
+
+// LogSender only logs the email. For local development.
+type LogSender struct{}
+
+func (LogSender) Configured() bool { return true }
+
+func (LogSender) Send(e Email) error {
+	log.Printf("[mail] to=%s subject=%q\n%s\n", e.To, e.Subject, e.Text)
+	return nil
 }
 
 // envelopeAddress returns the bare address from "Name <addr>".

@@ -56,14 +56,14 @@ type subscribeRequest struct {
 var (
 	subscribers *mongo.Collection
 	sends       *mongo.Collection
-	mailer      *Mailer
+	mailer      Sender
 	limiter     = newRateLimiter(5, time.Hour)
 )
 
 func setupNewsletter(db *mongo.Database) {
 	subscribers = db.Collection("newsletter_subscribers")
 	sends = db.Collection("newsletter_sends")
-	mailer = newMailerFromEnv()
+	mailer = newSenderFromEnv()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
@@ -82,7 +82,7 @@ func setupNewsletter(db *mongo.Database) {
 	}
 
 	if !mailer.Configured() {
-		log.Println("Newsletter: SMTP not configured, emails will fail until SMTP_HOST and NEWSLETTER_FROM are set")
+		log.Println("Newsletter: mail driver not configured, emails will fail until MAIL_DRIVER and its variables are set")
 	}
 }
 

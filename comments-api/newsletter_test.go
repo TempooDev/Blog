@@ -1,7 +1,10 @@
 package main
 
 import (
+	"encoding/json"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"net/textproto"
 	"strings"
 	"testing"
@@ -133,7 +136,7 @@ func fakeSMTP(t *testing.T) (addr string, got chan string) {
 func TestMailerSend(t *testing.T) {
 	addr, got := fakeSMTP(t)
 	host, port, _ := net.SplitHostPort(addr)
-	m := &Mailer{Host: host, Port: port, From: "Blog <newsletter@antoniobermudez.dev>"}
+	m := &SMTPSender{Host: host, Port: port, From: "Blog <newsletter@antoniobermudez.dev>"}
 	if err := m.Send(confirmationEmail("ana@example.com", "en", "https://x/confirm?token=1")); err != nil {
 		t.Fatal(err)
 	}
@@ -144,5 +147,40 @@ func TestMailerSend(t *testing.T) {
 		}
 	case <-time.After(5 * time.Second):
 		t.Fatal("no message received")
+	}
+}
+
+func TestHTTPSender(t *testing.T) {
+	var got map[string]interface{}
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Authorization") != "Bearer secret" {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
+		}
+		json.NewDecoder(r.Body).Decode(&got)
+		w.WriteHeader(http.StatusAccepted)
+	}))
+	defer srv.Close()
+
+	h := &HTTPSender{URL: srv.URL, Token: "secret", From: "Blog <newsletter@antoniobermudez.dev>"}
+	err := h.Send(Email{To: "ana@example.com", Subject: "Hola", Text: "t", HTML: "<p>h</p>",
+		UnsubscribeURL: "https://x/newsletter/unsubscribe?token=1"})
+	if err != nil {
+		t.Fatal(err)
+	}
+	headers, _ := got["headers"].(map[string]interface{})
+	if got["to"] != "ana@example.com" || headers["List-Unsubscribe-Post"] != "List-Unsubscribe=One-Click" {
+		t.Errorf("unexpected payload: %v", got)
+	}
+}
+
+func TestSenderFromEnv(t *testing.T) {
+	t.Setenv("MAIL_DRIVER", "http")
+	if _, ok := newSenderFromEnv().(*HTTPSender); !ok {
+		t.Error("MAIL_DRIVER=http should give an HTTPSender")
+	}
+	t.Setenv("MAIL_DRIVER", "")
+	if _, ok := newSenderFromEnv().(*SMTPSender); !ok {
+		t.Error("SMTP is the default driver")
 	}
 }

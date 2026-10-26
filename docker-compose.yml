@@ -8,7 +8,11 @@ services:
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - TELEGRAM_NOTIFY_URL=${TELEGRAM_NOTIFY_URL:-http://localhost:8080/notify}
-      # Newsletter: any SMTP provider with STARTTLS (Mailjet, Brevo, Scaleway TEM...)
+      # Newsletter mail driver: smtp (any provider with STARTTLS: Mailjet, Brevo, SES...),
+      # http (POST JSON to an own mail service) or log (development)
+      - MAIL_DRIVER=${MAIL_DRIVER:-smtp}
+      - MAIL_HTTP_URL=${MAIL_HTTP_URL:-}
+      - MAIL_HTTP_TOKEN=${MAIL_HTTP_TOKEN:-}
       - SMTP_HOST=${SMTP_HOST:-}
       - SMTP_PORT=${SMTP_PORT:-587}
       - SMTP_USER=${SMTP_USER:-}
