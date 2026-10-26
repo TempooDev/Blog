@@ -10,6 +10,7 @@ import (
 	"os"
 	"strconv"
 	"time"
+	_ "time/tzdata" // CRON_TZ=Europe/Madrid without tzdata in the image
 
 	"bytes"
 	"fmt"
@@ -421,6 +422,11 @@ func scheduleCronJobs() {
 	})
 	if err != nil {
 		log.Fatalf("Error scheduling cron job: %v\n", err)
+	}
+	if schedule := newsletterSchedule(); schedule != "off" {
+		if _, err := c.AddFunc(schedule, sendDueDigests); err != nil {
+			log.Fatalf("Error scheduling newsletter send (%q): %v\n", schedule, err)
+		}
 	}
 	c.Start()
 	log.Println("Cron scheduler started")

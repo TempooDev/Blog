@@ -16,6 +16,13 @@
           {{if .Source}}<p style="font-size:13px;color:#5c6478;margin:0 0 12px;">{{.Source}}</p>{{end}}
         </div>
         {{end}}
+        {{if .Digest.PromoTitle}}
+        <div style="margin:20px 0 4px;padding:20px;border-radius:8px;background:#eef0fd;border:1px solid #c9cef7;">
+          <h2 style="font-size:18px;line-height:1.4;margin:0 0 8px;">{{.Digest.PromoTitle}}</h2>
+          {{range .Promo}}<p style="font-size:15px;line-height:1.6;margin:0 0 12px;">{{.}}</p>{{end}}
+          {{if .Digest.PromoURL}}<a href="{{.Digest.PromoURL}}" style="display:inline-block;padding:10px 18px;border-radius:999px;background:#3b4bd8;color:#ffffff;font-weight:600;text-decoration:none;">{{if .Digest.PromoCTA}}{{.Digest.PromoCTA}}{{else}}{{.T.promoCta}}{{end}}</a>{{end}}
+        </div>
+        {{end}}
         {{range .Outro}}<p style="font-size:16px;line-height:1.6;margin:16px 0 0;">{{.}}</p>{{end}}
       </td></tr>
     </table>

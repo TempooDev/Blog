@@ -1397,6 +1397,166 @@ fields:
       has_auto_increment: false
       foreign_key_table: null
       foreign_key_column: null
+  - collection: digests
+    field: promo_title
+    type: string
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: promo_title
+      group: null
+      hidden: false
+      interface: input
+      note: Promotion block after the news (optional, leave empty for none)
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 12
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: promo_title
+      table: digests
+      data_type: varchar
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: promo_cta
+    type: string
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: promo_cta
+      group: null
+      hidden: false
+      interface: input
+      note: Promotion button text, e.g. Pruébalo gratis
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 13
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: half
+    schema:
+      name: promo_cta
+      table: digests
+      data_type: varchar
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: promo_text
+    type: text
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: promo_text
+      group: null
+      hidden: false
+      interface: input-multiline
+      note: Promotion text
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 14
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: promo_text
+      table: digests
+      data_type: text
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: digests
+    field: promo_url
+    type: string
+    meta:
+      collection: digests
+      conditions: null
+      display: null
+      display_options: null
+      field: promo_url
+      group: null
+      hidden: false
+      interface: input
+      note: Promotion link (https://...)
+      options: null
+      readonly: false
+      required: false
+      searchable: true
+      sort: 15
+      special: null
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: promo_url
+      table: digests
+      data_type: varchar
+      default_value: null
+      max_length: 255
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
 systemFields:
   - collection: directus_activity
     field: timestamp

@@ -12,7 +12,14 @@
 {{$.T.whyItMatters}}: {{.WhyItMatters}}
 {{end}}{{if .Source}}({{.Source}})
 {{end}}
-{{end}}{{range .Outro}}{{.}}
+{{end}}{{if .Digest.PromoTitle}}---
+{{.Digest.PromoTitle}}
+
+{{range .Promo}}{{.}}
+
+{{end}}{{if .Digest.PromoURL}}{{if .Digest.PromoCTA}}{{.Digest.PromoCTA}}{{else}}{{.T.promoCta}}{{end}}: {{.Digest.PromoURL}}
+
+{{end}}{{end}}{{range .Outro}}{{.}}
 
 {{end}}--
 {{.T.footer}}
