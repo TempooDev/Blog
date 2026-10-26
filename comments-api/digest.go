@@ -47,7 +47,9 @@ type Digest struct {
 	PromoCTA    string       `json:"promo_cta"`
 }
 
-const digestFields = "id,title,slug,language,issue_number,status,intro,items,outro,publish_date,sent_at,promo_title,promo_text,promo_url,promo_cta"
+// "*" rather than a field list: Directus answers 403 for a field it doesn't have yet,
+// e.g. right after a deploy that adds fields but before Directus restarts and applies the schema.
+const digestFields = "*"
 
 type DigestItem struct {
 	Title        string `json:"title"`

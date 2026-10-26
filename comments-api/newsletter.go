@@ -195,6 +195,10 @@ func handleSubscribe(w http.ResponseWriter, r *http.Request) {
 	}
 	found := err == nil
 	if found && existing.Status == "active" {
+		// Signing up again with the other language switches the language of the issues they get
+		if existing.Lang != lang {
+			subscribers.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"lang": lang}})
+		}
 		ok()
 		return
 	}
