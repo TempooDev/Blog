@@ -392,19 +392,38 @@ func newRateLimiter(max int, window time.Duration) *rateLimiter {
 func (l *rateLimiter) Allow(key string) bool {
 	l.mu.Lock()
 	defer l.mu.Unlock()
-	now := time.Now()
-	recent := l.hits[key][:0]
-	for _, t := range l.hits[key] {
-		if now.Sub(t) < l.window {
-			recent = append(recent, t)
-		}
-	}
-	if len(recent) >= l.max {
-		l.hits[key] = recent
+	if len(l.recent(key)) >= l.max {
 		return false
 	}
-	l.hits[key] = append(recent, now)
+	l.hits[key] = append(l.hits[key], time.Now())
 	return true
+}
+
+// Blocked reports whether the key used up its budget, without counting a new event.
+func (l *rateLimiter) Blocked(key string) bool {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	return len(l.recent(key)) >= l.max
+}
+
+// Record counts one event for the key.
+func (l *rateLimiter) Record(key string) {
+	l.mu.Lock()
+	defer l.mu.Unlock()
+	l.hits[key] = append(l.recent(key), time.Now())
+}
+
+// recent drops expired hits for the key and returns the rest. Callers hold the lock.
+func (l *rateLimiter) recent(key string) []time.Time {
+	now := time.Now()
+	kept := l.hits[key][:0]
+	for _, t := range l.hits[key] {
+		if now.Sub(t) < l.window {
+			kept = append(kept, t)
+		}
+	}
+	l.hits[key] = kept
+	return kept
 }
 
 // Prune forgets keys with no hits left in the window.

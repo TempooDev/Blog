@@ -202,3 +202,43 @@ func TestClientIP(t *testing.T) {
 		t.Errorf("should use CLIENT_IP_HEADER, got %q", got)
 	}
 }
+
+func TestAdminLoginRateLimit(t *testing.T) {
+	t.Setenv("ADMIN_USER", "admin")
+	t.Setenv("ADMIN_PASSWORD", "secret")
+	loginLimiter = newRateLimiter(5, 15*time.Minute)
+	h := authMiddleware(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
+	call := func(ip, user, pass string, withCreds bool) int {
+		r := httptest.NewRequest(http.MethodGet, "/dashboard", nil)
+		r.RemoteAddr = ip + ":1234"
+		if withCreds {
+			r.SetBasicAuth(user, pass)
+		}
+		w := httptest.NewRecorder()
+		h(w, r)
+		return w.Code
+	}
+
+	// Requests without credentials (the browser's first hit) don't count
+	for i := 0; i < 10; i++ {
+		if code := call("10.0.0.1", "", "", false); code != http.StatusUnauthorized {
+			t.Fatalf("no credentials: got %d", code)
+		}
+	}
+	if code := call("10.0.0.1", "admin", "secret", true); code != http.StatusOK {
+		t.Fatalf("right password should pass, got %d", code)
+	}
+	for i := 0; i < 5; i++ {
+		if code := call("10.0.0.1", "admin", "wrong", true); code != http.StatusUnauthorized {
+			t.Fatalf("attempt %d: got %d", i+1, code)
+		}
+	}
+	// Locked out, even with the right password
+	if code := call("10.0.0.1", "admin", "secret", true); code != http.StatusTooManyRequests {
+		t.Fatalf("after 5 failures: got %d", code)
+	}
+	// Other IPs are not affected
+	if code := call("10.0.0.2", "admin", "secret", true); code != http.StatusOK {
+		t.Fatalf("other IP: got %d", code)
+	}
+}
