@@ -13,6 +13,7 @@ const translations = {
         text: 'Every Monday, the week\'s most relevant AI and tech news, summarised with sources and why each one matters.',
         placeholder: 'you@example.com',
         emailLabel: 'Email',
+        langLabel: 'Newsletter language',
         consent: 'I want to receive the weekly newsletter and I accept the',
         privacyLink: 'privacy policy',
         button: 'Subscribe',
@@ -31,6 +32,7 @@ const translations = {
         text: 'Cada lunes, las noticias de IA y tecnología más relevantes de la semana, resumidas con su fuente y por qué importan.',
         placeholder: 'tu@correo.com',
         emailLabel: 'Correo electrónico',
+        langLabel: 'Idioma de la newsletter',
         consent: 'Quiero recibir la newsletter semanal y acepto la',
         privacyLink: 'política de privacidad',
         button: 'Suscribirme',
@@ -45,6 +47,12 @@ const translations = {
         },
     },
 };
+
+// Each option is written in its own language so it reads right whatever the page language is
+const languageOptions = [
+    { value: 'es', label: 'Español' },
+    { value: 'en', label: 'English' },
+];
 
 const inputStyle: React.CSSProperties = {
     padding: '0.85rem 1rem',
@@ -64,6 +72,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
     const t = translations[currentLang];
 
     const [email, setEmail] = useState('');
+    const [newsletterLang, setNewsletterLang] = useState<string>(currentLang);
     const [consent, setConsent] = useState(false);
     const [website, setWebsite] = useState('');
     const [sending, setSending] = useState(false);
@@ -85,7 +94,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
             const res = await fetch(`${apiBase}/newsletter/subscribe`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, lang: currentLang, consent, website }),
+                body: JSON.stringify({ email, lang: newsletterLang, consent, website }),
             });
             if (res.ok) {
                 setMessage(t.success);
@@ -137,6 +146,16 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                         required
                         style={inputStyle}
                     />
+                    <label htmlFor="newsletter-lang" className="sr-only">{t.langLabel}</label>
+                    <select
+                        id="newsletter-lang"
+                        value={newsletterLang}
+                        onChange={e => setNewsletterLang(e.target.value)}
+                        title={t.langLabel}
+                        style={{ ...inputStyle, flex: '0 0 auto', cursor: 'pointer' }}
+                    >
+                        {languageOptions.map(o => <option key={o.value} value={o.value}>{o.label}</option>)}
+                    </select>
                     <button type="submit" disabled={sending} style={{
                         padding: '0.85rem 1.75rem',
                         background: 'var(--accent-regular)',
