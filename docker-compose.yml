@@ -21,6 +21,8 @@ services:
       # Public URL of this API (confirmation and unsubscribe links) and of the blog
       - PUBLIC_API_URL=${PUBLIC_API_URL:-}
       - SITE_URL=${SITE_URL:-https://antoniobermudez.dev}
+      # Header with the visitor IP if a proxy sits in front of Traefik (e.g. CF-Connecting-IP)
+      - CLIENT_IP_HEADER=${CLIENT_IP_HEADER:-}
       # Reads published digests and writes back sent_at
       - DIRECTUS_URL=http://directus:8055
       - DIRECTUS_TOKEN=${NEWSLETTER_DIRECTUS_TOKEN:-}

@@ -81,6 +81,9 @@ func setupNewsletter(db *mongo.Database) {
 		log.Printf("Could not create newsletter_sends index: %v\n", err)
 	}
 
+	if apiURL() == "" {
+		log.Println("Newsletter: PUBLIC_API_URL is not set, confirmation and unsubscribe links will be broken")
+	}
 	if !mailer.Configured() {
 		log.Println("Newsletter: mail driver not configured, emails will fail until MAIL_DRIVER and its variables are set")
 	}
@@ -227,6 +230,8 @@ func handleSubscribe(w http.ResponseWriter, r *http.Request) {
 	confirmURL := apiURL() + "/newsletter/confirm?token=" + token
 	if err := mailer.Send(confirmationEmail(email, lang, confirmURL)); err != nil {
 		log.Printf("Error sending confirmation email: %v\n", err)
+		// Let the person retry right away instead of waiting out the resend window
+		subscribers.UpdateOne(ctx, bson.M{"email": email}, bson.M{"$set": bson.M{"confirmSentAt": time.Time{}}})
 		http.Error(w, "Could not send the confirmation email", http.StatusBadGateway)
 		return
 	}
@@ -276,7 +281,7 @@ func handleUnsubscribe(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodGet:
 		w.Header().Set("Content-Type", "text/html; charset=utf-8")
-		renderUnsubscribePage(w, sub.Lang, r.URL.RequestURI())
+		renderUnsubscribePage(w, sub.Lang, unsubscribeURL(token))
 	case http.MethodPost:
 		if sub.Status != "unsubscribed" {
 			_, err := subscribers.UpdateByID(ctx, sub.ID, bson.M{
@@ -351,12 +356,19 @@ func cleanupSubscribers() error {
 	return nil
 }
 
+// clientIP returns the visitor's IP for rate limiting. Behind Traefik the TCP peer is the proxy,
+// so it uses the last X-Forwarded-For hop (the one the proxy appended; earlier hops can be forged
+// by the client). If another proxy sits in front (e.g. Cloudflare), set CLIENT_IP_HEADER to the
+// header it sets, such as CF-Connecting-IP.
 func clientIP(r *http.Request) string {
-	if ip := r.Header.Get("CF-Connecting-IP"); ip != "" {
-		return ip
+	if h := os.Getenv("CLIENT_IP_HEADER"); h != "" {
+		if ip := strings.TrimSpace(r.Header.Get(h)); ip != "" {
+			return ip
+		}
 	}
 	if fwd := r.Header.Get("X-Forwarded-For"); fwd != "" {
-		return strings.TrimSpace(strings.Split(fwd, ",")[0])
+		hops := strings.Split(fwd, ",")
+		return strings.TrimSpace(hops[len(hops)-1])
 	}
 	host, _, err := net.SplitHostPort(r.RemoteAddr)
 	if err != nil {

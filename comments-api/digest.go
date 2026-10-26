@@ -259,6 +259,13 @@ func handleAdminSend(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Sending"))
 }
 
+// releaseSend drops the send record when nothing was sent, so the issue can be sent again.
+func releaseSend(id int) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	sends.DeleteOne(ctx, bson.M{"digestId": id})
+}
+
 func sendDigest(d Digest, waitForDeploy bool) {
 	lang := normalizeLang(d.Language)
 	if waitForDeploy {
@@ -274,11 +281,13 @@ func sendDigest(d Digest, waitForDeploy bool) {
 	cursor, err := subscribers.Find(ctx, bson.M{"status": "active", "lang": lang})
 	if err != nil {
 		log.Printf("Digest %d: error loading subscribers: %v\n", d.ID, err)
+		releaseSend(d.ID)
 		return
 	}
 	var list []Subscriber
 	if err := cursor.All(ctx, &list); err != nil {
 		log.Printf("Digest %d: error decoding subscribers: %v\n", d.ID, err)
+		releaseSend(d.ID)
 		return
 	}
 

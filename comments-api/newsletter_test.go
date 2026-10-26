@@ -184,3 +184,21 @@ func TestSenderFromEnv(t *testing.T) {
 		t.Error("SMTP is the default driver")
 	}
 }
+
+func TestClientIP(t *testing.T) {
+	r := httptest.NewRequest(http.MethodPost, "/newsletter/subscribe", nil)
+	r.RemoteAddr = "10.0.0.2:1234"
+	if got := clientIP(r); got != "10.0.0.2" {
+		t.Errorf("without proxy headers, got %q", got)
+	}
+	// A client can prepend fake hops; the proxy appends the real one last
+	r.Header.Set("X-Forwarded-For", "1.1.1.1, 203.0.113.7")
+	if got := clientIP(r); got != "203.0.113.7" {
+		t.Errorf("should use the last hop, got %q", got)
+	}
+	t.Setenv("CLIENT_IP_HEADER", "CF-Connecting-IP")
+	r.Header.Set("CF-Connecting-IP", "198.51.100.9")
+	if got := clientIP(r); got != "198.51.100.9" {
+		t.Errorf("should use CLIENT_IP_HEADER, got %q", got)
+	}
+}
