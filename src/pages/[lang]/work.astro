@@ -42,7 +42,14 @@ const similar = similarQuestion[lang as "es" | "en"];
                 <PortfolioPreview project={project} />
                 {service && (
                   <p class="similar">
-                    {similar} <a href={service.href}>{service.label}</a>
+                    {similar}{" "}
+                    <a
+                      href={service.href}
+                      data-tempoo-goal="ver_servicio"
+                      data-tempoo-goal-pagina={Astro.url.pathname}
+                      data-tempoo-goal-destino={service.href}
+                      data-tempoo-goal-posicion="work"
+                    >{service.label}</a>
                   </p>
                 )}
               </li>

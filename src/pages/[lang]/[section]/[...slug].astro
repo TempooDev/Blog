@@ -48,7 +48,12 @@ const jsonLd = getServiceJsonLd({
 ---
 
 <BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
-  <div class="stack gap-20">
+  <div
+    class="stack gap-20"
+    data-tempoo-scroll="service_page_content"
+    data-tempoo-scroll-threshold="0.5"
+    data-tempoo-scroll-delay="200"
+  >
     <main class="wrapper stack gap-10">
       {
         !isIndex && (
@@ -68,7 +73,14 @@ const jsonLd = getServiceJsonLd({
           <ul class="cards">
             {page.cards.map((card) => (
               <li>
-                <a class="card" href={card.href}>
+                <a
+                  class="card"
+                  href={card.href}
+                  data-tempoo-goal="ver_servicio"
+                  data-tempoo-goal-pagina={Astro.url.pathname}
+                  data-tempoo-goal-destino={card.href}
+                  data-tempoo-goal-posicion="tarjeta"
+                >
                   <h2>{card.title}</h2>
                   <p>{card.text}</p>
                   <span class="card-link">

@@ -38,7 +38,13 @@ const projects = (
         >
           <div class="services-link">
             <p>{content.servicesLine}</p>
-            <CallToAction href={SERVICE_PAGES[0][lang as "es" | "en"]!}>
+            <CallToAction
+              href={SERVICE_PAGES[0][lang as "es" | "en"]!}
+              data-tempoo-goal="ver_servicio"
+              data-tempoo-goal-pagina={Astro.url.pathname}
+              data-tempoo-goal-destino={SERVICE_PAGES[0][lang as "es" | "en"]!}
+              data-tempoo-goal-posicion="home"
+            >
               {content.servicesBtn}
               <Icon icon="arrow-right" size="1.2em" />
             </CallToAction>

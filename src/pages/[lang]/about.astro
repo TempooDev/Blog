@@ -42,7 +42,13 @@ const content = aboutI18n[lang as keyof typeof aboutI18n];
         <div class="content">
           <p>
             {content.servicesText}{" "}
-            <a href={SERVICE_PAGES[0][lang as "es" | "en"]}>{content.servicesLink}</a>.
+            <a
+              href={SERVICE_PAGES[0][lang as "es" | "en"]}
+              data-tempoo-goal="ver_servicio"
+              data-tempoo-goal-pagina={Astro.url.pathname}
+              data-tempoo-goal-destino={SERVICE_PAGES[0][lang as "es" | "en"]}
+              data-tempoo-goal-posicion="about"
+            >{content.servicesLink}</a>.
           </p>
         </div>
       </section>

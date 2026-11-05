@@ -85,7 +85,13 @@ const serviceLink = articleServiceLinks[entry.id];
             serviceLink && (
               <p>
                 <strong>{serviceLink.question}</strong>{" "}
-                <a href={serviceLink.href}>{serviceLink.label}</a>
+                <a
+                  href={serviceLink.href}
+                  data-tempoo-goal="ver_servicio"
+                  data-tempoo-goal-pagina={Astro.url.pathname}
+                  data-tempoo-goal-destino={serviceLink.href}
+                  data-tempoo-goal-posicion="articulo"
+                >{serviceLink.label}</a>
               </p>
             )
           }
