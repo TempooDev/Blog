@@ -10,7 +10,7 @@ interface Props {
 	alternateLangs?: Lang[];
 	image?: string | undefined;
 	imageAlt?: string | undefined;
-	article?: { publishDate: Date; tags: string[] } | undefined;
+	article?: { publishDate?: Date | undefined; tags: string[] } | undefined;
 	jsonLd?: object[];
 	noindex?: boolean;
 }
@@ -55,7 +55,7 @@ const metaDescription = toMetaDescription(description);
 {
 	article && (
 		<>
-			<meta property="article:published_time" content={article.publishDate.toISOString()} />
+			{article.publishDate && <meta property="article:published_time" content={article.publishDate.toISOString()} />}
 			{article.tags.map((tag) => <meta property="article:tag" content={tag} />)}
 		</>
 	)

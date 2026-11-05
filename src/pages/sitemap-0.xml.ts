@@ -8,8 +8,10 @@ interface SitemapUrl {
   alternates: Partial<Record<Lang, string>>;
 }
 
-const latest = (dates: Date[]) =>
-  dates.length ? new Date(Math.max(...dates.map((d) => d.valueOf()))) : undefined;
+const latest = (dates: (Date | undefined)[]) => {
+  const known = dates.filter((d): d is Date => d !== undefined);
+  return known.length ? new Date(Math.max(...known.map((d) => d.valueOf()))) : undefined;
+};
 
 const escapeXml = (value: string) =>
   value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");

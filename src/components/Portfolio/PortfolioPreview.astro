@@ -25,5 +25,5 @@ const slug = project.id.split("/").slice(1).join("/");
   imgSrc={data.img}
   imgAlt={data.img_alt || data.title}
   tags={data.tags}
-  publishDate={data.publishDate.toISOString().split("T")[0]}
+  publishDate={data.publishDate?.toISOString().split("T")[0]}
 />
