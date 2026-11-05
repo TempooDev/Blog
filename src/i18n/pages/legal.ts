@@ -19,6 +19,7 @@ interface LegalContent {
 
 const CONTACT = '<a href="mailto:contact@antoniobermudez.dev">contact@antoniobermudez.dev</a>';
 const UPDATED = "2026-11-05";
+const COOKIES_UPDATED = "2026-11-05";
 
 export const legalLinksI18n: Record<Lang, Record<LegalPage | "label", string>> = {
     es: { label: "Información legal", legal: "Aviso legal", privacy: "Privacidad", cookies: "Cookies" },
@@ -160,14 +161,15 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
             title: "Política de cookies",
             metaTitle: "Política de cookies | Antonio Bermúdez",
             description: "Qué guarda antoniobermudez.dev en tu navegador y cómo aceptar o rechazar la analítica.",
-            updated: UPDATED,
+            updated: COOKIES_UPDATED,
             sections: [
                 {
                     title: "Qué guarda este sitio en tu navegador",
                     body: [
-                        "Este sitio no usa cookies. Sí guarda algunos datos en el almacenamiento local del navegador (localStorage y sessionStorage), que a efectos legales se tratan igual que las cookies.",
+                        "Este sitio no usa cookies, salvo el calendario de citas. Sí guarda algunos datos en el almacenamiento local del navegador (localStorage y sessionStorage), que a efectos legales se tratan igual que las cookies.",
                         "<strong>Necesarios</strong>, siempre activos: <code>theme</code> guarda si prefieres el tema claro u oscuro, <code>language</code> guarda el idioma que eliges y <code>consent</code> guarda tu respuesta al aviso de cookies.",
                         "<strong>Analítica</strong>, solo si aceptas: <code>tempoo_visitor</code> es un identificador aleatorio de visitante que se mantiene hasta que lo borres, y <code>tempoo_session</code> es un identificador de sesión que se borra al cerrar la pestaña. Los usa Tempoo Analytics para contar visitas, como se explica en la <a href=\"/es/privacy/\">política de privacidad</a>.",
+                        "<strong>Calendario de citas:</strong> si abres citas.antoniobermudez.dev para reservar una llamada, ese subdominio usa dos cookies necesarias para que funcione: <code>csrf_cookie</code> protege los formularios frente a envíos falsificados y dura 2 horas, y <code>ea_session</code> mantiene tu sesión durante la reserva y dura 7 días. No se usan para analítica ni publicidad.",
                     ],
                 },
                 {
@@ -284,14 +286,15 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
             title: "Cookie policy",
             metaTitle: "Cookie policy | Antonio Bermúdez",
             description: "What antoniobermudez.dev stores in your browser and how to accept or reject analytics.",
-            updated: UPDATED,
+            updated: COOKIES_UPDATED,
             sections: [
                 {
                     title: "What this site stores in your browser",
                     body: [
-                        "This site doesn't use cookies. It does store some data in your browser's local storage (localStorage and sessionStorage), which the law treats the same way as cookies.",
+                        "This site doesn't use cookies, except for the booking calendar. It does store some data in your browser's local storage (localStorage and sessionStorage), which the law treats the same way as cookies.",
                         "<strong>Necessary</strong>, always on: <code>theme</code> remembers whether you prefer the light or dark theme, <code>language</code> remembers the language you pick and <code>consent</code> stores your answer to the cookie notice.",
                         "<strong>Analytics</strong>, only if you accept: <code>tempoo_visitor</code> is a random visitor ID kept until you clear it, and <code>tempoo_session</code> is a session ID removed when you close the tab. Tempoo Analytics uses them to count visits, as explained in the <a href=\"/en/privacy/\">privacy policy</a>.",
+                        "<strong>Booking calendar:</strong> if you open citas.antoniobermudez.dev to book a call, that subdomain uses two cookies it needs to work: <code>csrf_cookie</code> protects forms against forged submissions and lasts 2 hours, and <code>ea_session</code> keeps your session during the booking and lasts 7 days. They are not used for analytics or advertising.",
                     ],
                 },
                 {

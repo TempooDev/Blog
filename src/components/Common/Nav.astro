@@ -45,7 +45,8 @@ const isCurrentPage = (href: string) => {
   let pathname = Astro.url.pathname.replace(import.meta.env.BASE_URL, "");
   if (pathname.at(0) !== "/") pathname = "/" + pathname;
   if (pathname.at(-1) !== "/") pathname += "/";
-  return pathname === href || (href !== "/" && pathname.startsWith(href));
+  // Every path in a language starts with the home URL, so home only matches exactly.
+  return pathname === href || (href !== `/${lang}/` && pathname.startsWith(href));
 };
 ---
 
