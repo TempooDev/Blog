@@ -125,8 +125,8 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                 {
                     title: "Reserva de llamadas",
                     body: [
-                        "Si reservas una llamada en <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> guardo tu nombre y apellidos, tu correo electrónico, tu teléfono, las notas que escribas y la fecha y hora de la cita. Solo uso estos datos para gestionar la cita y hablar contigo sobre lo que me hayas planteado.",
-                        "La base legal es tu consentimiento, que das al marcar la casilla del formulario. Los conservo mientras se gestiona la cita y lo necesario después para atender lo que me hayas pedido. El calendario funciona con Easy!Appointments en un servidor que gestiono yo y usa dos cookies técnicas, <code>ea_session</code> y <code>csrf_cookie</code>, necesarias para que el formulario funcione.",
+                        "Si reservas una llamada en <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> guardo tu nombre y apellidos, tu correo electrónico, la fecha y hora de la cita y, si los indicas, tu teléfono y tus notas. Solo uso estos datos para gestionar la cita y hablar contigo sobre tu proyecto.",
+                        "La base legal es la aplicación de medidas precontractuales a petición tuya (art. 6.1.b RGPD). Los conservo hasta 12 meses después de la cita, salvo que iniciemos una relación profesional o exista una obligación legal. El calendario funciona con Easy!Appointments en un servidor que gestiono yo y usa dos cookies técnicas, <code>ea_session</code> y <code>csrf_cookie</code>, necesarias para que el formulario funcione. Los proveedores técnicos de alojamiento y correo pueden tratar estos datos por mi cuenta.",
                     ],
                 },
                 {
@@ -249,8 +249,8 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                 {
                     title: "Booking a call",
                     body: [
-                        "If you book a call at <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> I store your first and last name, your email address, your phone number, any notes you write and the date and time of the appointment. I only use this data to manage the appointment and talk to you about what you've raised.",
-                        "The legal basis is your consent, given by ticking the box on the form. I keep the data while the appointment is being handled and afterwards only as long as needed to deal with your request. The calendar runs on Easy!Appointments on a server I run myself and uses two technical cookies, <code>ea_session</code> and <code>csrf_cookie</code>, which the form needs in order to work.",
+                        "If you book a call at <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> I store your first and last name, your email address, the date and time of the appointment and, if you provide them, your phone number and notes. I only use this data to manage the appointment and talk to you about your project.",
+                        "The legal basis is taking pre-contractual steps at your request (Art. 6(1)(b) GDPR). I keep the data for up to 12 months after the appointment, unless we start a professional relationship or a legal obligation applies. The calendar runs on Easy!Appointments on a server I run myself and uses two technical cookies, <code>ea_session</code> and <code>csrf_cookie</code>, which the form needs in order to work. Technical hosting and email providers may process this data on my behalf.",
                     ],
                 },
                 {
