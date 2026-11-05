@@ -1,6 +1,6 @@
 import type { APIRoute } from "astro";
 import { getCollection } from "astro:content";
-import { DEFAULT_LANG, LANGS, getAlternatePaths, type Lang } from "../utils/routing";
+import { DEFAULT_LANG, LANGS, SERVICE_PAGES, findServicePage, getAlternatePaths, type Lang } from "../utils/routing";
 
 interface SitemapUrl {
   path: string;
@@ -39,6 +39,11 @@ export const GET: APIRoute = async ({ site }) => {
     for (const [path, lastmod] of pages) {
       urls.push({ path, lastmod, alternates: await getAlternatePaths(path) });
     }
+
+    for (const page of SERVICE_PAGES) {
+      const path = page[lang];
+      if (path) urls.push({ path, alternates: await getAlternatePaths(path) });
+    }
   }
 
   for (const entry of [...posts, ...work, ...issues]) {
@@ -51,7 +56,7 @@ export const GET: APIRoute = async ({ site }) => {
     .map(({ path, lastmod, alternates }) => {
       const links = Object.entries(alternates);
       const hreflangs =
-        links.length > 1
+        links.length > 1 || findServicePage(path)
           ? [...links, ["x-default", alternates[DEFAULT_LANG] ?? links[0][1]]]
               .map(
                 ([hreflang, href]) =>

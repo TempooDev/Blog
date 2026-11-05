@@ -61,6 +61,61 @@ export function getEntryJsonLd(
     ];
 }
 
+export function getServiceJsonLd({
+    name,
+    description,
+    url,
+    lang,
+    breadcrumbs,
+    faq = [],
+}: {
+    name: string;
+    description: string;
+    url: URL;
+    lang: Lang;
+    breadcrumbs: { name: string; url: string }[];
+    faq?: { question: string; answer: string }[];
+}) {
+    const data: object[] = [
+        {
+            "@context": "https://schema.org",
+            "@type": "Service",
+            name,
+            serviceType: name,
+            description,
+            url: url.href,
+            areaServed: ["ES", "EU"],
+            provider: {
+                "@type": "Person",
+                name: SITE_NAME,
+                url: new URL(`/${lang}/about/`, url).href,
+            },
+        },
+        {
+            "@context": "https://schema.org",
+            "@type": "BreadcrumbList",
+            itemListElement: breadcrumbs.map((crumb, i) => ({
+                "@type": "ListItem",
+                position: i + 1,
+                name: crumb.name,
+                item: crumb.url,
+            })),
+        },
+    ];
+    if (faq.length) {
+        data.push({
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: faq.map(({ question, answer }) => ({
+                "@type": "Question",
+                name: question,
+                acceptedAnswer: { "@type": "Answer", text: answer.replace(/<[^>]+>/g, "") },
+            })),
+        });
+    }
+    return data;
+}
+
 /**
  * The page title is already the only <h1>; headings written as `#` in the CMS
  * body would add a second one, so they are rendered as <h2>.

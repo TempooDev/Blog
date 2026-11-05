@@ -13,6 +13,20 @@ export function getLangFromPath(pathname: string): Lang | undefined {
     return match ? (match[1] as Lang) : undefined;
 }
 
+/** Service pages have translated slugs, and the GDPR page only exists in English. */
+export const SERVICE_PAGES: { id: string; es?: string; en: string }[] = [
+    { id: "index", es: "/es/servicios/", en: "/en/services/" },
+    { id: "ai-consulting", es: "/es/servicios/consultoria-ia/", en: "/en/services/ai-consulting/" },
+    { id: "ai-integration", es: "/es/servicios/integracion-ia/", en: "/en/services/ai-integration/" },
+    { id: "ai-automation", es: "/es/servicios/automatizacion-ia/", en: "/en/services/ai-automation/" },
+    { id: "technical-consulting", es: "/es/servicios/consultoria-tecnologica/", en: "/en/services/fractional-cto/" },
+    { id: "gdpr-compliant-ai", en: "/en/services/gdpr-compliant-ai/" },
+];
+
+export function findServicePage(pathname: string) {
+    return SERVICE_PAGES.find((page) => page.es === pathname || page.en === pathname);
+}
+
 const withTrailingSlash = (path: string) => (path.endsWith("/") ? path : `${path}/`);
 
 /**
@@ -34,6 +48,11 @@ export async function getAlternatePaths(
             alternates[lang as Lang] = `/${lang}/${basePath}/${slugParts.join("/")}/`;
         }
         return alternates;
+    }
+
+    const servicePage = findServicePage(pathname);
+    if (servicePage) {
+        return Object.fromEntries(LANGS.flatMap((l) => (servicePage[l] ? [[l, servicePage[l]]] : [])));
     }
 
     const lang = getLangFromPath(pathname);

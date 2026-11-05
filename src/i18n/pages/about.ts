@@ -12,6 +12,8 @@ export const aboutI18n = {
         educationP2: "I have an AZ-900 Azure Fundamentals certification.",
         skillsTitle: "Skills",
         skillsP1: "My skills include functional analysis, .NET Core, Azure DevOps, SQL, Event Bus and Service Bus, AKS and microservices.",
+        servicesText: "If you run an SME or a startup and need help with AI or with the technical side of your product, take a look at",
+        servicesLink: "the consulting services I offer",
     },
     es: {
         title: "Sobre mí | Antonio Bermúdez",
@@ -25,5 +27,7 @@ export const aboutI18n = {
         educationP2: "Cuento con la certificación AZ-900 Azure Fundamentals.",
         skillsTitle: "Habilidades",
         skillsP1: "Mis habilidades incluyen análisis funcional, .NET Core, Azure DevOps, SQL, Event Bus y Service Bus, AKS y microservicios.",
+        servicesText: "Si tienes una pyme o una startup y necesitas ayuda con la IA o con la parte técnica de tu producto, echa un vistazo a",
+        servicesLink: "los servicios de consultoría que ofrezco",
     },
 };

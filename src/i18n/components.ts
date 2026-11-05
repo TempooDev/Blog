@@ -45,6 +45,7 @@ export const navI18n = {
     en: {
         home: "Home",
         work: "Work",
+        services: "Services",
         blog: "Blog",
         newsletter: "Newsletter",
         about: "About",
@@ -52,6 +53,7 @@ export const navI18n = {
     es: {
         home: "Inicio",
         work: "Proyectos",
+        services: "Servicios",
         blog: "Blog",
         newsletter: "Newsletter",
         about: "Sobre mí",
