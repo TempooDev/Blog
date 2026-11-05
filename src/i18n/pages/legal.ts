@@ -18,7 +18,7 @@ interface LegalContent {
 }
 
 const CONTACT = '<a href="mailto:contact@antoniobermudez.dev">contact@antoniobermudez.dev</a>';
-const UPDATED = "2026-10-26";
+const UPDATED = "2026-11-05";
 
 export const legalLinksI18n: Record<Lang, Record<LegalPage | "label", string>> = {
     es: { label: "Información legal", legal: "Aviso legal", privacy: "Privacidad", cookies: "Cookies" },
@@ -120,6 +120,13 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                         "Si te suscribes a la newsletter guardo tu correo electrónico, el idioma que elijas, la fecha en que diste el consentimiento y la versión del texto que aceptaste. Solo la uso para enviarte la newsletter semanal. Hasta que no confirmas desde el enlace que te llega por correo no recibes nada, y si no confirmas, tu dirección se borra a los 7 días.",
                         "La base legal es tu consentimiento. Puedes darte de baja cuando quieras desde el enlace que aparece en cada correo, y tu dirección se borra a los 30 días de la baja. Los correos no llevan píxeles de seguimiento ni enlaces que registren si los abres o en qué pulsas.",
                         "Los datos se guardan en servidores que gestiono yo. Para entregar los correos uso un proveedor de envío de email que actúa como encargado del tratamiento y solo recibe tu dirección y el contenido de cada envío.",
+                    ],
+                },
+                {
+                    title: "Reserva de llamadas",
+                    body: [
+                        "Si reservas una llamada en <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> guardo tu nombre y apellidos, tu correo electrónico, la fecha y hora de la cita y, si los indicas, tu teléfono y tus notas. Solo uso estos datos para gestionar la cita y hablar contigo sobre tu proyecto.",
+                        "La base legal es la aplicación de medidas precontractuales a petición tuya (art. 6.1.b RGPD). Los conservo hasta 12 meses después de la cita, salvo que iniciemos una relación profesional o exista una obligación legal. El calendario funciona con Easy!Appointments en un servidor que gestiono yo y usa dos cookies técnicas, <code>ea_session</code> y <code>csrf_cookie</code>, necesarias para que el formulario funcione. Los proveedores técnicos de alojamiento y correo pueden tratar estos datos por mi cuenta.",
                     ],
                 },
                 {
@@ -237,6 +244,13 @@ export const legalI18n: Record<Lang, Record<LegalPage, LegalContent>> = {
                         "If you subscribe to the newsletter I store your email address, the language you choose, the date you gave consent and the version of the text you accepted. I only use it to send you the weekly newsletter. Nothing is sent until you confirm from the link in the email you receive, and if you don't confirm, your address is deleted after 7 days.",
                         "The legal basis is your consent. You can unsubscribe at any time from the link in every email, and your address is deleted 30 days after you unsubscribe. The emails have no tracking pixels and no links that record whether you open them or what you click.",
                         "The data is stored on servers I run myself. To deliver the emails I use an email sending provider that acts as a data processor and only receives your address and the content of each email.",
+                    ],
+                },
+                {
+                    title: "Booking a call",
+                    body: [
+                        "If you book a call at <a href=\"https://citas.antoniobermudez.dev/\">citas.antoniobermudez.dev</a> I store your first and last name, your email address, the date and time of the appointment and, if you provide them, your phone number and notes. I only use this data to manage the appointment and talk to you about your project.",
+                        "The legal basis is taking pre-contractual steps at your request (Art. 6(1)(b) GDPR). I keep the data for up to 12 months after the appointment, unless we start a professional relationship or a legal obligation applies. The calendar runs on Easy!Appointments on a server I run myself and uses two technical cookies, <code>ea_session</code> and <code>csrf_cookie</code>, which the form needs in order to work. Technical hosting and email providers may process this data on my behalf.",
                     ],
                 },
                 {

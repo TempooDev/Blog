@@ -1,0 +1,260 @@
+---
+import BaseLayout from "@layouts/BaseLayout.astro";
+import Hero from "@components/Common/Hero.astro";
+import Icon from "@components/Common/Icon.astro";
+import ServiceCTA from "@components/Common/ServiceCTA.astro";
+import { servicesI18n, type ServicePage } from "../../../i18n/pages/services";
+import { LANGS, SERVICE_PAGES, type Lang } from "../../../utils/routing";
+import { getServiceJsonLd } from "../../../utils/seo";
+
+interface Props {
+  page: ServicePage;
+}
+
+export function getStaticPaths() {
+  return LANGS.flatMap((lang) =>
+    SERVICE_PAGES.flatMap(({ id, [lang]: path }) => {
+      if (!path) return [];
+      const [, , section, slug] = path.split("/");
+      return [
+        {
+          params: { lang, section, slug: slug || undefined },
+          props: { page: servicesI18n[lang].pages[id] },
+        },
+      ];
+    }),
+  );
+}
+
+const { page } = Astro.props;
+const lang = Astro.params.lang as Lang;
+const t = servicesI18n[lang];
+const indexPath = SERVICE_PAGES[0][lang]!;
+const isIndex = Astro.url.pathname === indexPath;
+const absolute = (path: string) => new URL(path, Astro.site).href;
+
+const jsonLd = getServiceJsonLd({
+  name: page.serviceName,
+  description: page.description,
+  url: new URL(Astro.url.pathname, Astro.site),
+  lang,
+  breadcrumbs: [
+    { name: t.home, url: absolute(`/${lang}/`) },
+    { name: t.services, url: absolute(indexPath) },
+    ...(isIndex ? [] : [{ name: page.serviceName, url: absolute(Astro.url.pathname) }]),
+  ],
+  faq: page.faq?.items,
+});
+---
+
+<BaseLayout title={page.title} description={page.description} jsonLd={jsonLd}>
+  <div
+    class="stack gap-20"
+    data-tempoo-scroll="service_page_content"
+    data-tempoo-scroll-threshold="0.5"
+    data-tempoo-scroll-delay="200"
+  >
+    <main class="wrapper stack gap-10">
+      {
+        !isIndex && (
+          <a class="back-link" href={indexPath}>
+            <Icon icon="arrow-left" /> {t.allServices}
+          </a>
+        )
+      }
+      <Hero title={page.h1} align="start" />
+
+      <div class="prose intro">
+        {page.intro.map((text) => <p set:html={text} />)}
+      </div>
+
+      {
+        page.cards && (
+          <ul class="cards">
+            {page.cards.map((card) => (
+              <li>
+                <a
+                  class="card"
+                  href={card.href}
+                  data-tempoo-goal="ver_servicio"
+                  data-tempoo-goal-pagina={Astro.url.pathname}
+                  data-tempoo-goal-destino={card.href}
+                  data-tempoo-goal-posicion="tarjeta"
+                >
+                  <h2>{card.title}</h2>
+                  <p>{card.text}</p>
+                  <span class="card-link">
+                    {t.seeService} <Icon icon="arrow-right" size="1em" />
+                  </span>
+                </a>
+              </li>
+            ))}
+          </ul>
+        )
+      }
+
+      <div class="prose">
+        {
+          page.notice && <p class="notice">{page.notice}</p>
+        }
+        {
+          page.sections.map((section) => (
+            <section id={section.id}>
+              <h2>{section.title}</h2>
+              {section.body?.map((text) => <p set:html={text} />)}
+              {section.list && (
+                <ul>
+                  {section.list.map((item) => <li set:html={item} />)}
+                </ul>
+              )}
+              {section.steps && (
+                <ol>
+                  {section.steps.map((item) => <li set:html={item} />)}
+                </ol>
+              )}
+              {section.after?.map((text) => <p set:html={text} />)}
+            </section>
+          ))
+        }
+        {
+          page.faq && (
+            <section>
+              <h2>{page.faq.title}</h2>
+              {page.faq.items.map(({ question, answer }) => (
+                <>
+                  <h3>{question}</h3>
+                  <p set:html={answer} />
+                </>
+              ))}
+            </section>
+          )
+        }
+      </div>
+    </main>
+
+    <ServiceCTA title={t.ctaTitle} text={t.ctaText} cta={page.cta} />
+  </div>
+</BaseLayout>
+
+<style>
+  .back-link {
+    align-self: flex-start;
+    color: var(--gray-300);
+    text-decoration: none;
+  }
+
+  .back-link:hover,
+  .back-link:focus {
+    color: var(--gray-0);
+  }
+
+  .prose {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    max-width: 70ch;
+    font-size: var(--text-md);
+    line-height: 1.75;
+    color: var(--gray-200);
+  }
+
+  .prose.intro {
+    gap: 1rem;
+    font-size: var(--text-lg);
+    line-height: 1.6;
+  }
+
+  section {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    scroll-margin-top: 2rem;
+  }
+
+  section h2 {
+    font-size: var(--text-2xl);
+    color: var(--gray-0);
+  }
+
+  section h3 {
+    margin-top: 1rem;
+    font-size: var(--text-lg);
+    color: var(--gray-0);
+  }
+
+  section ul,
+  section ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding-inline-start: 1.5rem;
+  }
+
+  .prose :global(a) {
+    color: var(--accent-regular);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .notice {
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--gray-800);
+    border-radius: 0.75rem;
+    background: var(--gradient-subtle);
+    color: var(--gray-0);
+  }
+
+  .cards {
+    display: grid;
+    gap: 1rem;
+    padding: 0;
+    list-style: none;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    height: 100%;
+    padding: 1.5rem;
+    border: 1px solid var(--gray-800);
+    border-radius: 0.75rem;
+    background: var(--gradient-subtle);
+    box-shadow: var(--shadow-sm);
+    color: var(--gray-200);
+    text-decoration: none;
+  }
+
+  .card h2 {
+    font-size: var(--text-xl);
+    color: var(--gray-0);
+  }
+
+  .card p {
+    flex: 1;
+  }
+
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--accent-regular);
+    font-weight: 600;
+  }
+
+  .card:hover,
+  .card:focus {
+    border-color: var(--accent-regular);
+  }
+
+  @media (min-width: 50em) {
+    .cards {
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    section h2 {
+      font-size: var(--text-3xl);
+    }
+  }
+</style>

@@ -9,6 +9,7 @@ import Hero from "@components/Common/Hero.astro";
 import Grid from "@components/Common/Grid.astro";
 import { getLangStaticPaths } from "../../utils/routing";
 import { workI18n } from "../../i18n/pages/collections";
+import { getWorkServiceLink, similarQuestion } from "../../i18n/pages/services";
 
 export const getStaticPaths = getLangStaticPaths;
 
@@ -21,6 +22,7 @@ const projects = (
 ).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
 
 const content = workI18n[lang as keyof typeof workI18n];
+const similar = similarQuestion[lang as "es" | "en"];
 ---
 
 <BaseLayout title={content.title} description={content.description}>
@@ -33,14 +35,40 @@ const content = workI18n[lang as keyof typeof workI18n];
       />
       <Grid variant="offset">
         {
-          projects.map((project) => (
-            <li>
-              <PortfolioPreview project={project} />
-            </li>
-          ))
+          projects.map((project) => {
+            const service = getWorkServiceLink(project.id);
+            return (
+              <li>
+                <PortfolioPreview project={project} />
+                {service && (
+                  <p class="similar">
+                    {similar}{" "}
+                    <a
+                      href={service.href}
+                      data-tempoo-goal="ver_servicio"
+                      data-tempoo-goal-pagina={Astro.url.pathname}
+                      data-tempoo-goal-destino={service.href}
+                      data-tempoo-goal-posicion="work"
+                    >{service.label}</a>
+                  </p>
+                )}
+              </li>
+            );
+          })
         }
       </Grid>
     </main>
     <ContactCTA />
   </div>
 </BaseLayout>
+
+<style>
+  .similar {
+    margin-top: 0.75rem;
+    color: var(--gray-200);
+  }
+
+  .similar a {
+    color: var(--accent-regular);
+  }
+</style>

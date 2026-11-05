@@ -2,7 +2,7 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import ContactCTA from "@components/Common/ContactCTA.astro";
 import Hero from "@components/Common/Hero.astro";
-import { getLangStaticPaths } from "../../utils/routing";
+import { SERVICE_PAGES, getLangStaticPaths } from "../../utils/routing";
 import { aboutI18n } from "../../i18n/pages/about";
 
 export const getStaticPaths = getLangStaticPaths;
@@ -35,6 +35,21 @@ const content = aboutI18n[lang as keyof typeof aboutI18n];
         <h2 class="section-title">{content.skillsTitle}</h2>
         <div class="content">
           <p>{content.skillsP1}</p>
+        </div>
+      </section>
+
+      <section>
+        <div class="content">
+          <p>
+            {content.servicesText}{" "}
+            <a
+              href={SERVICE_PAGES[0][lang as "es" | "en"]}
+              data-tempoo-goal="ver_servicio"
+              data-tempoo-goal-pagina={Astro.url.pathname}
+              data-tempoo-goal-destino={SERVICE_PAGES[0][lang as "es" | "en"]}
+              data-tempoo-goal-posicion="about"
+            >{content.servicesLink}</a>.
+          </p>
         </div>
       </section>
     </main>

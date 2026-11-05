@@ -32,11 +32,13 @@ export async function getStaticPaths() {
 }
 
 import { blogI18n } from "../../../i18n/pages/collections";
+import { articleServiceLinks } from "../../../i18n/pages/services";
 
 const { entry } = Astro.props;
 const { Content } = await render(entry);
 const { lang } = Astro.params;
 const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
+const serviceLink = articleServiceLinks[entry.id];
 ---
 
 <BaseLayout
@@ -79,6 +81,20 @@ const backLinkTitle = blogI18n[lang as keyof typeof blogI18n].backLinkTitle;
             )
           }
           <div class="content" set:html={demoteHeadings(entry.rendered?.html || entry.body || "")} />
+          {
+            serviceLink && (
+              <p>
+                <strong>{serviceLink.question}</strong>{" "}
+                <a
+                  href={serviceLink.href}
+                  data-tempoo-goal="ver_servicio"
+                  data-tempoo-goal-pagina={Astro.url.pathname}
+                  data-tempoo-goal-destino={serviceLink.href}
+                  data-tempoo-goal-posicion="articulo"
+                >{serviceLink.label}</a>
+              </p>
+            )
+          }
             <hr />
           <NewsletterSignup client:visible lang={lang} />
           <Comments

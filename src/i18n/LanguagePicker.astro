@@ -1,5 +1,6 @@
 ---
 import { getCollection } from "astro:content";
+import { SERVICE_PAGES, findServicePage } from "../utils/routing";
 const { entry } = Astro.props;
 
 let otherLink;
@@ -46,7 +47,11 @@ if (entry) {
     const targetLang = lang === "en" ? "es" : "en";
 
     // Construct new path: swap lang prefix
-    otherLink = `/${targetLang}${rest}`;
+    // Service pages have translated slugs; without a translation, go to the services index.
+    const servicePage = findServicePage(currentPath);
+    otherLink = servicePage
+      ? (servicePage[targetLang as "es" | "en"] ?? SERVICE_PAGES[0][targetLang as "es" | "en"])
+      : `/${targetLang}${rest}`;
   } else {
     // If no language prefix (e.g. root / or direct access), default to swapping to 'en' from 'es' logic or vice versa
     // But with prefixDefaultLocale: true, we should usually have a prefix.

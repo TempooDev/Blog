@@ -12,7 +12,7 @@ import PortfolioPreview from "@components/Portfolio/PortfolioPreview.astro";
 import ContactCTA from "@components/Common/ContactCTA.astro";
 import Skills from "@components/Common/Skills.astro";
 
-import { getLangStaticPaths } from "../../utils/routing";
+import { SERVICE_PAGES, getLangStaticPaths } from "../../utils/routing";
 import { homeI18n } from "../../i18n/pages/home";
 
 export const getStaticPaths = getLangStaticPaths;
@@ -36,6 +36,19 @@ const projects = (
           tagline={content.heroTagline}
           align="start"
         >
+          <div class="services-link">
+            <p>{content.servicesLine}</p>
+            <CallToAction
+              href={SERVICE_PAGES[0][lang as "es" | "en"]!}
+              data-tempoo-goal="ver_servicio"
+              data-tempoo-goal-pagina={Astro.url.pathname}
+              data-tempoo-goal-destino={SERVICE_PAGES[0][lang as "es" | "en"]!}
+              data-tempoo-goal-posicion="home"
+            >
+              {content.servicesBtn}
+              <Icon icon="arrow-right" size="1.2em" />
+            </CallToAction>
+          </div>
           <div class="roles">
             <Pill><Icon icon="code" size="1.33em" /> {content.roles.dev}</Pill>
             <Pill
@@ -98,6 +111,15 @@ const projects = (
     flex-direction: column;
     align-items: center;
     gap: 2rem;
+  }
+
+  .services-link {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    text-align: start;
+    color: var(--gray-200);
   }
 
   .roles {

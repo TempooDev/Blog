@@ -14,6 +14,8 @@ export const homeI18n = {
         projectsTitle: "Personal Projects",
         projectsDesc: "Some personal projects I have worked on.",
         viewAll: "View All",
+        servicesLine: "AI and technical consulting for SMEs and startups",
+        servicesBtn: "See services",
     },
     es: {
         title: "Antonio Bermúdez · Ingeniero de software (.NET, Azure)",
@@ -29,5 +31,7 @@ export const homeI18n = {
         projectsTitle: "Proyectos personales",
         projectsDesc: "Algunos proyectos personales en los que he trabajado.",
         viewAll: "Ver todos",
+        servicesLine: "Consultoría de IA y tecnología para pymes y startups",
+        servicesBtn: "Ver servicios",
     },
 };

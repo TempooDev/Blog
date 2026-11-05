@@ -5,6 +5,7 @@ import Footer from "@components/Common/Footer.astro";
 import ConsentBanner from "@components/Common/ConsentBanner.astro";
 import {
   DEFAULT_LANG,
+  findServicePage,
   getAlternatePaths,
   getLangFromPath,
 } from "../utils/routing";
@@ -15,23 +16,25 @@ export interface Props {
   description?: string | undefined;
   entry?: any;
   noindex?: boolean;
+  jsonLd?: object[];
 }
 
-const { title, description, entry, noindex = false } = Astro.props;
+const { title, description, entry, noindex = false, jsonLd: pageJsonLd } = Astro.props;
 
 const lang = getLangFromPath(Astro.url.pathname) ?? DEFAULT_LANG;
 const alternates = await getAlternatePaths(Astro.url.pathname, entry);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 const image: string | undefined = entry?.data.img || undefined;
 const isHome = Astro.url.pathname === `/${lang}/`;
-const jsonLd = entry
+const jsonLd = pageJsonLd ?? (entry
   ? getEntryJsonLd(entry, canonicalURL, lang, new URL(image ?? DEFAULT_IMAGE, Astro.site).href)
   : isHome
     ? getPersonJsonLd(Astro.site!)
-    : [];
-// hreflang only makes sense when the page actually has another language version
+    : []);
+// hreflang only makes sense when the page actually has another language version.
+// Service pages always declare it: the English-only GDPR page keeps en + x-default.
 const hreflangs =
-  !noindex && Object.keys(alternates).length > 1
+  !noindex && (Object.keys(alternates).length > 1 || findServicePage(Astro.url.pathname))
     ? [
         ...Object.entries(alternates),
         ["x-default", alternates[DEFAULT_LANG] ?? Object.values(alternates)[0]],
