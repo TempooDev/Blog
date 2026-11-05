@@ -50,7 +50,7 @@ export function getEntryJsonLd(
             headline: entry.data.title,
             description: entry.data.description,
             image,
-            datePublished: entry.data.publishDate.toISOString(),
+            ...(entry.data.publishDate && { datePublished: entry.data.publishDate.toISOString() }),
             inLanguage: lang,
             keywords: entry.data.tags.join(", "),
             mainEntityOfPage: url.href,

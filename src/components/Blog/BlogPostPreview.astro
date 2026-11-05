@@ -20,5 +20,5 @@ const slug = parts.slice(1).join("/");
   imgSrc={post.data.img}
   imgAlt={post.data.img_alt || post.data.title}
   tags={post.data.tags}
-  publishDate={post.data.publishDate.toISOString().split("T")[0]}
+  publishDate={post.data.publishDate?.toISOString().split("T")[0]}
 />

@@ -6,6 +6,7 @@ import Grid from "@components/Common/Grid.astro";
 import CardPreview from "@components/Common/CardPreview.astro";
 import NewsletterSignup from "../../components/NewsletterSignup";
 import { getLangStaticPaths } from "../../utils/routing";
+import { byPublishDateDesc } from "../../utils/dates";
 import { newsletterI18n } from "../../i18n/pages/collections";
 
 export const getStaticPaths = getLangStaticPaths;
@@ -14,7 +15,7 @@ const { lang } = Astro.params;
 
 const issues = (
   await getCollection("newsletter", ({ id }) => id.startsWith(`${lang}/`))
-).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+).sort(byPublishDateDesc);
 
 const content = newsletterI18n[lang as keyof typeof newsletterI18n];
 ---
@@ -42,7 +43,7 @@ const content = newsletterI18n[lang as keyof typeof newsletterI18n];
                     imgSrc={issue.data.img}
                     imgAlt={issue.data.img_alt || issue.data.title}
                     tags={issue.data.tags}
-                    publishDate={issue.data.publishDate.toISOString().split("T")[0]}
+                    publishDate={issue.data.publishDate?.toISOString().split("T")[0]}
                   />
                 </li>
               ))}

@@ -13,6 +13,7 @@ import ContactCTA from "@components/Common/ContactCTA.astro";
 import Skills from "@components/Common/Skills.astro";
 
 import { SERVICE_PAGES, getLangStaticPaths } from "../../utils/routing";
+import { byPublishDateDesc } from "../../utils/dates";
 import { homeI18n } from "../../i18n/pages/home";
 
 export const getStaticPaths = getLangStaticPaths;
@@ -24,7 +25,7 @@ const projects = (
   await getCollection("work", ({ id }) => {
     return id.startsWith(`${lang}/`);
   })
-).sort((a, b) => b.data.publishDate.valueOf() - a.data.publishDate.valueOf());
+).sort(byPublishDateDesc);
 ---
 
 <BaseLayout title={content.title} description={content.description}>
