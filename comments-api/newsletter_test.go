@@ -316,3 +316,72 @@ func TestNewsletterSchedule(t *testing.T) {
 		t.Errorf("next run %v, want %v", next.UTC(), want)
 	}
 }
+
+func TestIsStale(t *testing.T) {
+	cases := []struct {
+		publish, today string
+		want           bool
+	}{
+		{"2026-11-09T00:00:00", "2026-11-09", false},
+		{"2026-11-09", "2026-11-15", false},
+		{"2026-11-09T17:00:00", "2026-11-16", true},
+		{"", "2026-11-16", false},
+		{"garbage", "2026-11-16", false},
+	}
+	for _, c := range cases {
+		if got := isStale(Digest{PublishDate: c.publish}, c.today); got != c.want {
+			t.Errorf("isStale(%q, %q) = %v, want %v", c.publish, c.today, got, c.want)
+		}
+	}
+}
+
+func TestCrossSiteRequest(t *testing.T) {
+	cases := []struct {
+		method, site, origin string
+		want                 bool
+	}{
+		{http.MethodPost, "same-origin", "", false},
+		{http.MethodPost, "cross-site", "", true},
+		{http.MethodPost, "same-site", "", true},
+		{http.MethodPost, "", "https://evil.example", true},
+		{http.MethodPost, "", "https://api.example.com", false},
+		{http.MethodPost, "", "", false}, // curl
+		{http.MethodGet, "cross-site", "", false},
+	}
+	for _, c := range cases {
+		r := httptest.NewRequest(c.method, "https://api.example.com/admin/newsletter/send?digest=1", nil)
+		if c.site != "" {
+			r.Header.Set("Sec-Fetch-Site", c.site)
+		}
+		if c.origin != "" {
+			r.Header.Set("Origin", c.origin)
+		}
+		if got := crossSiteRequest(r); got != c.want {
+			t.Errorf("%s site=%q origin=%q: got %v, want %v", c.method, c.site, c.origin, got, c.want)
+		}
+	}
+}
+
+func TestAdminRequiresPassword(t *testing.T) {
+	t.Setenv("ADMIN_PASSWORD", "")
+	h := authMiddleware(func(w http.ResponseWriter, r *http.Request) { w.WriteHeader(http.StatusOK) })
+	r := httptest.NewRequest(http.MethodGet, "/dashboard", nil)
+	r.SetBasicAuth("admin", "admin")
+	w := httptest.NewRecorder()
+	h(w, r)
+	if w.Code != http.StatusServiceUnavailable {
+		t.Fatalf("admin/admin without ADMIN_PASSWORD: got %d", w.Code)
+	}
+	if w.Header().Get("Cache-Control") != "no-store" || w.Header().Get("X-Frame-Options") != "DENY" {
+		t.Error("admin responses must not be cached or framed")
+	}
+}
+
+func TestDashboardCSP(t *testing.T) {
+	if !strings.Contains(dashboardCSP, "script-src 'sha256-") || !strings.Contains(dashboardCSP, "style-src 'sha256-") {
+		t.Fatalf("CSP must pin the dashboard's inline script and style: %s", dashboardCSP)
+	}
+	if strings.Contains(string(dashboardHTML), " onclick=") || strings.Contains(string(dashboardHTML), " style=\"") {
+		t.Error("inline handlers and style attributes are blocked by the CSP")
+	}
+}

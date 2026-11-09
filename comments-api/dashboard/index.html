@@ -1,295 +1,392 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comments Admin Dashboard</title>
+    <meta name="robots" content="noindex, nofollow">
+    <title>Panel · antoniobermudez.dev</title>
     <style>
+        :root {
+            --bg: #f5f6f8;
+            --surface: #ffffff;
+            --surface-2: #f0f2f5;
+            --text: #1d2127;
+            --muted: #687180;
+            --border: #e2e5ea;
+            --accent: #3b5bdb;
+            --accent-text: #ffffff;
+            --ok-bg: #e3f6e8;
+            --ok: #1f7a3a;
+            --warn-bg: #fff4d6;
+            --warn: #8a6100;
+            --info-bg: #e2efff;
+            --info: #1d5bbf;
+            --danger: #c92a2a;
+            --danger-bg: #ffe9e9;
+            --shadow: 0 1px 2px rgba(16, 24, 40, .06), 0 1px 3px rgba(16, 24, 40, .08);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg: #0f1115;
+                --surface: #181b21;
+                --surface-2: #20242c;
+                --text: #e7e9ee;
+                --muted: #9aa3b2;
+                --border: #2a2f39;
+                --accent: #6d8bff;
+                --accent-text: #0f1115;
+                --ok-bg: #16301f;
+                --ok: #6fdc8c;
+                --warn-bg: #33290f;
+                --warn: #f2c54b;
+                --info-bg: #142640;
+                --info: #7fb2ff;
+                --danger: #ff6b6b;
+                --danger-bg: #3a1717;
+                --shadow: none;
+            }
+        }
+
+        * { box-sizing: border-box; }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #f4f4f9;
             margin: 0;
-            padding: 20px;
-            color: #333;
+            background: var(--bg);
+            color: var(--text);
+            font: 15px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        h1 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: #444;
-        }
+        .wrap { max-width: 920px; margin: 0 auto; padding: 24px 16px 48px; }
 
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
+        header { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 20px; }
+        header h1 { font-size: 1.35rem; margin: 0; }
+        header span { color: var(--muted); font-size: .9rem; }
 
-        .card {
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-        }
+        .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
+        .stat { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px 16px; box-shadow: var(--shadow); }
+        .stat .label { color: var(--muted); font-size: .8rem; text-transform: uppercase; letter-spacing: .04em; }
+        .stat .value { font-size: 1.6rem; font-weight: 700; margin-top: 2px; }
+        .stat .value.small { font-size: 1rem; padding-top: 8px; }
 
-        .card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-        }
+        .tabs { display: flex; gap: 4px; background: var(--surface-2); border-radius: 10px; padding: 4px; margin-bottom: 16px; }
+        .tab { flex: 1; border: 0; background: transparent; color: var(--muted); padding: 10px; border-radius: 8px; font-weight: 600; font-size: .95rem; cursor: pointer; }
+        .tab.active { background: var(--surface); color: var(--text); box-shadow: var(--shadow); }
+        .tab .count { display: inline-block; min-width: 20px; padding: 0 6px; margin-left: 6px; border-radius: 10px; background: var(--danger); color: #fff; font-size: .75rem; line-height: 20px; }
+        .tab .count:empty { display: none; }
 
-        .meta {
-            font-size: 0.9em;
-            color: #666;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding-bottom: 10px;
-            overflow-wrap: anywhere;
-        }
+        .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+        .toolbar input { flex: 1; min-width: 200px; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text); font-size: .95rem; }
+        .seg { display: flex; gap: 4px; }
 
-        .content {
-            margin-bottom: 20px;
-            white-space: pre-wrap;
-            overflow-wrap: anywhere;
-            word-break: break-word;
-            background-color: #fafafa;
-            padding: 15px;
-            border-radius: 4px;
-            border: 1px solid #eee;
-        }
+        .list { display: flex; flex-direction: column; gap: 12px; }
+        .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; box-shadow: var(--shadow); }
+        .card.highlight { border-color: var(--warn); }
+        .card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; flex-wrap: wrap; }
+        .card h3 { margin: 0 0 4px; font-size: 1.05rem; }
+        .meta { color: var(--muted); font-size: .85rem; overflow-wrap: anywhere; }
+        .meta a { color: var(--accent); }
+        .body { margin: 12px 0 0; padding: 12px; background: var(--surface-2); border-radius: 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+        .actions { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
 
-        .actions {
-            display: flex;
-            gap: 10px;
-        }
+        .pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 999px; font-size: .8rem; font-weight: 600; background: var(--surface-2); color: var(--muted); white-space: nowrap; }
+        .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+        .pill.ok { background: var(--ok-bg); color: var(--ok); }
+        .pill.warn { background: var(--warn-bg); color: var(--warn); }
+        .pill.info { background: var(--info-bg); color: var(--info); }
+        .lang { font-weight: 700; font-size: .75rem; padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); margin-right: 6px; }
 
-        button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
+        .btn { border: 1px solid var(--border); background: var(--surface); color: var(--text); padding: 9px 14px; border-radius: 8px; font-weight: 600; font-size: .9rem; cursor: pointer; }
+        .btn:hover { background: var(--surface-2); }
+        .btn.primary { background: var(--accent); border-color: var(--accent); color: var(--accent-text); }
+        .btn.primary:hover { filter: brightness(1.08); }
+        .btn.ok { background: var(--ok); border-color: var(--ok); color: #fff; }
+        .btn.danger { color: var(--danger); }
+        .btn.danger:hover { background: var(--danger-bg); }
+        .btn[disabled] { opacity: .55; cursor: default; }
+        .seg .btn.active { background: var(--text); color: var(--bg); border-color: var(--text); }
 
-        .approve {
-            background-color: #4CAF50;
-            color: white;
-        }
+        .empty { text-align: center; color: var(--muted); padding: 48px 16px; background: var(--surface); border: 1px dashed var(--border); border-radius: 12px; }
+        .error { display: none; margin-bottom: 16px; padding: 12px 14px; border-radius: 8px; background: var(--danger-bg); color: var(--danger); }
+        .error.show { display: block; }
 
-        .approve:hover {
-            background-color: #45a049;
-        }
+        .toast { position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%) translateY(16px); opacity: 0; visibility: hidden; background: var(--text); color: var(--bg); padding: 12px 18px; border-radius: 10px; font-weight: 600; transition: transform .25s, opacity .25s, visibility .25s; max-width: calc(100% - 32px); }
+        .toast.show { transform: translateX(-50%); opacity: 1; visibility: visible; }
 
-        .reject {
-            background-color: #f44336;
-            color: white;
-        }
-
-        .reject:hover {
-            background-color: #da190b;
-        }
-
-        .no-comments {
-            grid-column: 1 / -1;
-            text-align: center;
-            padding: 50px;
-            color: #888;
-            font-size: 1.2em;
-        }
-
-        .error {
-            color: red;
-            text-align: center;
-            margin-bottom: 20px;
-        }
-    </style>
-    <style>
-        /* ... existing styles ... */
-        .tabs {
-            display: flex;
-            justify-content: center;
-            margin-bottom: 20px;
-            gap: 10px;
-        }
-
-        .tab {
-            padding: 10px 20px;
-            cursor: pointer;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            background: #fff;
-            font-weight: bold;
-        }
-
-        .tab.active {
-            background: #333;
-            color: #fff;
-            border-color: #333;
-        }
-
-        .filters {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .filters input {
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            width: 300px;
-        }
-
-        .filters button {
-            flex: 0 0 auto;
-            background: #333;
-            color: #fff;
-        }
-
-        .filters button:hover {
-            background: #555;
+        @media (max-width: 640px) {
+            .stats { grid-template-columns: repeat(2, 1fr); }
+            .actions .btn { flex: 1; padding: 12px; }
+            header { flex-direction: column; gap: 2px; }
         }
     </style>
 </head>
 
 <body>
+    <div class="wrap">
+        <header>
+            <h1>Panel de antoniobermudez.dev</h1>
+            <span id="next-send"></span>
+        </header>
 
-    <h1>Comments Admin Dashboard</h1>
+        <section class="stats" aria-label="Resumen">
+            <div class="stat"><div class="label">Comentarios pendientes</div><div class="value" id="stat-pending">–</div></div>
+            <div class="stat"><div class="label">Suscriptores ES</div><div class="value" id="stat-es">–</div></div>
+            <div class="stat"><div class="label">Suscriptores EN</div><div class="value" id="stat-en">–</div></div>
+            <div class="stat"><div class="label">Números sin enviar</div><div class="value" id="stat-unsent">–</div></div>
+        </section>
 
-    <div class="tabs">
-        <button id="tab-pending" class="tab active" onclick="switchTab('pending')">Pending</button>
-        <button id="tab-approved" class="tab" onclick="switchTab('approved')">Approved</button>
+        <nav class="tabs" role="tablist">
+            <button class="tab active" data-tab="newsletter" role="tab">Newsletter<span class="count" id="tab-count-newsletter"></span></button>
+            <button class="tab" data-tab="comments" role="tab">Comentarios<span class="count" id="tab-count-comments"></span></button>
+        </nav>
+
+        <div class="error" id="error"></div>
+
+        <section id="view-newsletter">
+            <div class="list" id="digests"></div>
+        </section>
+
+        <section id="view-comments" hidden>
+            <div class="toolbar">
+                <div class="seg">
+                    <button class="btn active" data-status="pending">Pendientes</button>
+                    <button class="btn" data-status="approved">Aprobados</button>
+                </div>
+                <input type="search" id="slug-filter" placeholder="Filtrar por slug del post">
+            </div>
+            <div class="list" id="comments"></div>
+        </section>
     </div>
 
-    <div class="filters">
-        <input type="text" id="slug-filter" placeholder="Filter by Post Slug / Translation ID"
-            onkeypress="handleEnter(event)">
-        <button onclick="fetchComments()">Search</button>
-    </div>
-
-    <div id="error-msg" class="error"></div>
-    <div id="comments-container" class="container">
-        <!-- Comments will be loaded here -->
-    </div>
+    <div class="toast" id="toast" role="status"></div>
 
     <script>
-        const API_BASE = window.location.origin;
-        let currentStatus = 'pending';
+        const API = window.location.origin;
+        const $ = id => document.getElementById(id);
+        let commentStatus = 'pending';
+        let toastTimer;
 
-        function switchTab(status) {
-            currentStatus = status;
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById(`tab-${status}`).classList.add('active');
-            fetchComments();
+        function esc(value) {
+            return String(value ?? '')
+                .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;').replace(/'/g, '&#039;');
         }
 
-        function handleEnter(e) {
-            if (e.key === 'Enter') fetchComments();
+        function fmtDate(value) {
+            if (!value) return '—';
+            return new Date(value).toLocaleString('es-ES', { dateStyle: 'medium', timeStyle: 'short' });
         }
 
-        async function fetchComments() {
+        function fmtDay(value) {
+            if (!value) return '—';
+            const [y, m, d] = value.slice(0, 10).split('-').map(Number);
+            return new Date(y, m - 1, d).toLocaleDateString('es-ES', { dateStyle: 'medium' });
+        }
+
+        function toast(message) {
+            const el = $('toast');
+            el.textContent = message;
+            el.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => el.classList.remove('show'), 3500);
+        }
+
+        function showError(message) {
+            const el = $('error');
+            el.textContent = message || '';
+            el.classList.toggle('show', !!message);
+        }
+
+        async function api(path, options = {}) {
+            const res = await fetch(API + path, options);
+            if (res.status === 401) {
+                window.location.reload(); // the browser asks for the password again
+                throw new Error('Sesión caducada');
+            }
+            const text = await res.text();
+            if (!res.ok) throw new Error(text.trim() || res.statusText);
+            try { return JSON.parse(text); } catch { return text; }
+        }
+
+        // Tabs
+        function showTab(name) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
+            $('view-newsletter').hidden = name !== 'newsletter';
+            $('view-comments').hidden = name !== 'comments';
+            history.replaceState(null, '', '#' + name);
+            showError('');
+            if (name === 'newsletter') loadDigests(); else loadComments();
+        }
+
+        document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => showTab(t.dataset.tab)));
+
+        // Newsletter
+        function digestState(d) {
+            if (d.send && !d.send.finishedAt) return { cls: 'info', label: 'Enviando…' };
+            if (d.send) return { cls: 'ok', label: `Enviado · ${d.send.sent} ok${d.send.failed ? `, ${d.send.failed} fallidos` : ''}` };
+            if (d.sent_at) return { cls: 'ok', label: 'Enviado' };
+            if (d.status === 'published') return { cls: 'warn', label: 'Publicado, sin enviar' };
+            if (d.status === 'draft') return { cls: '', label: 'Borrador' };
+            return { cls: '', label: d.status };
+        }
+
+        let digestData = { digests: [], active: {} };
+
+        async function loadDigests() {
             try {
-                const slug = document.getElementById('slug-filter').value.trim();
-                let url = `${API_BASE}/admin/list?status=${currentStatus}`;
-                if (slug) {
-                    url += `&slug=${encodeURIComponent(slug)}`;
-                }
+                digestData = await api('/admin/newsletter/digests');
+                renderDigests();
+            } catch (err) {
+                showError('No he podido cargar los números: ' + err.message);
+            }
+        }
 
-                const response = await fetch(url);
-                if (response.status === 401) {
-                    window.location.reload(); // Trigger browser basic auth prompt
-                    return;
-                }
-                if (!response.ok) throw new Error('Failed to fetch comments');
+        function renderDigests() {
+            const { digests = [], active = {}, next_send } = digestData;
+            $('stat-es').textContent = active.es ?? 0;
+            $('stat-en').textContent = active.en ?? 0;
+            const unsent = digests.filter(d => d.status === 'published' && !d.send && !d.sent_at).length;
+            $('stat-unsent').textContent = unsent;
+            $('tab-count-newsletter').textContent = unsent || '';
+            $('next-send').textContent = next_send ? 'Próximo envío automático: ' + fmtDate(next_send) : 'Envío automático desactivado';
 
-                const comments = await response.json();
+            const list = $('digests');
+            if (!digests.length) {
+                list.innerHTML = '<div class="empty">Todavía no hay números en Directus.</div>';
+                return;
+            }
+            list.innerHTML = digests.map(d => {
+                const state = digestState(d);
+                const canSend = d.status === 'published' && !d.send && !d.sent_at;
+                const sentWhen = d.send?.finishedAt || d.sent_at;
+                return `
+                    <article class="card ${canSend ? 'highlight' : ''}">
+                        <div class="card-head">
+                            <div>
+                                <h3><span class="lang">${esc(d.language).toUpperCase()}</span>#${esc(d.issue_number || '?')} · ${esc(d.title)}</h3>
+                                <div class="meta">
+                                    Fecha ${fmtDay(d.publish_date)}${sentWhen ? ` · enviado ${fmtDate(sentWhen)}` : ''}
+                                    · ${esc(active[d.language] ?? 0)} suscriptores
+                                    · <a href="${esc(d.page_url)}" target="_blank" rel="noopener noreferrer">ver en la web</a>
+                                </div>
+                            </div>
+                            <span class="pill ${state.cls}">${esc(state.label)}</span>
+                        </div>
+                        <div class="actions">
+                            ${canSend ? `<button class="btn primary" data-send="${esc(d.id)}">Enviar ahora</button>` : ''}
+                            <button class="btn" data-test="${esc(d.id)}">Enviar prueba</button>
+                        </div>
+                    </article>`;
+            }).join('');
+        }
+
+        $('digests').addEventListener('click', async e => {
+            const send = e.target.closest('[data-send]');
+            const test = e.target.closest('[data-test]');
+            if (send) {
+                const d = digestData.digests.find(x => String(x.id) === send.dataset.send);
+                const count = digestData.active[d.language] ?? 0;
+                if (!confirm(`¿Enviar "${d.title}" a ${count} suscriptores (${d.language.toUpperCase()}) ahora?\n\nNo se puede deshacer.`)) return;
+                send.disabled = true;
+                try {
+                    await api(`/admin/newsletter/send?digest=${encodeURIComponent(d.id)}`, { method: 'POST' });
+                    toast('Enviando. Te llegará el resumen por Telegram.');
+                } catch (err) {
+                    showError('No se ha enviado: ' + err.message);
+                }
+                loadDigests();
+            } else if (test) {
+                const email = prompt('¿A qué dirección envío la prueba?');
+                if (!email) return;
+                test.disabled = true;
+                try {
+                    await api(`/admin/newsletter/send?digest=${encodeURIComponent(test.dataset.test)}&test=${encodeURIComponent(email)}`, { method: 'POST' });
+                    toast('Prueba enviada a ' + email);
+                } catch (err) {
+                    showError('No se ha enviado la prueba: ' + err.message);
+                }
+                test.disabled = false;
+            }
+        });
+
+        // Comments
+        async function loadComments() {
+            try {
+                const slug = $('slug-filter').value.trim();
+                let path = `/admin/list?status=${commentStatus}`;
+                if (slug) path += `&slug=${encodeURIComponent(slug)}`;
+                const comments = await api(path) || [];
+                if (commentStatus === 'pending' && !slug) updatePendingCount(comments.length);
                 renderComments(comments);
             } catch (err) {
-                document.getElementById('error-msg').textContent = err.message;
+                showError('No he podido cargar los comentarios: ' + err.message);
             }
+        }
+
+        function updatePendingCount(n) {
+            $('stat-pending').textContent = n;
+            $('tab-count-comments').textContent = n || '';
         }
 
         function renderComments(comments) {
-            const container = document.getElementById('comments-container');
-            container.innerHTML = '';
-
-            if (!comments || comments.length === 0) {
-                container.innerHTML = `<div class="no-comments">No ${currentStatus} comments found!</div>`;
+            const list = $('comments');
+            if (!comments.length) {
+                list.innerHTML = `<div class="empty">No hay comentarios ${commentStatus === 'pending' ? 'pendientes' : 'aprobados'}.</div>`;
                 return;
             }
-
-            comments.forEach(comment => {
-                const card = document.createElement('div');
-                card.className = 'card';
-
-                let actions = '';
-                if (currentStatus === 'pending') {
-                    actions = `
-                        <button class="approve" onclick="approveComment('${comment.id}')">Approve</button>
-                        <button class="reject" onclick="rejectComment('${comment.id}')">Reject</button>
-                    `;
-                } else if (currentStatus === 'approved') {
-                    actions = `
-                        <button class="reject" onclick="rejectComment('${comment.id}')">Delete</button>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="meta">
-                        <strong>Author:</strong> ${escapeHtml(comment.author)}<br>
-                        <strong>Post Slug:</strong> ${escapeHtml(comment.slug)}<br>
-                        <strong>Date:</strong> ${new Date(comment.createdAt).toLocaleString()}
+            list.innerHTML = comments.map(c => `
+                <article class="card">
+                    <div class="card-head">
+                        <div>
+                            <h3>${esc(c.author)}</h3>
+                            <div class="meta">${esc(c.slug)} · ${fmtDate(c.createdAt)}</div>
+                        </div>
                     </div>
-                    <div class="content">${escapeHtml(comment.content)}</div>
+                    <div class="body">${esc(c.content)}</div>
                     <div class="actions">
-                        ${actions}
+                        ${commentStatus === 'pending'
+                            ? `<button class="btn ok" data-approve="${esc(c.id)}">Aprobar</button>
+                               <button class="btn danger" data-reject="${esc(c.id)}">Rechazar</button>`
+                            : `<button class="btn danger" data-reject="${esc(c.id)}">Borrar</button>`}
                     </div>
-                `;
-                container.appendChild(card);
-            });
+                </article>`).join('');
         }
 
-        async function approveComment(id) {
-            if (!confirm('Approve this comment?')) return;
+        $('comments').addEventListener('click', async e => {
+            const approve = e.target.closest('[data-approve]');
+            const reject = e.target.closest('[data-reject]');
+            const btn = approve || reject;
+            if (!btn) return;
+            const action = approve ? 'approve' : 'reject';
+            const id = approve ? approve.dataset.approve : reject.dataset.reject;
+            const question = approve ? '¿Aprobar este comentario?' : commentStatus === 'approved' ? '¿Borrar este comentario?' : '¿Rechazar este comentario?';
+            if (!confirm(question)) return;
+            btn.disabled = true;
             try {
-                const res = await fetch(`${API_BASE}/admin/approve?id=${id}`, { method: 'POST' });
-                if (!res.ok) throw new Error('Failed to approve');
-                fetchComments();
+                await api(`/admin/${action}?id=${encodeURIComponent(id)}`, { method: 'POST' });
+                toast(approve ? 'Comentario aprobado' : 'Comentario eliminado');
             } catch (err) {
-                alert(err.message);
+                showError(err.message);
             }
-        }
+            loadComments();
+        });
 
-        async function rejectComment(id) {
-            const action = currentStatus === 'approved' ? 'Delete' : 'Reject';
-            if (!confirm(`${action} this comment?`)) return;
-            try {
-                const res = await fetch(`${API_BASE}/admin/reject?id=${id}`, { method: 'POST' });
-                if (!res.ok) throw new Error('Failed to reject');
-                fetchComments();
-            } catch (err) {
-                alert(err.message);
-            }
-        }
+        document.querySelectorAll('[data-status]').forEach(b => b.addEventListener('click', () => {
+            commentStatus = b.dataset.status;
+            document.querySelectorAll('[data-status]').forEach(x => x.classList.toggle('active', x === b));
+            loadComments();
+        }));
+        $('slug-filter').addEventListener('keydown', e => { if (e.key === 'Enter') loadComments(); });
 
-        function escapeHtml(unsafe) {
-            return unsafe
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/"/g, "&quot;")
-                .replace(/'/g, "&#039;");
+        // First load: fill both counters, then show the tab from the URL (Telegram links to #newsletter)
+        api('/admin/list?status=pending').then(c => updatePendingCount((c || []).length)).catch(() => {});
+        if (location.hash === '#comments') {
+            showTab('comments');
+            api('/admin/newsletter/digests').then(d => { digestData = d; renderDigests(); }).catch(() => {});
+        } else {
+            showTab('newsletter');
         }
-
-        // Initial load
-        fetchComments();
     </script>
 </body>
 
