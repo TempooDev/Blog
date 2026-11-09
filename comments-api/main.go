@@ -84,6 +84,7 @@ func main() {
 	http.HandleFunc("/admin/trigger-notify", authMiddleware(handleAdminTriggerNotify))
 	http.HandleFunc("/admin/newsletter/subscribers", authMiddleware(handleAdminSubscribers))
 	http.HandleFunc("/admin/newsletter/send", authMiddleware(handleAdminSend))
+	http.HandleFunc("/admin/newsletter/digests", authMiddleware(handleAdminDigests))
 
 	// Cron Jobs
 	scheduleCronJobs()
@@ -109,14 +110,22 @@ var loginLimiter = newRateLimiter(5, 15*time.Minute)
 // Middleware for Basic Auth
 func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		setAdminHeaders(w)
 		adminUser := os.Getenv("ADMIN_USER")
 		adminPass := os.Getenv("ADMIN_PASSWORD")
 
 		if adminUser == "" {
 			adminUser = "admin"
 		}
+		// No built-in password: without ADMIN_PASSWORD the admin area stays closed.
 		if adminPass == "" {
-			adminPass = "admin" // Default for dev, user should set env var
+			log.Println("Admin request refused: ADMIN_PASSWORD is not set")
+			http.Error(w, "Admin is disabled until ADMIN_PASSWORD is set", http.StatusServiceUnavailable)
+			return
+		}
+		if crossSiteRequest(r) {
+			http.Error(w, "Cross-site request refused", http.StatusForbidden)
+			return
 		}
 
 		ip := clientIP(r)
@@ -144,7 +153,8 @@ func authMiddleware(next http.HandlerFunc) http.HandlerFunc {
 }
 
 func handleDashboard(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Content-Type", "text/html")
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.Header().Set("Content-Security-Policy", dashboardCSP)
 	w.Write(dashboardHTML)
 }
 

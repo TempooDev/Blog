@@ -16,6 +16,7 @@ import (
 	textTemplate "text/template"
 	"time"
 
+	"github.com/robfig/cron/v3"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
@@ -314,7 +315,8 @@ func sendDueDigests() {
 	if err != nil {
 		madrid = time.UTC
 	}
-	due, err := fetchDueDigests(ctx, time.Now().In(madrid).Format("2006-01-02"))
+	today := time.Now().In(madrid).Format("2006-01-02")
+	due, err := fetchDueDigests(ctx, today)
 	if err != nil {
 		log.Printf("Newsletter: could not load due issues: %v\n", err)
 		notifyTelegram("Newsletter: no he podido leer los números de Directus, no se ha enviado nada: " + err.Error())
@@ -322,10 +324,16 @@ func sendDueDigests() {
 	}
 	if len(due) == 0 {
 		log.Println("Newsletter: no published issue waiting to be sent")
-		notifyTelegram("Newsletter: no hay ningún número publicado pendiente de enviar. Si había uno en borrador, publícalo y envíalo a mano.")
+		notifyTelegram("Newsletter: no hay ningún número publicado pendiente de enviar. Si había uno en borrador, publícalo y envíalo desde " + dashboardURL())
 		return
 	}
 	for _, d := range due {
+		if isStale(d, today) {
+			// Published after its own Monday: it is a week old now, so don't send it next to the new one
+			log.Printf("Newsletter: digest %d (%s) is from %s, not sending it with this week's issues\n", d.ID, d.Language, d.PublishDate)
+			notifyTelegram(fmt.Sprintf("Newsletter: \"%s\" (%s) sigue sin enviar y es de hace más de una semana, así que no lo envío hoy. Si aún quieres mandarlo, hazlo desde %s", d.Title, normalizeLang(d.Language), dashboardURL()))
+			continue
+		}
 		err := claimSend(ctx, d)
 		if mongo.IsDuplicateKeyError(err) {
 			continue
@@ -400,4 +408,122 @@ func sendDigest(d Digest, waitForDeploy bool) {
 	if err := notifyTelegram(msg); err != nil {
 		log.Printf("Error notifying Telegram: %v\n", err)
 	}
+}
+
+// staleAfter is how old an unsent issue can be before the weekly job stops sending it on its own.
+// An issue published after its Monday slot would otherwise go out a week late, next to the new one.
+const staleAfter = 6 * 24 * time.Hour
+
+// isStale reports whether the issue's publish date is more than staleAfter before today (YYYY-MM-DD).
+func isStale(d Digest, today string) bool {
+	if len(d.PublishDate) < 10 {
+		return false
+	}
+	published, err1 := time.Parse("2006-01-02", d.PublishDate[:10])
+	now, err2 := time.Parse("2006-01-02", today)
+	if err1 != nil || err2 != nil {
+		return false
+	}
+	return now.Sub(published) > staleAfter
+}
+
+func dashboardURL() string {
+	if base := apiURL(); base != "" {
+		return base + "/dashboard#newsletter"
+	}
+	return "/dashboard#newsletter"
+}
+
+// fetchRecentDigests returns the latest issues, newest first, for the dashboard.
+func fetchRecentDigests(ctx context.Context, limit int) ([]Digest, error) {
+	q := url.Values{}
+	q.Set("fields", digestFields)
+	q.Set("limit", fmt.Sprint(limit))
+	q.Set("sort", "-id")
+	var body struct {
+		Data []Digest `json:"data"`
+	}
+	err := directusGet(ctx, "/items/digests?"+q.Encode(), &body)
+	return body.Data, err
+}
+
+type sendRecord struct {
+	DigestID   int        `bson:"digestId" json:"-"`
+	StartedAt  time.Time  `bson:"startedAt" json:"startedAt"`
+	FinishedAt *time.Time `bson:"finishedAt,omitempty" json:"finishedAt,omitempty"`
+	Sent       int        `bson:"sent" json:"sent"`
+	Failed     int        `bson:"failed" json:"failed"`
+}
+
+type digestSummary struct {
+	ID          int         `json:"id"`
+	Title       string      `json:"title"`
+	Language    string      `json:"language"`
+	IssueNumber int         `json:"issue_number"`
+	Status      string      `json:"status"`
+	PublishDate string      `json:"publish_date"`
+	SentAt      *string     `json:"sent_at"`
+	Send        *sendRecord `json:"send,omitempty"`
+	PageURL     string      `json:"page_url"`
+}
+
+// GET /admin/newsletter/digests lists the latest issues with their send state and the
+// number of active subscribers per language, for the dashboard's Newsletter tab.
+func handleAdminDigests(w http.ResponseWriter, r *http.Request) {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	list, err := fetchRecentDigests(ctx, 12)
+	if err != nil {
+		http.Error(w, "Could not load digests: "+err.Error(), http.StatusBadGateway)
+		return
+	}
+
+	ids := make([]int, 0, len(list))
+	for _, d := range list {
+		ids = append(ids, d.ID)
+	}
+	records := map[int]*sendRecord{}
+	if len(ids) > 0 {
+		cursor, err := sends.Find(ctx, bson.M{"digestId": bson.M{"$in": ids}})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		var rs []sendRecord
+		if err := cursor.All(ctx, &rs); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		for i := range rs {
+			records[rs[i].DigestID] = &rs[i]
+		}
+	}
+
+	out := make([]digestSummary, 0, len(list))
+	for _, d := range list {
+		lang := normalizeLang(d.Language)
+		out = append(out, digestSummary{
+			ID: d.ID, Title: d.Title, Language: lang, IssueNumber: d.IssueNumber, Status: d.Status,
+			PublishDate: d.PublishDate, SentAt: d.SentAt, Send: records[d.ID],
+			PageURL: fmt.Sprintf("%s/%s/newsletter/%s/", siteURL(), lang, d.Slug),
+		})
+	}
+
+	active := map[string]int64{}
+	for _, lang := range []string{"es", "en"} {
+		n, err := subscribers.CountDocuments(ctx, bson.M{"status": "active", "lang": lang})
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		active[lang] = n
+	}
+
+	resp := map[string]interface{}{"digests": out, "active": active}
+	if sched, err := cron.ParseStandard(newsletterSchedule()); err == nil {
+		resp["next_send"] = sched.Next(time.Now()).UTC().Format(time.RFC3339)
+	}
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
 }
