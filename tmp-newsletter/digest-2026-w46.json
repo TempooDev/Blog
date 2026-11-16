@@ -1,0 +1,154 @@
+[
+  {
+    "language": "es",
+    "slug": "ia-tecnologia-semana-46-2026",
+    "translation_id": "digest-2026-w46",
+    "title": "IA y tecnología: semana 46 de 2026",
+    "description": "Lo más destacado: Claude Fable 5.2, Gemini 4 Carbon, la ley de IA de Nueva York y los parches de seguridad de Microsoft de noviembre.",
+    "publish_date": "2026-11-16",
+    "intro": "Esta es la edición de la semana 46 de 2026, la del 9 al 13 de noviembre. Repasamos los modelos que han salido esta semana, Claude Fable 5.2 y Gemini 4 Carbon, la ley de IA de Nueva York que ya está abierta a registro, y los fallos de seguridad que conviene parchear antes de que acabe el mes. Cada noticia enlaza a su fuente original para que puedas comprobarla.",
+    "outro": "Nos leemos la semana que viene.",
+    "items": [
+      {
+        "title": "Anthropic lanza Claude Fable 5.2 y Mythos 5.2 para trabajo de programación autónomo",
+        "url": "https://www.anthropic.com/claude-fable-and-mythos-5-2",
+        "source": "Anthropic",
+        "category": "IA",
+        "summary": "El 9 de noviembre, Anthropic presentó Claude Fable 5.2 y Mythos 5.2, que comparten modelo base y se diferencian en quién puede usarlos. En FrontierCode 2.0, Fable alcanza el 49,1 % con esfuerzo máximo, frente al 45,5 % de Claude Opus 5.5. El precio estándar es de 8 dólares por millón de tokens de entrada y 40 de salida, y el modo rápido cuesta el doble.",
+        "why_it_matters": "Si montas agentes de código, el coste por token y la mejora en tareas largas determinan cuánto compensa delegarles trabajo. Compara coste por tarea completada, no solo precio por token."
+      },
+      {
+        "title": "Google publica Gemini 4 Carbon en API, con precio introductorio hasta el 30 de noviembre",
+        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+        "source": "Google",
+        "category": "IA",
+        "summary": "El 10 de noviembre, Google anunció que Gemini 4 Carbon está disponible por API en Google AI Studio y Gemini for business, orientado a programación compleja de varios pasos y agentes de larga duración. Según Google, lidera CursorBench 4.0 y otros dos benchmarks, y la tasa de éxito de ataques bajó del 3,1 % al 0,8 % frente a Gemini 4 Argon. El precio introductorio es de 2 y 10 dólares por millón de tokens, y pasa a 4 y 20 el 30 de noviembre.",
+        "why_it_matters": "Si pagas por tokens, el cambio de precio del 30 de noviembre afectará a tu presupuesto. Los benchmarks son del propio Google, así que valida con tus casos reales antes de migrar."
+      },
+      {
+        "title": "IBM y Microsoft presentan Imagine Enterprise, una plataforma de agentes de IA sobre Azure",
+        "url": "https://news.microsoft.com/source/2026/11/10/ibm-and-microsoft-announce-a-new-ai-agent-platform-designed-for-industry-specific-transformation/",
+        "source": "IBM y Microsoft",
+        "category": "Cloud",
+        "summary": "El 10 de noviembre, IBM y Microsoft anunciaron una plataforma para construir, desplegar y gobernar agentes por industria, con más de 6.000 agentes aportados por IBM Consulting. Se apoya en Azure, Microsoft Foundry, Fabric, Entra, Purview y Defender, y empieza en servicios financieros, seguros y retail. El comunicado no indica fecha de disponibilidad.",
+        "why_it_matters": "Los agentes entran en la oferta de consultoría y cloud empresarial, con gobernanza incluida. Si trabajas con clientes regulados, revisa qué controles ofrece realmente antes de prometerlos."
+      },
+      {
+        "title": "Nueva York activa su ley de seguridad para grandes desarrolladores de IA",
+        "url": "https://techcrunch.com/2026/11/10/openai-anthropic-face-new-oversight-as-new-yorks-ai-safety-law-takes-effect/",
+        "source": "TechCrunch",
+        "category": "Regulación",
+        "summary": "El 10 de noviembre, Nueva York abrió el registro de la RAISE Act, que afecta a grandes desarrolladores con más de 500 millones de dólares de ingresos. Deben registrarse antes del 1 de enero de 2027, publicar marcos de seguridad y notificar incidentes críticos en 72 horas. Las multas llegan a 1 millón de dólares por infracción y 3 millones por reincidencia.",
+        "why_it_matters": "El umbral deja fuera a casi todas las startups, pero la notificación de incidentes en 72 horas puede cambiar cómo tus proveedores de modelos documentan sus fallos."
+      },
+      {
+        "title": "Patch Tuesday de noviembre de 2026: 63 vulnerabilidades críticas y un zero-day explotado en Outlook",
+        "url": "https://blog.qualys.com/vulnerabilities-threat-research/2026/11/10/microsoft-patch-tuesday-november-2026-security-update-review",
+        "source": "Qualys",
+        "category": "Ciberseguridad",
+        "summary": "El 10 de noviembre, Microsoft corrigió más de mil vulnerabilidades, 63 críticas. Solo una está explotada: CVE-2026-124194, un fallo de suplantación en Outlook. También hay ejecuciones remotas de código sin autenticación en IIS y en los códecs de Windows. CISA da de plazo hasta el 24 de noviembre de 2026.",
+        "why_it_matters": "Si gestionas Windows u Outlook, el plazo de CISA fija la prioridad. Parchea IIS y los códecs cuanto antes si tienes esos servicios expuestos."
+      },
+      {
+        "title": "APT29 explota una cadena zero-click contra Apple con un fallo corregido en 2024",
+        "url": "https://www.f5.com/labs/articles/weekly-threat-bulletin-november-11th-2026",
+        "source": "F5 Labs",
+        "category": "Ciberseguridad",
+        "summary": "Según F5 Labs, APT29 combina CVE-2024-27834, parcheado por Apple en mayo de 2024, con CVE-2025-43529 de WebKit para robar información y cookies sin interacción del usuario. Se distribuye por sitios comprometidos y por un ataque a la cadena de suministro del Plerdy SEO Tracker. CISA da de plazo hasta el 18 de noviembre de 2026.",
+        "why_it_matters": "Un ataque sin clic alcanza a cualquier iPhone, iPad o Mac sin actualizar. Comprueba que tienes al menos iOS 17.5 o macOS Sonoma 14.5, y mantenlos en la última versión."
+      },
+      {
+        "title": "Fallo de autenticación en OpenSSH con musl (Alpine) y parche disponible",
+        "url": "https://www.f5.com/labs/articles/weekly-threat-bulletin-november-11th-2026",
+        "source": "F5 Labs",
+        "category": "Herramientas",
+        "summary": "Según F5 Labs, un fallo afecta a OpenSSH en sistemas musl como Alpine cuando no se usa PAM. Requiere una cuenta sin contraseña marcada con '*' en /etc/shadow y otra con hash SHA-256 o SHA-512. Alpine y OpenSSH han publicado parches, aunque el boletín no asigna un CVE claro.",
+        "why_it_matters": "Es un fallo de acceso remoto con parche disponible. Revisa hoy la versión de OpenSSH en tus contenedores y servidores Alpine."
+      },
+      {
+        "title": "OpenAI compra Odessia, una startup de agentes de viaje, por su equipo",
+        "url": "https://techcrunch.com/2026/11/10/openai-acquires-odessia-travel-startup-created-by-sonder-founder/",
+        "source": "TechCrunch",
+        "category": "IA",
+        "summary": "El 10 de noviembre, OpenAI anunció la compra de Odessia, un agente de viajes creado por Francis Davidson, cofundador de Sonder. La startup había levantado 6 millones de dólares en pre-seed con Sequoia. El precio no se ha divulgado, el producto ya no funciona y TechCrunch habla de acqui-hire.",
+        "why_it_matters": "Sugiere que el valor de una startup de agentes puede estar en su equipo más que en su producto. Si construyes sobre un solo caso de uso, piensa qué te diferencia cuando la plataforma base lo cubra."
+      }
+    ]
+  },
+  {
+    "language": "en",
+    "slug": "ai-tech-week-46-2026",
+    "translation_id": "digest-2026-w46",
+    "title": "AI & tech: week 46 of 2026",
+    "description": "Highlights: Claude Fable 5.2, Gemini 4 Carbon, New York's AI safety law, an exploited Apple zero-click chain and Microsoft's November patches.",
+    "publish_date": "2026-11-16",
+    "intro": "This is the week 46 issue, covering 9 to 13 November. We look at this week's model releases, Claude Fable 5.2 and Gemini 4 Carbon, New York's AI safety law, which has just opened for registration, and the security fixes worth applying before the month is out. Every item links to its original source so you can check it.",
+    "outro": "See you next week.",
+    "items": [
+      {
+        "title": "Anthropic launches Claude Fable 5.2 and Mythos 5.2 for long autonomous coding work",
+        "url": "https://www.anthropic.com/claude-fable-and-mythos-5-2",
+        "source": "Anthropic",
+        "category": "AI",
+        "summary": "On November 9, Anthropic introduced Claude Fable 5.2 and Mythos 5.2, which share a base model and differ in who can use them. On FrontierCode 2.0, Fable scores 49.1% at maximum effort, against 45.5% for Claude Opus 5.5. Standard pricing is 8 dollars per million input tokens and 40 per million output tokens, and the fast mode costs double.",
+        "why_it_matters": "If you build coding agents, token price and gains on long tasks decide how much delegating work pays off. Compare cost per completed task, not just price per token."
+      },
+      {
+        "title": "Google releases Gemini 4 Carbon in the API, with introductory pricing until November 30",
+        "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+        "source": "Google",
+        "category": "AI",
+        "summary": "On November 10, Google made Gemini 4 Carbon available through the API in Google AI Studio and Gemini for business, aimed at complex multi-step coding and long-running agents. Google says it leads CursorBench 4.0 and two other benchmarks, and the per-attempt breach rate fell from 3.1% to 0.8% versus Gemini 4 Argon. Introductory pricing is 2 and 10 dollars per million tokens, rising to 4 and 20 on November 30.",
+        "why_it_matters": "If you pay per token, the November 30 price change will affect your budget. The benchmarks are Google's own, so validate them on your real workloads."
+      },
+      {
+        "title": "IBM and Microsoft unveil Imagine Enterprise, an industry AI agent platform on Azure",
+        "url": "https://news.microsoft.com/source/2026/11/10/ibm-and-microsoft-announce-a-new-ai-agent-platform-designed-for-industry-specific-transformation/",
+        "source": "IBM and Microsoft",
+        "category": "Cloud",
+        "summary": "On November 10, IBM and Microsoft announced a platform to build, run and govern industry AI agents, with more than 6,000 agents supplied by IBM Consulting. It relies on Azure, Microsoft Foundry, Fabric, Entra, Purview and Defender, and starts with financial services, insurance and retail. The announcement gives no availability date.",
+        "why_it_matters": "Agents are becoming part of enterprise consulting and cloud offerings with governance built in. If you work with regulated clients, check which controls it actually provides."
+      },
+      {
+        "title": "New York activates its safety law for large frontier AI developers",
+        "url": "https://techcrunch.com/2026/11/10/openai-anthropic-face-new-oversight-as-new-yorks-ai-safety-law-takes-effect/",
+        "source": "TechCrunch",
+        "category": "Regulation",
+        "summary": "On November 10, New York opened registration for the RAISE Act, which covers large developers with more than 500 million dollars in revenue. They must register before January 1, 2027, publish safety frameworks and report critical incidents within 72 hours. Penalties reach 1 million dollars per violation and 3 million for repeat violations.",
+        "why_it_matters": "The threshold excludes almost every startup, but 72-hour incident reporting may change how your model providers document their failures."
+      },
+      {
+        "title": "November 2026 Patch Tuesday: 63 critical fixes and an Outlook zero-day under attack",
+        "url": "https://blog.qualys.com/vulnerabilities-threat-research/2026/11/10/microsoft-patch-tuesday-november-2026-security-update-review",
+        "source": "Qualys",
+        "category": "Security",
+        "summary": "On November 10, Microsoft fixed more than 1,000 vulnerabilities, 63 critical. Only one is exploited: CVE-2026-124194, an Outlook spoofing flaw. The release also includes unauthenticated remote code execution flaws in IIS and the Windows Codecs Library. CISA's patch deadline is November 24, 2026.",
+        "why_it_matters": "If you run Windows or Outlook, CISA's deadline sets the priority. Patch IIS and the codecs library soon if those services are exposed."
+      },
+      {
+        "title": "APT29 runs a zero-click chain against Apple using a 2024 flaw",
+        "url": "https://www.f5.com/labs/articles/weekly-threat-bulletin-november-11th-2026",
+        "source": "F5 Labs",
+        "category": "Security",
+        "summary": "According to F5 Labs, APT29 chains CVE-2024-27834, patched by Apple in May 2024, with WebKit flaw CVE-2025-43529 to steal information and cookies without user interaction. Delivery uses compromised sites and a supply-chain attack on the Plerdy SEO Tracker. CISA's deadline for federal agencies is November 18, 2026.",
+        "why_it_matters": "A zero-click attack reaches any unpatched iPhone, iPad or Mac. Check that you are at least on iOS 17.5 or macOS Sonoma 14.5, and keep devices on the latest version."
+      },
+      {
+        "title": "OpenSSH authentication bypass on musl systems such as Alpine, with patches available",
+        "url": "https://www.f5.com/labs/articles/weekly-threat-bulletin-november-11th-2026",
+        "source": "F5 Labs",
+        "category": "Tools",
+        "summary": "According to F5 Labs, a flaw affects OpenSSH on musl systems such as Alpine when PAM is not used. It requires a passwordless account marked with '*' in /etc/shadow and another account with a SHA-256 or SHA-512 hash. Alpine and OpenSSH have released patches, though the bulletin gives no clear CVE.",
+        "why_it_matters": "It is a remote access flaw with an available patch. Check your OpenSSH version in Alpine containers and servers today."
+      },
+      {
+        "title": "OpenAI acquires Odessia, a travel agent startup, for its team",
+        "url": "https://techcrunch.com/2026/11/10/openai-acquires-odessia-travel-startup-created-by-sonder-founder/",
+        "source": "TechCrunch",
+        "category": "AI",
+        "summary": "On November 10, OpenAI acquired Odessia, an AI travel agent founded by Sonder co-founder Francis Davidson. The startup had raised 6 million dollars in a pre-seed round led by Sequoia. The price is undisclosed, the product no longer runs, and TechCrunch calls the deal an acqui-hire.",
+        "why_it_matters": "The value of an agent startup may lie in its team more than its product. If you build on one use case, consider what sets you apart once base platforms cover it."
+      }
+    ]
+  }
+]
