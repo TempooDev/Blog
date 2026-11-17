@@ -1,5 +1,23 @@
 import { defineCollection, z } from 'astro:content';
 
+// Fixed lines of the blog map (see src/utils/lines.ts). A post belongs to one or two;
+// two make it a transfer station. Directus may not have the field yet, so it is optional.
+const LINE_IDS = ['arquitectura', 'ia', 'infra', 'producto', 'oficio'] as const;
+
+const toLines = (value: unknown): (typeof LINE_IDS)[number][] => {
+  const list = Array.isArray(value) ? value : typeof value === 'string' && value ? value.split(',') : [];
+  const valid = list
+    .map((v) => String(v).trim().toLowerCase())
+    .filter((v): v is (typeof LINE_IDS)[number] => (LINE_IDS as readonly string[]).includes(v));
+  return [...new Set(valid)].slice(0, 2);
+};
+
+// Reading time from the Markdown source, at ~200 words per minute.
+const toMinutes = (markdown: string) => {
+  const words = markdown.replace(/```[\s\S]*?```/g, ' ').split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 200));
+};
+
 const directusLoader = (configOrCollection) => {
   const collection = typeof configOrCollection === 'string' ? configOrCollection : configOrCollection.collection;
   return {
@@ -37,6 +55,8 @@ const directusLoader = (configOrCollection) => {
             tags: item.tags || [],
             img: item.cover_image ? `${DIRECTUS_URL}/assets/${item.cover_image}` : "",
             img_alt: item.img_alt || '',
+            lines: toLines(item.lines),
+            minutes: toMinutes(item.content || ''),
           },
           rendered: {
             html
@@ -126,6 +146,8 @@ export const collections = {
 			tags: z.array(z.string()),
 			img: z.string(),
 			img_alt: z.string().optional(),
+			lines: z.array(z.enum(LINE_IDS)).default([]),
+			minutes: z.number().optional(),
 		}),
 	}),
 	newsletter: defineCollection({

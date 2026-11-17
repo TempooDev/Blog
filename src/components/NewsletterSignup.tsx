@@ -5,6 +5,8 @@ interface NewsletterSignupProps {
     apiBase?: string;
     /** Show the result of the confirm/unsubscribe links (?status=...) — only on the newsletter page. */
     showStatus?: boolean;
+    /** "board": only the form, for the dark departures board on the home page. */
+    variant?: 'card' | 'board';
 }
 
 const translations = {
@@ -63,9 +65,9 @@ const languageNames = { es: 'Español', en: 'English' };
 
 const inputStyle: React.CSSProperties = {
     padding: '0.85rem 1rem',
-    borderRadius: '0.75rem',
-    border: '2px solid var(--blue-600)',
-    background: 'var(--blue-800)',
+    borderRadius: '4px',
+    border: '1px solid var(--sep)',
+    background: 'var(--surface)',
     color: 'var(--blue-0)',
     fontFamily: 'inherit',
     fontSize: 'var(--text-md)',
@@ -74,7 +76,8 @@ const inputStyle: React.CSSProperties = {
     minWidth: 0,
 };
 
-export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.env.PUBLIC_COMMENTS_API, showStatus = false }: NewsletterSignupProps) {
+export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.env.PUBLIC_COMMENTS_API, showStatus = false, variant = 'card' }: NewsletterSignupProps) {
+    const board = variant === 'board';
     const currentLang = (lang && translations[lang as keyof typeof translations]) ? lang as keyof typeof translations : 'en';
     const t = translations[currentLang];
 
@@ -120,23 +123,22 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
     };
 
     return (
-        <section className="newsletter-signup" aria-labelledby="newsletter-title" style={{
-            background: 'rgba(255, 255, 255, 0.03)',
+        <section className={`newsletter-signup${board ? ' is-board' : ''}`} aria-labelledby={board ? undefined : 'newsletter-title'} aria-label={board ? t.title : undefined} style={board ? {} : {
+            background: 'var(--surface)',
             padding: '2rem',
-            borderRadius: '1.5rem',
-            border: '1px solid var(--blue-700)',
-            boxShadow: 'var(--shadow-md)',
+            borderRadius: '6px',
+            border: '1px solid var(--sep)',
         }}>
-            <h2 id="newsletter-title" style={{ color: 'var(--blue-0)', marginBottom: '0.75rem', fontSize: 'var(--text-xl)' }}>{t.title}</h2>
-            <p style={{ color: 'var(--blue-200)', marginBottom: '1.5rem' }}>{t.text}</p>
+            {!board && <h2 id="newsletter-title" style={{ color: 'var(--ink)', marginBottom: '0.75rem', fontSize: 'var(--text-xl)' }}>{t.title}</h2>}
+            {!board && <p style={{ color: 'var(--ink-2)', marginBottom: '1.5rem' }}>{t.text}</p>}
             {message && (
                 <div role="status" style={{
                     padding: '1rem',
                     marginBottom: '1.5rem',
-                    background: 'var(--accent-overlay)',
-                    color: 'var(--blue-0)',
-                    borderRadius: '0.75rem',
-                    border: '1px solid var(--accent-regular)',
+                    background: board ? 'rgba(255,255,255,0.08)' : 'var(--accent-overlay)',
+                    color: board ? 'var(--board-ink)' : 'var(--ink)',
+                    borderRadius: '4px',
+                    border: '1px solid var(--sep)',
                     fontSize: 'var(--text-sm)',
                 }}>
                     {message}
@@ -153,7 +155,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                         value={email}
                         onChange={e => setEmail(e.target.value)}
                         required
-                        style={inputStyle}
+                        style={board ? { ...inputStyle, border: '0', background: '#fff', color: '#121212' } : inputStyle}
                     />
                     <label htmlFor="newsletter-lang" className="sr-only">{t.langLabel}</label>
                     <select
@@ -161,7 +163,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                         value={issueLang}
                         onChange={e => setIssueLang(e.target.value as keyof typeof translations)}
                         title={t.langLabel}
-                        style={{ ...inputStyle, flex: '0 0 auto', cursor: 'pointer' }}
+                        style={{ ...inputStyle, flex: '0 0 auto', cursor: 'pointer', ...(board ? { border: '0', background: '#fff', color: '#121212' } : {}) }}
                     >
                         {Object.entries(languageNames).map(([code, name]) => (
                             <option key={code} value={code}>{name}</option>
@@ -169,10 +171,10 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                     </select>
                     <button type="submit" disabled={sending} style={{
                         padding: '0.85rem 1.75rem',
-                        background: 'var(--accent-regular)',
-                        color: 'white',
+                        background: board ? 'var(--signal)' : 'var(--ink)',
+                        color: board ? '#121212' : 'var(--on-ink)',
                         border: 'none',
-                        borderRadius: '999rem',
+                        borderRadius: '4px',
                         cursor: sending ? 'wait' : 'pointer',
                         fontWeight: '600',
                         fontSize: 'var(--text-md)',
@@ -191,10 +193,10 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                     onChange={e => setWebsite(e.target.value)}
                     style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', opacity: 0 }}
                 />
-                <label style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: 'var(--text-sm)', color: 'var(--gray-400)' }}>
+                <label style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: 'var(--text-sm)', color: board ? 'var(--board-ink-2)' : 'var(--ink-2)' }}>
                     <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} required style={{ marginTop: '0.2rem' }} />
                     <span>
-                        {t.consent} <a href={`/${currentLang}/privacy/`} style={{ textDecoration: 'underline' }}>{t.privacyLink}</a>.
+                        {t.consent} <a href={`/${currentLang}/privacy/`} style={{ textDecoration: 'underline', color: 'inherit' }}>{t.privacyLink}</a>.
                     </span>
                 </label>
             </form>

@@ -377,6 +377,58 @@ fields:
       foreign_key_table: null
       foreign_key_column: null
   - collection: posts
+    field: lines
+    type: json
+    meta:
+      collection: posts
+      conditions: null
+      display: labels
+      display_options: null
+      field: lines
+      group: null
+      hidden: false
+      interface: select-multiple-checkbox
+      note: Línea(s) del mapa del blog. Una o dos; con dos, el post es un transbordo.
+      options:
+        choices:
+          - text: L1 · Arquitectura
+            value: arquitectura
+          - text: L2 · IA
+            value: ia
+          - text: L3 · Infra
+            value: infra
+          - text: L4 · Producto
+            value: producto
+          - text: L5 · Oficio
+            value: oficio
+      readonly: false
+      required: false
+      searchable: true
+      sort: 8
+      special:
+        - cast-json
+      translations: null
+      validation: null
+      validation_message: null
+      width: full
+    schema:
+      name: lines
+      table: posts
+      data_type: json
+      default_value: null
+      max_length: null
+      numeric_precision: null
+      numeric_scale: null
+      is_nullable: true
+      is_unique: false
+      is_indexed: false
+      is_primary_key: false
+      is_generated: false
+      generation_expression: null
+      has_auto_increment: false
+      foreign_key_table: null
+      foreign_key_column: null
+  - collection: posts
     field: content
     type: text
     meta:

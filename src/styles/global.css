@@ -1,61 +1,83 @@
-/* Global variables */
+/* ==========================================================================
+   Tokens · "Mapa de líneas"
+   Topics are lines of a transit map and posts are stations. The five lines are
+   fixed (see src/utils/lines.ts), so the palette never grows.
+   ========================================================================== */
 :root {
-	/* Colors */
-	--blue-0: #03071e;
-	--blue-50: #111827;
-	--blue-100: #1f2937;
-	--blue-200: #374151;
-	--blue-300: #4b5563;
-	--blue-400: #6b7280;
-	--blue-500: #9ca3af;
-	--blue-600: #d1d5db;
-	--blue-700: #e5e7eb;
-	--blue-800: #f9fafb;
-	--blue-900: #ffffff;
-	--blue-999-basis: 0, 0%, 100%;
-	--blue-999_40: hsla(var(--blue-999-basis), 0.4);
-	--blue-999: #ffffff;
-	
-	--accent-light: #60a5fa;
-	--accent-regular: #3b82f6;
-	--accent-dark: #1e3a8a;
-	--accent-overlay: hsla(220, 80%, 60%, 0.33);
+	/* Base */
+	--bg: #f4f2ee;
+	--surface: #ffffff;
+	--ink: #121212;
+	--ink-2: #5c5a55;
+	--sep: #dddad1;
+	--on-ink: #ffffff; /* text on an ink surface (buttons, departures board) */
+	--board: #121212; /* dark panels: departures board, code, cookie bar */
+	--board-ink: #ffffff;
+	--board-ink-2: #b8b5ae;
+	--board-sep: #3a3936;
+	--signal: #f29e02; /* amber of the departures board */
+
+	/* Lines */
+	--l1: #d7263d; /* Arquitectura */
+	--l2: #0fa37f; /* IA */
+	--l3: #f29e02; /* Infra */
+	--l4: #1e88e5; /* Producto */
+	--l5: #5b3fd1; /* Oficio */
+
+	/* Neutral scale. The older components were written against --gray-* and --blue-*,
+	   which were used without being defined; they now map onto the same palette. */
+	--gray-0: var(--ink);
+	--gray-100: #1e1d1b;
+	--gray-200: #2e2d2a;
+	--gray-300: var(--ink-2);
+	--gray-400: #75726b;
+	--gray-500: #8f8b83;
+	--gray-600: #b3aea4;
+	--gray-700: #cbc6bc;
+	--gray-800: var(--sep);
+	--gray-900: var(--surface);
+	--gray-999-basis: 40, 22%, 95%;
+	--gray-999_40: hsla(var(--gray-999-basis), 0.4);
+	--gray-999: var(--bg);
+
+	--blue-0: var(--gray-0);
+	--blue-50: var(--gray-0);
+	--blue-100: var(--gray-100);
+	--blue-200: var(--gray-200);
+	--blue-300: var(--gray-300);
+	--blue-400: var(--gray-400);
+	--blue-500: var(--gray-500);
+	--blue-600: var(--gray-600);
+	--blue-700: var(--gray-700);
+	--blue-800: var(--gray-800);
+	--blue-900: var(--gray-900);
+	--blue-999-basis: var(--gray-999-basis);
+	--blue-999_40: var(--gray-999_40);
+	--blue-999: var(--gray-999);
+
+	--accent-light: var(--ink-2);
+	--accent-regular: var(--ink);
+	--accent-dark: var(--ink);
+	--accent-overlay: rgba(18, 18, 18, 0.08);
 	--accent-subtle-overlay: var(--accent-overlay);
-	--accent-text-over: var(--blue-900);
+	--accent-text-over: var(--on-ink);
+	--link-color: var(--ink);
 
-	--link-color: var(--accent-regular);
+	--gradient-stop-1: var(--ink-2);
+	--gradient-stop-2: var(--ink);
+	--gradient-stop-3: var(--ink);
+	--gradient-subtle: linear-gradient(var(--surface), var(--surface));
+	--gradient-accent: linear-gradient(var(--ink), var(--ink));
+	--gradient-accent-orange: var(--gradient-accent);
+	--gradient-stroke: linear-gradient(var(--sep), var(--sep));
 
-	/* Gradients */
-	--gradient-stop-1: var(--accent-light);
-	--gradient-stop-2: var(--accent-regular);
-	--gradient-stop-3: var(--accent-dark);
-	--gradient-subtle: linear-gradient(150deg, var(--blue-900) 19%, var(--blue-999) 150%);
-	--gradient-accent: linear-gradient(
-		150deg,
-		var(--gradient-stop-1),
-		var(--gradient-stop-2),
-		var(--gradient-stop-3)
-	);
-	--gradient-accent-orange: linear-gradient(
-		150deg,
-		#6b7280,
-		var(--accent-regular),
-		var(--accent-dark)
-	);
-	--gradient-stroke: linear-gradient(180deg, var(--blue-900), var(--blue-700));
+	/* Flat design: shadows are kept as names only, very soft. */
+	--shadow-sm: 0 1px 2px rgba(18, 18, 18, 0.04);
+	--shadow-md: 0 2px 8px rgba(18, 18, 18, 0.06);
+	--shadow-lg: 0 8px 24px rgba(18, 18, 18, 0.08);
 
-	/* Shadows */
-	--shadow-sm:
-		0px 6px 3px rgba(31, 41, 55, 0.01), 0px 4px 2px rgba(31, 41, 55, 0.01),
-		0px 2px 2px rgba(31, 41, 55, 0.02), 0px 0px 1px rgba(31, 41, 55, 0.03);
-	--shadow-md:
-		0px 28px 11px rgba(31, 41, 55, 0.01), 0px 16px 10px rgba(31, 41, 55, 0.03),
-		0px 7px 7px rgba(31, 41, 55, 0.05), 0px 2px 4px rgba(31, 41, 55, 0.06);
-	--shadow-lg:
-		0px 62px 25px rgba(31, 41, 55, 0.01), 0px 35px 21px rgba(31, 41, 55, 0.05),
-		0px 16px 16px rgba(31, 41, 55, 0.1), 0px 4px 9px rgba(31, 41, 55, 0.12);
-
-	/* Text Sizes */
+	/* Text sizes */
+	--text-xs: 0.75rem;
 	--text-sm: 0.875rem;
 	--text-base: 1rem;
 	--text-md: 1.125rem;
@@ -70,97 +92,74 @@
 	--font-system:
 		system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
 		'Open Sans', 'Helvetica Neue', sans-serif;
-	--font-body: 'Public Sans', var(--font-system);
-	--font-brand: Rubik, var(--font-system);
+	--font-mono-system: ui-monospace, SFMono-Regular, Menlo, Monaco, 'Roboto Mono', monospace;
+	--font-body: 'Overpass', var(--font-system);
+	--font-brand: 'Overpass', var(--font-system);
+	--font-mono: 'Overpass Mono', var(--font-mono-system);
 
-	/* Transitions */
+	/* Layout */
+	--page-max: 90rem; /* 1440px */
+	--gutter: clamp(1.25rem, 5.5vw, 5rem); /* 20px on mobile, 80px on desktop */
+	--track: 8px; /* line thickness */
+	--measure: 42.5rem; /* 680px article column */
+
 	--theme-transition: 0.2s ease-in-out;
 }
 
-/* Self-host font-face placeholders (add actual woff2 files in /public/fonts/) */
-@font-face {
-	font-family: 'Public Sans';
-	src: url('/fonts/public-sans-400.woff2') format('woff2');
-	font-weight: 400;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: 'Public Sans';
-	src: url('/fonts/public-sans-700.woff2') format('woff2');
-	font-weight: 700;
-	font-style: normal;
-	font-display: swap;
-}
-@font-face {
-	font-family: 'Rubik';
-	src: url('/fonts/rubik-500.woff2') format('woff2');
-	font-weight: 500;
-	font-style: normal;
-	font-display: swap;
-}
-
+/* Dark: same structure, a warm near-black ground and slightly brighter lines. */
 :root.theme-dark {
-	--blue-0: #ffffff;
-	--blue-50: #f9fafb;
-	--blue-100: #e5e7eb;
-	--blue-200: #d1d5db;
-	--blue-300: #9ca3af;
-	--blue-400: #6b7280;
-	--blue-500: #4b5563;
-	--blue-600: #374151;
-	--blue-700: #1f2937;
-	--blue-800: #111827;
-	--blue-900: #03071e;
-	--blue-999-basis: 225, 31%, 5%;
-	--blue-999: #03071e;
+	--bg: #131211;
+	--surface: #1c1b19;
+	--ink: #f1eee8;
+	--ink-2: #a9a59c;
+	--sep: #34322e;
+	--on-ink: #131211;
+	--board: #0a0a09;
+	--board-ink: #f1eee8;
+	--board-ink-2: #a9a59c;
+	--board-sep: #2c2b28;
+	--signal: #f5b13a;
 
-	--accent-light: #1e3a8a;
-	--accent-regular: #3b82f6;
-	--accent-dark: #60a5fa;
-	--accent-overlay: hsla(220, 80%, 60%, 0.33);
-	--accent-subtle-overlay: hsla(220, 80%, 60%, 0.33);
-	--accent-text-over: var(--blue-0);
+	--l1: #f0505f;
+	--l2: #2cc79a;
+	--l3: #f5b13a;
+	--l4: #4fa3ee;
+	--l5: #8b74f0;
 
-	--link-color: var(--accent-dark);
+	--gray-100: #e6e2da;
+	--gray-200: #d2cec5;
+	--gray-400: #8c887f;
+	--gray-500: #6e6a62;
+	--gray-600: #4e4b45;
+	--gray-700: #3a3833;
+	--gray-999-basis: 30, 6%, 7%;
 
-	--gradient-stop-1: #1e3a8a;
-	--gradient-subtle: linear-gradient(150deg, var(--blue-900) 19%, var(--blue-999) 81%);
-	--gradient-accent-orange: linear-gradient(
-		150deg,
-		#6b7280,
-		var(--accent-regular),
-		var(--accent-light)
-	);
-	--gradient-stroke: linear-gradient(180deg, var(--blue-600), var(--blue-800));
+	--accent-overlay: rgba(241, 238, 232, 0.1);
 
-	--shadow-sm:
-		0px 6px 3px rgba(255, 255, 255, 0.01), 0px 4px 2px rgba(255, 255, 255, 0.01),
-		0px 2px 2px rgba(255, 255, 255, 0.02), 0px 0px 1px rgba(255, 255, 255, 0.03);
-	--shadow-md:
-		0px 28px 11px rgba(255, 255, 255, 0.01), 0px 16px 10px rgba(255, 255, 255, 0.03),
-		0px 7px 7px rgba(255, 255, 255, 0.05), 0px 2px 4px rgba(255, 255, 255, 0.06);
-	--shadow-lg:
-		0px 62px 25px rgba(255, 255, 255, 0.01), 0px 35px 21px rgba(255, 255, 255, 0.05),
-		0px 16px 16px rgba(255, 255, 255, 0.1), 0px 4px 9px rgba(255, 255, 255, 0.12);
+	--shadow-sm: none;
+	--shadow-md: none;
+	--shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.4);
 }
 
-html,
-body {
-	min-height: 100%;
-	/* Prevent the whole page from scrolling horizontally; internal scrollable
-	   elements (code blocks) will handle their own overflow via overflow-x:auto */
-	overflow-x: hidden;
+/* Self-hosted variable fonts (scripts/fetch-fonts.mjs) */
+@font-face {
+	font-family: 'Overpass';
+	src: url('/fonts/overpass.woff2') format('woff2');
+	font-weight: 100 900;
+	font-style: normal;
+	font-display: swap;
+}
+@font-face {
+	font-family: 'Overpass Mono';
+	src: url('/fonts/overpass-mono.woff2') format('woff2');
+	font-weight: 300 700;
+	font-style: normal;
+	font-display: swap;
 }
 
-body {
-	background-color: var(--blue-999);
-	color: var(--blue-200);
-	font-family: var(--font-body);
-	-webkit-font-smoothing: antialiased;
-	line-height: 1.5;
-}
-
+/* ==========================================================================
+   Base
+   ========================================================================== */
 *,
 *::after,
 *::before {
@@ -168,13 +167,46 @@ body {
 	margin: 0;
 }
 
-img {
+html {
+	color-scheme: light;
+	-webkit-text-size-adjust: 100%;
+}
+
+:root.theme-dark {
+	color-scheme: dark;
+}
+
+/* No overflow-x: hidden here: it hid the elements that overflowed instead of
+   fixing them. Wide content (code, tables, diagrams) scrolls inside its own box. */
+html,
+body {
+	min-height: 100%;
+}
+
+body {
+	background-color: var(--bg);
+	color: var(--ink);
+	font-family: var(--font-body);
+	font-size: 1rem;
+	line-height: 1.5;
+	-webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
 	max-width: 100%;
 	height: auto;
 }
 
 a {
 	color: var(--link-color);
+	text-underline-offset: 0.2em;
+}
+
+:focus-visible {
+	outline: 2px solid var(--ink);
+	outline-offset: 3px;
 }
 
 h1,
@@ -182,34 +214,41 @@ h2,
 h3,
 h4,
 h5 {
-	line-height: 1.1;
 	font-family: var(--font-brand);
-	font-weight: 600;
-	color: var(--blue-100);
+	font-weight: 700;
+	line-height: 1.15;
+	letter-spacing: -0.01em;
+	color: var(--ink);
+	overflow-wrap: break-word;
 }
 
 h1 {
-	font-size: var(--text-5xl);
+	font-size: clamp(2rem, 1.2rem + 3.2vw, 3.5rem);
+	line-height: 1.1;
 }
-
 h2 {
-	font-size: var(--text-4xl);
+	font-size: clamp(1.5rem, 1.1rem + 1.6vw, 2.25rem);
 }
-
 h3 {
-	font-size: var(--text-3xl);
+	font-size: clamp(1.25rem, 1.05rem + 0.8vw, 1.625rem);
 }
-
 h4 {
-	font-size: var(--text-2xl);
+	font-size: var(--text-lg);
 }
-
 h5 {
-	font-size: var(--text-xl);
+	font-size: var(--text-md);
 }
 
-/* Utilities */
+code,
+kbd,
+pre,
+samp {
+	font-family: var(--font-mono);
+}
 
+/* ==========================================================================
+   Utilities
+   ========================================================================== */
 .sr-only {
 	position: absolute;
 	width: 1px;
@@ -222,11 +261,12 @@ h5 {
 	border-width: 0;
 }
 
+/* Same side margin on every page: 20px on phones, 80px at 1440. */
 .wrapper {
 	width: 100%;
-	max-width: 83rem;
+	max-width: var(--page-max);
 	margin-inline: auto;
-	padding-inline: 1.5rem;
+	padding-inline: var(--gutter);
 }
 
 .stack {
@@ -234,230 +274,110 @@ h5 {
 	flex-direction: column;
 }
 
-.gap-2 {
-	gap: 0.5rem;
+.mono {
+	font-family: var(--font-mono);
 }
-.gap-4 {
-	gap: 1rem;
+
+/* Small uppercase label in mono: "ESTACIÓN 08", "RED DE ARTÍCULOS" */
+.kicker {
+	font-family: var(--font-mono);
+	font-weight: 700;
+	font-size: 0.8125rem;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	color: var(--ink-2);
 }
-.gap-8 {
-	gap: 2rem;
-}
-.gap-10 {
-	gap: 2.5rem;
-}
-.gap-15 {
-	gap: 3.75rem;
-}
-.gap-20 {
-	gap: 5rem;
-}
-.gap-30 {
-	gap: 7.5rem;
-}
-.gap-48 {
-	gap: 12rem;
-}
+
+.gap-2 { gap: 0.5rem; }
+.gap-4 { gap: 1rem; }
+.gap-8 { gap: 2rem; }
+.gap-10 { gap: 2.5rem; }
+.gap-15 { gap: 3.75rem; }
+.gap-20 { gap: 5rem; }
+.gap-30 { gap: 7.5rem; }
+.gap-48 { gap: 12rem; }
 
 @media (min-width: 50em) {
-	.lg\:gap-2 {
-		gap: 0.5rem;
-	}
-	.lg\:gap-4 {
-		gap: 1rem;
-	}
-	.lg\:gap-8 {
-		gap: 2rem;
-	}
-	.lg\:gap-10 {
-		gap: 2.5rem;
-	}
-	.lg\:gap-15 {
-		gap: 3.75rem;
-	}
-	.lg\:gap-20 {
-		gap: 5rem;
-	}
-	.lg\:gap-30 {
-		gap: 7.5rem;
-	}
-	.lg\:gap-48 {
-		gap: 12rem;
-	}
+	.lg\:gap-2 { gap: 0.5rem; }
+	.lg\:gap-4 { gap: 1rem; }
+	.lg\:gap-8 { gap: 2rem; }
+	.lg\:gap-10 { gap: 2.5rem; }
+	.lg\:gap-15 { gap: 3.75rem; }
+	.lg\:gap-20 { gap: 5rem; }
+	.lg\:gap-30 { gap: 7.5rem; }
+	.lg\:gap-48 { gap: 12rem; }
 }
 
-/* Improve code block and inline code handling so they don't overflow on mobile
-   - pre: allow wrapping or scrolling, max-width 100% and touch-friendly scrolling
-   - code: allow wrapping for very long tokens and use monospace font */
-.content :global(pre) {
-	overflow-x: auto; /* internal horizontal scroll for long lines */
-	overflow-y: hidden;
-	max-width: 100%;
-	box-sizing: border-box; /* ensure padding doesn't expand width */
-	padding: 1rem;
-	border-radius: 0.75rem;
-	background: rgba(0,0,0,0.04);
-	white-space: pre; /* keep original formatting, allow horizontal scroll */
-	-webkit-overflow-scrolling: touch;
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Helvetica Neue", monospace;
-	font-size: 0.95rem;
-}
-
-.content :global(pre) :global(code) {
-	white-space: pre; /* inline code inside pre should not wrap */
-}
-
-.content :global(code) {
-	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Segoe UI Mono", "Helvetica Neue", monospace;
-	font-size: 0.92rem;
-	word-break: break-word;
-	white-space: pre-wrap; /* inline code can wrap */
-	background: rgba(0,0,0,0.02);
-	padding: 0.12rem 0.28rem;
-	border-radius: 4px;
-}
-
-@media (max-width: 50em) {
-	/* Reduce heading sizes and improve layout on mobile */
-	h1 {
-		font-size: clamp(1.75rem, 6vw, 2.5rem);
-		line-height: 1.05;
-	}
-	h2 {
-		font-size: clamp(1.5rem, 5.5vw, 2rem);
-	}
-	h3 {
-		font-size: clamp(1.25rem, 4.5vw, 1.5rem);
-	}
-
-	.content :global(pre) {
-		padding: 0.75rem;
-		font-size: 0.9rem;
-	}
-	.content :global(code) {
-		font-size: 0.88rem;
-	}
-
-	/* Ensure content wrapper doesn't cause horizontal overflow */
-	.content {
-		max-width: 100%;
-		padding-inline: 0.5rem;
-	}
-}
-
-/* Defensive rules to stop any descendant from expanding past the viewport
-   (fixes clipped h2 and paragraphs caused by wide inline elements). We keep
-   pre/code behavior intact but ensure text elements can wrap safely.) */
+/* ==========================================================================
+   Long-form content rendered from the CMS (.content)
+   ========================================================================== */
 .content {
-	box-sizing: border-box;
+	min-width: 0;
 }
 
-.content :global(*) {
+.content pre {
+	overflow-x: auto;
 	max-width: 100%;
-	box-sizing: border-box;
+	padding: 1.25rem 1.5rem;
+	border-radius: 6px;
+	background: var(--board);
+	color: var(--board-ink);
+	font-size: 0.875rem;
+	line-height: 1.6;
+	-webkit-overflow-scrolling: touch;
 }
 
-/* Allow code blocks to keep internal scroll but not force parent's width */
-.content :global(pre),
-.content :global(code),
-.content :global(img),
-.content :global(table) {
-	max-width: 100% !important;
-	width: auto !important;
-}
-
-/* Ensure headings and paragraphs wrap instead of producing overflow */
-.content :global(h2),
-.content :global(h3),
-.content :global(p) {
+.content code {
+	font-family: var(--font-mono);
+	font-size: 0.9em;
 	overflow-wrap: anywhere;
-	word-break: break-word;
 }
 
-@media (max-width: 50em) {
-	.content :global(h2) {
-		font-size: 1.05rem !important;
-		line-height: 1.18 !important;
-	}
-	.content :global(p) {
-		font-size: 0.96rem !important;
-	}
+.content :not(pre) > code {
+	padding: 0.1em 0.3em;
+	border-radius: 3px;
+	background: var(--accent-overlay);
 }
 
-/* Neutralize common Bootstrap grid/layout classes when they appear inside
-   content MDX (some posts include raw Bootstrap HTML). These classes use
-   negative margins and fixed column widths that can create horizontal overflow
-   on small viewports — reset them safely inside .content only. */
-.content :global(.container-fluid),
-.content :global(.container),
-.content :global(.row) {
-	width: 100% !important;
-	max-width: 100% !important;
-	margin-left: 0 !important;
-	margin-right: 0 !important;
-	padding-left: 0 !important;
-	padding-right: 0 !important;
-	box-sizing: border-box !important;
+.content pre code {
+	overflow-wrap: normal;
+	white-space: pre;
 }
 
-.content :global([class*="col-"]) {
-	float: none !important;
-	width: auto !important;
-	min-width: 0 !important;
-	padding-left: 0.5rem !important;
-	padding-right: 0.5rem !important;
-	box-sizing: border-box !important;
+.content img,
+.content video {
+	max-width: 100%;
+	height: auto;
 }
 
-/* Defensive: ensure cards, expressive code wrappers and tables don't force
-   widths beyond the container */
-.content :global(.card),
-.content :global(.expressive-code),
-.content :global(table) {
-	max-width: 100% !important;
-	width: auto !important;
-	box-sizing: border-box !important;
-	overflow-x: auto !important;
+/* Tables and Expressive Code frames scroll inside their own box. */
+.content table,
+.content .expressive-code {
+	display: block;
+	max-width: 100%;
+	overflow-x: auto;
 }
 
-/* Strong mobile overrides for headings and hero titles to ensure
-   they don't render excessively large on small screens. These rules
-   are placed at the end to increase specificity and take precedence.
-*/
-@media (max-width: 50em) {
-	/* Generic headings */
-	h1 {
-		font-size: 1.6rem !important;
-		line-height: 1.06 !important;
-		margin-top: 0.25rem;
-		margin-bottom: 0.65rem;
-	}
-	h2 {
-		font-size: 1.2rem !important;
-		line-height: 1.12 !important;
-		margin-top: 0.75rem;
-		margin-bottom: 0.5rem;
-	}
+.content h2,
+.content h3,
+.content p,
+.content li {
+	overflow-wrap: break-word;
+}
 
-	/* Hero-specific title override */
-	.hero .title,
-	.title {
-		font-size: clamp(1.25rem, 6vw, 1.9rem) !important;
-		line-height: 1.08 !important;
-		max-width: 100% !important;
-		margin-inline: 0 !important;
-		/* avoid forcing a fixed width that, together with padding, can produce
-		   clipped text when the page has overflow hidden; let the element size
-		   naturally and use safe wrapping */
-		padding-inline: 0.5rem;
-		display: block;
-		width: auto !important;
-		overflow-wrap: anywhere !important; /* break long words when needed */
-		word-break: break-word !important;
-	}
+/* Some older posts include raw Bootstrap HTML with negative margins and fixed
+   columns; inside .content they are flattened so they can't widen the page. */
+.content .container-fluid,
+.content .container,
+.content .row {
+	width: 100%;
+	max-width: 100%;
+	margin-inline: 0;
+	padding-inline: 0;
+}
 
-	/* Ensure the hero block uses full width padding so text doesn't get squeezed */
-	.hero {
-		padding-inline: 0.5rem;
-	}
+.content [class*='col-'] {
+	float: none;
+	width: auto;
+	min-width: 0;
 }

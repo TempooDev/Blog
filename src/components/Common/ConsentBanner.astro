@@ -11,7 +11,8 @@ const t = consentI18n[lang];
 ---
 
 <div class="consent-banner" role="region" aria-label={t.label} hidden data-labels={JSON.stringify({ granted: t.granted, denied: t.denied })}>
-  <p>{t.text} <a href={`/${lang}/cookies/`}>{t.more}</a></p>
+  <p>{t.text}</p>
+  <a class="more" href={`/${lang}/cookies/`}>{t.more}</a>
   <div class="actions">
     <button type="button" data-consent="denied">{t.reject}</button>
     <button type="button" data-consent="granted" class="primary">{t.accept}</button>
@@ -43,8 +44,17 @@ const t = consentI18n[lang];
       document.head.appendChild(s);
     }
 
+    // While the bar is visible the page gets that much extra room at the bottom,
+    // so it never covers the end of the content.
+    function reserveSpace() {
+      var h = banner.hidden ? 0 : banner.offsetHeight + 24;
+      document.documentElement.style.setProperty("--consent-space", h + "px");
+    }
+    if (window.ResizeObserver) new ResizeObserver(reserveSpace).observe(banner);
+
     function render(state) {
       banner.hidden = state === "granted" || state === "denied";
+      reserveSpace();
       document.querySelectorAll("[data-consent-state]").forEach(function (el) {
         el.textContent = state ? labels[state] : "—";
       });
@@ -79,51 +89,94 @@ const t = consentI18n[lang];
 </script>
 
 <style>
+  :global(body) {
+    padding-bottom: var(--consent-space, 0px);
+  }
+
+  /* Small dark bar at the bottom: a card on phones, one row on desktop. */
   .consent-banner {
     position: fixed;
-    inset: auto 1rem 1rem 1rem;
-    z-index: 100;
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-    max-width: 48rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    z-index: 90;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-width: 62rem;
     margin-inline: auto;
-    padding: 1rem 1.25rem;
-    border: 1px solid var(--blue-800);
-    border-radius: 1rem;
-    background: var(--blue-999);
-    box-shadow: var(--shadow-md);
-    color: var(--blue-200);
-    font-size: var(--text-sm);
+    padding: 1rem;
+    border-radius: 8px;
+    background: var(--board);
+    color: var(--board-ink);
+    font-size: 0.9375rem;
+    line-height: 1.45;
+    box-shadow: var(--shadow-lg);
   }
 
   .consent-banner[hidden] {
     display: none;
   }
 
-  .consent-banner a {
+  .consent-banner p {
+    grid-column: 1 / -1;
+  }
+
+  .more {
+    grid-column: 1 / -1;
+    justify-self: start;
+    color: inherit;
+    font-weight: 600;
+    font-size: 0.875rem;
     text-decoration: underline;
   }
 
   .actions {
-    display: flex;
-    gap: 0.5rem;
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
   }
 
   .actions button {
-    padding: 0.5rem 1.25rem;
-    border-radius: 999rem;
-    border: 1px solid var(--blue-800);
+    padding: 0.7rem 1rem 0.6rem;
+    border-radius: 4px;
+    border: 1.5px solid var(--board-ink);
     background: transparent;
-    color: var(--blue-0);
+    color: var(--board-ink);
+    font: inherit;
+    font-weight: 700;
     cursor: pointer;
   }
 
   .actions .primary {
-    background: var(--accent-regular);
-    border-color: var(--accent-regular);
-    color: var(--accent-text-over);
+    border-color: var(--signal);
+    background: var(--signal);
+    color: #121212;
+  }
+
+  @media (min-width: 50em) {
+    .consent-banner {
+      bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      width: max-content;
+      max-width: calc(100% - 3rem);
+      padding: 0.875rem 1rem 0.875rem 1.25rem;
+    }
+
+    .more {
+      white-space: nowrap;
+    }
+
+    .actions {
+      display: flex;
+      flex: none;
+    }
+
+    .actions button {
+      padding: 0.55rem 1rem 0.45rem;
+    }
   }
 </style>

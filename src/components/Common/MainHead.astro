@@ -10,6 +10,7 @@ interface Props {
 	alternateLangs?: Lang[];
 	image?: string | undefined;
 	imageAlt?: string | undefined;
+	imageSize?: { width: number; height: number } | undefined;
 	article?: { publishDate?: Date | undefined; tags: string[] } | undefined;
 	jsonLd?: object[];
 	noindex?: boolean;
@@ -22,6 +23,7 @@ const {
 	alternateLangs = [],
 	image,
 	imageAlt,
+	imageSize,
 	article,
 	jsonLd = [],
 	noindex = false,
@@ -46,6 +48,8 @@ const metaDescription = toMetaDescription(description);
 <meta property="og:url" content={canonicalURL} />
 <meta property="og:image" content={imageURL} />
 {imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+{imageSize && <meta property="og:image:width" content={String(imageSize.width)} />}
+{imageSize && <meta property="og:image:height" content={String(imageSize.height)} />}
 <meta property="og:locale" content={OG_LOCALES[lang]} />
 {
 	alternateLangs
@@ -70,13 +74,11 @@ const metaDescription = toMetaDescription(description);
 {jsonLd.map((data) => <script type="application/ld+json" set:html={JSON.stringify(data).replace(/</g, '\\u003c')} />)}
 
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-<!-- Removed Google Fonts to shorten critical request chain.
-     Tip: self-host minimal WOFF2 variants later (Public Sans 400/700, Rubik 500)
-     with @font-face and optional preload for best LCP. Fallbacks are used now. -->
-<!-- Preload self-hosted fonts to improve LCP -->
-<link rel="preload" href="/fonts/public-sans-400.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/public-sans-700.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="preload" href="/fonts/rubik-500.woff2" as="font" type="font/woff2" crossorigin>
+<!-- Self-hosted variable fonts (scripts/fetch-fonts.mjs) -->
+<link rel="preload" href="/fonts/overpass.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/overpass-mono.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#f4f2ee" media="(prefers-color-scheme: light)" />
+<meta name="theme-color" content="#131211" media="(prefers-color-scheme: dark)" />
 <script is:inline>
 	// This code is inlined in the head to make dark mode instant & blocking.
 	const getThemePreference = () => {

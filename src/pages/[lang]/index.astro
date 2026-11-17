@@ -2,260 +2,686 @@
 import { getCollection } from "astro:content";
 
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LineChip from "@components/Lines/LineChip.astro";
+import LineMap from "@components/Lines/LineMap.astro";
+import NewsletterSignup from "../../components/NewsletterSignup";
 
-import CallToAction from "@components/Common/CallToAction.astro";
-import Grid from "@components/Common/Grid.astro";
-import Hero from "@components/Common/Hero.astro";
-import Icon from "@components/Common/Icon.astro";
-import Pill from "@components/Common/Pill.astro";
-import PortfolioPreview from "@components/Portfolio/PortfolioPreview.astro";
-import ContactCTA from "@components/Common/ContactCTA.astro";
-import Skills from "@components/Common/Skills.astro";
-
-import { SERVICE_PAGES, getLangStaticPaths } from "../../utils/routing";
-import { byPublishDateDesc } from "../../utils/dates";
+import { SERVICE_PAGES, getLangStaticPaths, type Lang } from "../../utils/routing";
+import { LINES, TERMINALS, formatDate, getLine, terminalHref, toStations } from "../../utils/lines";
 import { homeI18n } from "../../i18n/pages/home";
 
 export const getStaticPaths = getLangStaticPaths;
 
-const { lang } = Astro.params;
-const content = homeI18n[lang as keyof typeof homeI18n];
+const lang = Astro.params.lang as Lang;
+const t = homeI18n[lang];
+const servicesHref = SERVICE_PAGES[0][lang]!;
 
-const projects = (
-  await getCollection("work", ({ id }) => {
-    return id.startsWith(`${lang}/`);
-  })
-).sort(byPublishDateDesc);
+const stations = toStations(
+  await getCollection("blog", ({ id }) => id.startsWith(`${lang}/`)),
+); // newest first
+const latest = stations[0];
+const mapStations = stations.slice(0, 5).reverse(); // oldest → newest, left → right
+const mobileStations = stations.slice(0, 4);
+const years = [...new Set(mapStations.map((s) => s.year).filter(Boolean))].sort().join(" – ");
 ---
 
-<BaseLayout title={content.title} description={content.description}>
-  <div class="stack gap-20 lg:gap-48">
-    <div class="wrapper stack gap-8 lg:gap-20">
-      <header class="hero">
-        <Hero
-          title={content.heroTitle}
-          tagline={content.heroTagline}
-          align="start"
-        >
-          <div class="services-link">
-            <p>{content.servicesLine}</p>
-            <CallToAction
-              href={SERVICE_PAGES[0][lang as "es" | "en"]!}
-              data-tempoo-goal="ver_servicio"
-              data-tempoo-goal-pagina={Astro.url.pathname}
-              data-tempoo-goal-destino={SERVICE_PAGES[0][lang as "es" | "en"]!}
-              data-tempoo-goal-posicion="home"
-            >
-              {content.servicesBtn}
-              <Icon icon="arrow-right" size="1.2em" />
-            </CallToAction>
-          </div>
-          <div class="roles">
-            <Pill><Icon icon="code" size="1.33em" /> {content.roles.dev}</Pill>
-            <Pill
-              ><Icon icon="microphone-stage" size="1.33em" />
-              {content.roles.teacher}</Pill
-            >
-            <Pill
-              ><Icon icon="pencil-line" size="1.33em" />
-              {content.roles.arch}</Pill
-            >
-          </div>
-        </Hero>
+<BaseLayout title={t.title} description={t.description}>
+  <main class="wrapper home">
+    <header class="intro">
+      <p class="kicker">
+        {t.network} · {t.fixedLines} · {stations.length} {t.stations}
+      </p>
+      <h1>{t.headline}</h1>
+      <p class="sub">
+        {t.servicesLine}.{" "}
+        <a
+          href={servicesHref}
+          data-tempoo-goal="ver_servicio"
+          data-tempoo-goal-pagina={Astro.url.pathname}
+          data-tempoo-goal-destino={servicesHref}
+          data-tempoo-goal-posicion="home"
+        >{t.servicesBtn} →</a>
+      </p>
+    </header>
 
-        <img
-          alt={content.imgAlt}
-          width="480"
-          height="620"
-          src="/assets/portrait.webp"
-        />
-      </header>
-
-      <Skills lang={lang} />
-    </div>
-
-    <main class="wrapper stack gap-20 lg:gap-48">
-      <section class="section with-background with-cta">
-        <header class="section-header stack gap-2 lg:gap-4">
-          <h2>{content.projectsTitle}</h2>
-          <p>{content.projectsDesc}</p>
-        </header>
-
-        <div class="gallery">
-          <Grid variant="offset">
-            {
-              projects.map((project) => (
-                <li>
-                  <PortfolioPreview project={project} />
-                </li>
-              ))
-            }
-          </Grid>
+    <section class="network" aria-labelledby="latest-title">
+      <div class="map-col">
+        <div class="map-head">
+          <h2 id="latest-title" class="kicker">{t.latest}{years && ` · ${years}`}</h2>
+          <a href={`/${lang}/blog/`}>{t.allStations} →</a>
         </div>
 
-        <div class="cta">
-          <CallToAction href={`/${lang}/work/`}>
-            {content.viewAll}
-            <Icon icon="arrow-right" size="1.2em" />
-          </CallToAction>
+        <div class="map-desktop">
+          <LineMap stations={mapStations} lang={lang} highlight={latest?.post.id} />
         </div>
-      </section>
-    </main>
 
-    <ContactCTA />
-  </div>
+        <!-- Phones: the last stations on one vertical track -->
+        <ol class="mini">
+          {
+            mobileStations.map((s, i) => (
+              <li
+                class:list={[{ transfer: s.lines.length > 1, latest: i === 0 }]}
+                style={s.lines.length === 1 ? `--c:${s.lines[0].color}` : undefined}
+              >
+                <p class="kicker">
+                  {t.station} {s.number}
+                  {s.post.data.publishDate && ` · ${formatDate(s.post.data.publishDate, lang)}`}
+                </p>
+                <a href={s.href}>{s.post.data.title}</a>
+                <p class="mini-meta">
+                  {s.lines.map((l) => (
+                    <LineChip line={l} lang={lang} badgeOnly size="sm" />
+                  ))}
+                  {s.post.data.tags.length > 0 && <span class="mono">{s.post.data.tags.slice(0, 3).join(" · ")}</span>}
+                </p>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+
+      {
+        latest && (
+          <aside class="last-stop" aria-labelledby="last-stop-title">
+            <p class="panel-head">
+              <span>{t.lastStop}</span>
+              <span class="pulse" style={`background:${latest.lines[0]?.color ?? "var(--signal)"}`} />
+            </p>
+            <div class="panel-body">
+              <p class="kicker">{t.station} {latest.number}</p>
+              <h2 id="last-stop-title">
+                <a href={latest.href}>{latest.post.data.title}</a>
+              </h2>
+              {latest.lines.length > 0 && (
+                <p class="chips">
+                  {latest.lines.map((l) => (
+                    <LineChip line={l} lang={lang} />
+                  ))}
+                </p>
+              )}
+              {latest.post.data.tags.length > 0 && (
+                <p class="mono tags">{latest.post.data.tags.slice(0, 4).join("  ·  ")}</p>
+              )}
+              <dl>
+                {latest.post.data.publishDate && (
+                  <div>
+                    <dt>{t.date}</dt>
+                    <dd>{formatDate(latest.post.data.publishDate, lang)}</dd>
+                  </div>
+                )}
+                {latest.post.data.minutes && (
+                  <div>
+                    <dt>{t.reading}</dt>
+                    <dd>{latest.post.data.minutes} min</dd>
+                  </div>
+                )}
+                {latest.lines.length > 0 && (
+                  <div>
+                    <dt>{t.lines}</dt>
+                    <dd>{latest.lines.map((l) => l.code).join(" · ")}</dd>
+                  </div>
+                )}
+              </dl>
+              <a class="button" href={latest.href}>{t.read} →</a>
+            </div>
+          </aside>
+        )
+      }
+    </section>
+
+    <section class="legend" aria-label={t.legendTitle}>
+      <p class="kicker">{t.legendTitle}</p>
+      <div class="legend-chips">
+        {LINES.map((l) => <LineChip line={l} lang={lang} />)}
+      </div>
+      <p class="symbols">
+        <span><span class="sym-transfer" />{t.transfer}</span>
+        <span><span class="sym-terminal" />{t.terminal}</span>
+      </p>
+      <p class="note">{t.legendNote} <span class="mono">.NET · Go · k6 · Azure</span></p>
+    </section>
+
+    <section class="departures" aria-labelledby="departures-title">
+      <p class="kicker dep-kicker">{t.departures}</p>
+      <div class="dep-grid">
+        <dl class="dep-row">
+          <div>
+            <dt>{t.destination}</dt>
+            <dd id="departures-title" class="dest">Newsletter</dd>
+          </div>
+          <div>
+            <dt>{t.frequency}</dt>
+            <dd class="mono freq">{t.everyMonday}</dd>
+          </div>
+          <div>
+            <dt>{t.language}</dt>
+            <dd class="mono">ES / EN</dd>
+          </div>
+        </dl>
+        <p class="dep-text">{t.newsletterText}</p>
+        <div class="dep-form">
+          <NewsletterSignup client:visible lang={lang} variant="board" />
+        </div>
+      </div>
+    </section>
+
+    <section class="terminals" aria-labelledby="terminals-title">
+      <h2 id="terminals-title">{t.terminalsTitle}</h2>
+      <p class="terminals-sub">{t.terminalsText}</p>
+      <ul>
+        {
+          TERMINALS.map((term) => {
+            const line = getLine(term.line);
+            return (
+              <li style={`--c:${line.color}`}>
+                <a href={terminalHref(term, lang)}>
+                  <span class="kicker">
+                    Terminal · {line.code} {line.label[lang]}
+                  </span>
+                  <span class="name">{term.name}</span>
+                  <span class="desc">{term.description[lang]}</span>
+                  <span class="more">{t.viewProject} →</span>
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </section>
+  </main>
 </BaseLayout>
 
 <style>
-  .hero {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 2rem;
+  .home {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 3rem;
+    padding-bottom: 2rem;
   }
 
-  .services-link {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    text-align: start;
-    color: var(--gray-200);
+  .intro .kicker {
+    font-size: 0.75rem;
   }
 
-  .roles {
+  .intro h1 {
+    margin-top: 0.5rem;
+    font-size: clamp(2rem, 1.2rem + 3.3vw, 3.5rem);
+    letter-spacing: -0.02em;
+  }
+
+  .sub {
+    margin-top: 0.75rem;
+    font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.375rem);
+    color: var(--ink-2);
+  }
+
+  .sub a {
+    color: var(--ink);
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  /* --- Map + last stop --------------------------------------------------- */
+  .network {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2.5rem;
+  }
+
+  .map-head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 0.5rem 1rem;
+    margin-bottom: 1.25rem;
+  }
+
+  .map-head h2 {
+    font-size: 0.75rem;
+  }
+
+  .map-head a {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .map-desktop {
     display: none;
   }
 
-  .hero img {
-    aspect-ratio: 5 / 4;
-    object-fit: cover;
-    object-position: top;
-    border-radius: 1.5rem;
-    box-shadow: var(--shadow-md);
-  }
-
-  @media (min-width: 50em) {
-    .hero {
-      display: grid;
-      grid-template-columns: 6fr 4fr;
-      padding-inline: 2.5rem;
-      gap: 3.75rem;
-    }
-
-    .roles {
-      margin-top: 0.5rem;
-      display: flex;
-      gap: 0.5rem;
-    }
-
-    .hero img {
-      aspect-ratio: 3 / 4;
-      border-radius: 4.5rem;
-      object-fit: cover;
-    }
-  }
-
-  /* ====================================================== */
-
-  .section {
-    display: grid;
-    gap: 2rem;
-  }
-
-  .with-background {
+  .mini {
+    --x: 1rem;
     position: relative;
+    list-style: none;
+    padding: 0.5rem 0 0;
   }
 
-  .with-background::before {
-    --hero-bg: var(--bg-image-subtle-2);
-
+  .mini::before {
     content: "";
     position: absolute;
-    pointer-events: none;
-    left: 50%;
-    width: 100vw;
-    aspect-ratio: calc(2.25 / var(--bg-scale));
+    left: calc(var(--x) - var(--track) / 2);
     top: 0;
-    transform: translateY(-75%) translateX(-50%);
-    background:
-      url("/assets/backgrounds/noise.webp") top center/220px repeat,
-      var(--hero-bg) center center / var(--bg-gradient-size) no-repeat,
-      var(--gray-999);
-    background-blend-mode: overlay, normal, normal, normal;
-    mix-blend-mode: var(--bg-blend-mode);
+    bottom: 1rem;
+    width: var(--track);
+    border-radius: 4px;
+    background: var(--ink);
+  }
+
+  .mini li {
+    position: relative;
+    padding-left: 3rem;
+  }
+
+  .mini li + li {
+    margin-top: 1.75rem;
+  }
+
+  .mini li::before {
+    content: "";
+    position: absolute;
+    left: calc(var(--x) - 11px);
+    top: 1.15rem;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: 4px solid var(--c, var(--ink));
+    background: var(--bg);
+  }
+
+  .mini li.transfer::before {
+    border-color: var(--ink);
+  }
+
+  .mini li.latest::after {
+    content: "";
+    position: absolute;
+    left: calc(var(--x) - 24px);
+    top: calc(1.15rem - 13px);
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--l2) 18%, transparent);
     z-index: -1;
   }
 
-  .with-background.bg-variant::before {
-    --hero-bg: var(--bg-image-subtle-1);
+  .mini .kicker {
+    font-size: 0.6875rem;
   }
 
-  .section-header {
-    justify-self: center;
-    text-align: center;
-    max-width: 50ch;
-    font-size: var(--text-md);
-    color: var(--gray-300);
+  .mini a {
+    display: block;
+    margin-top: 0.2rem;
+    font-weight: 700;
+    font-size: 1.1875rem;
+    line-height: 1.25;
+    color: var(--ink);
+    text-decoration: none;
   }
 
-  .section-header h2 {
-    font-size: var(--text-2xl);
-  }
-
-  @media (min-width: 50em) {
-    .section {
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-areas: "header header header header" "gallery gallery gallery gallery";
-      gap: 5rem;
-    }
-
-    .section.with-cta {
-      grid-template-areas: "header header header cta" "gallery gallery gallery gallery";
-    }
-
-    .section-header {
-      grid-area: header;
-      font-size: var(--text-lg);
-    }
-
-    .section-header h2 {
-      font-size: var(--text-4xl);
-    }
-
-    .with-cta .section-header {
-      justify-self: flex-start;
-      text-align: left;
-    }
-
-    .gallery {
-      grid-area: gallery;
-    }
-
-    .cta {
-      grid-area: cta;
-    }
-  }
-
-  /* ====================================================== */
-
-  .mention-card {
+  .mini-meta {
     display: flex;
-    height: 7rem;
-    justify-content: center;
+    flex-wrap: wrap;
     align-items: center;
-    text-align: center;
-    border: 1px solid var(--gray-800);
-    border-radius: 1.5rem;
-    color: var(--gray-300);
-    background: var(--gradient-subtle);
-    box-shadow: var(--shadow-sm);
+    gap: 0.375rem;
+    margin-top: 0.4rem;
+    font-size: 0.6875rem;
+    color: var(--ink-2);
   }
 
-  @media (min-width: 50em) {
-    .mention-card {
-      border-radius: 1.5rem;
-      height: 9.5rem;
+  .last-stop {
+    align-self: start;
+    border: 1px solid var(--sep);
+    background: var(--surface);
+  }
+
+  .panel-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.875rem 1.5rem;
+    background: var(--board);
+    color: var(--board-ink);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.8125rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .pulse {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+
+  .panel-body {
+    display: grid;
+    gap: 0.875rem;
+    padding: 1.5rem;
+  }
+
+  .panel-body .kicker {
+    font-size: 0.75rem;
+  }
+
+  .panel-body h2 {
+    margin-top: -0.25rem;
+    font-size: 1.875rem;
+    line-height: 1.15;
+  }
+
+  .panel-body h2 a {
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .tags {
+    font-size: 0.75rem;
+    color: var(--ink-2);
+  }
+
+  dl {
+    display: grid;
+    gap: 0.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--sep);
+  }
+
+  dl div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+  }
+
+  dt {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+  }
+
+  dd {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  .button {
+    justify-self: start;
+    margin-top: 0.5rem;
+    padding: 0.85rem 1.25rem 0.75rem;
+    border-radius: 4px;
+    background: var(--ink);
+    color: var(--on-ink);
+    font-weight: 700;
+    text-decoration: none;
+  }
+
+  /* --- Legend --------------------------------------------------------------- */
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1.25rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid var(--sep);
+  }
+
+  .legend > .kicker {
+    font-size: 0.75rem;
+    width: 100%;
+  }
+
+  .legend-chips {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+    margin-inline: calc(var(--gutter) * -1);
+    padding-inline: var(--gutter);
+    scrollbar-width: none;
+    width: calc(100% + var(--gutter) * 2);
+  }
+
+  .legend-chips > :global(*) {
+    flex: none;
+  }
+
+  .symbols {
+    display: flex;
+    gap: 1.25rem;
+    font-size: 0.875rem;
+    color: var(--ink-2);
+  }
+
+  .symbols > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .sym-transfer {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 3px solid var(--ink);
+    background: var(--bg);
+  }
+
+  .sym-terminal {
+    width: 6px;
+    height: 20px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+
+  .note {
+    width: 100%;
+    font-size: 0.875rem;
+    color: var(--ink-2);
+  }
+
+  /* --- Departures board (newsletter) ------------------------------------ */
+  .departures {
+    padding: 1.5rem 1.25rem;
+    border-radius: 6px;
+    background: var(--board);
+    color: var(--board-ink);
+  }
+
+  .dep-kicker {
+    color: var(--signal);
+    font-size: 0.75rem;
+  }
+
+  .dep-grid {
+    display: grid;
+    gap: 1rem;
+    margin-top: 1rem;
+  }
+
+  .dep-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    padding: 0;
+    border: 0;
+  }
+
+  .dep-row div {
+    display: block;
+  }
+
+  .dep-row dt {
+    color: #8c8a85;
+    font-size: 0.6875rem;
+  }
+
+  .dep-row dd {
+    margin-top: 0.25rem;
+    font-size: 1.125rem;
+  }
+
+  .dep-row .dest {
+    font-family: var(--font-brand);
+    font-size: 1.75rem;
+    line-height: 1.1;
+  }
+
+  .dep-row div:first-child {
+    width: 100%;
+  }
+
+  .freq {
+    color: var(--signal);
+  }
+
+  .dep-text {
+    color: var(--board-ink-2);
+  }
+
+  .dep-form :global(.newsletter-signup form) {
+    gap: 0.75rem !important;
+  }
+
+  /* --- Terminals -------------------------------------------------------------- */
+  .terminals h2 {
+    font-size: clamp(1.75rem, 1.4rem + 1.2vw, 2.25rem);
+  }
+
+  .terminals-sub {
+    margin-top: 0.375rem;
+    color: var(--ink-2);
+  }
+
+  .terminals ul {
+    list-style: none;
+    padding: 0;
+    display: grid;
+    gap: 1rem;
+    margin-top: 1.75rem;
+  }
+
+  .terminals li a {
+    display: grid;
+    gap: 0.5rem;
+    height: 100%;
+    padding: 1.5rem;
+    border: 1px solid var(--sep);
+    border-top: 8px solid var(--c);
+    background: var(--surface);
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .terminals li a:hover {
+    border-color: var(--ink);
+    border-top-color: var(--c);
+  }
+
+  .terminals .kicker {
+    color: var(--c);
+    font-size: 0.6875rem;
+  }
+
+  .terminals .name {
+    font-weight: 700;
+    font-size: 1.5rem;
+  }
+
+  .terminals .desc {
+    color: var(--ink-2);
+    font-size: 0.9375rem;
+    line-height: 1.5;
+  }
+
+  .terminals .more {
+    margin-top: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  @media (min-width: 60em) {
+    .home {
+      gap: 3.5rem;
+    }
+
+    .map-desktop {
+      display: block;
+    }
+
+    .mini {
+      display: none;
+    }
+
+    .legend > .kicker {
+      width: auto;
+    }
+
+    .legend-chips {
+      overflow: visible;
+      margin: 0;
+      padding: 0;
+      width: auto;
+    }
+
+    .symbols {
+      margin-left: auto;
+    }
+
+    .departures {
+      padding: 2rem;
+    }
+
+    .dep-grid {
+      grid-template-columns: 1fr 1fr;
+      align-items: start;
+      column-gap: 3rem;
+    }
+
+    .dep-row {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr 0.8fr;
+      gap: 1rem;
+      padding-top: 0.75rem;
+      border-top: 1px solid var(--board-sep);
+    }
+
+    .dep-row div:first-child {
+      width: auto;
+    }
+
+    .dep-row .dest {
+      font-size: 2rem;
+    }
+
+    .dep-text {
+      grid-column: 1;
+    }
+
+    .dep-form {
+      grid-column: 2;
+      grid-row: 1 / span 2;
+    }
+
+    .terminals ul {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  @media (min-width: 85em) {
+    .network {
+      grid-template-columns: minmax(0, 1fr) 21.25rem;
+      column-gap: 3.75rem;
     }
   }
 </style>

@@ -44,11 +44,21 @@ export const contactI18n = {
 export const navI18n = {
     en: {
         home: "Home",
-        work: "Work",
+        work: "Projects",
         services: "Services",
         blog: "Blog",
         newsletter: "Newsletter",
         about: "About",
+        mainNav: "Main menu",
+        menu: "Menu",
+        openMenu: "Open menu",
+        closeMenu: "Close menu",
+        here: "You are here",
+        language: "Language",
+        languageNames: { es: "Español", en: "English" },
+        newsletterKicker: "Newsletter · every Monday · ES / EN",
+        newsletterCta: "Subscribe",
+        theme: "Dark theme",
     },
     es: {
         home: "Inicio",
@@ -57,14 +67,34 @@ export const navI18n = {
         blog: "Blog",
         newsletter: "Newsletter",
         about: "Sobre mí",
+        mainNav: "Menú principal",
+        menu: "Menú",
+        openMenu: "Abrir menú",
+        closeMenu: "Cerrar menú",
+        here: "Estás aquí",
+        language: "Idioma",
+        languageNames: { es: "Español", en: "English" },
+        newsletterKicker: "Newsletter · cada lunes · ES / EN",
+        newsletterCta: "Suscribirme",
+        theme: "Tema oscuro",
     },
 };
 
 export const footerI18n = {
     en: {
         copyright: "Antonio Bermúdez Rodríguez",
+        tagline: "Software engineer in Málaga. AI and technology consulting for SMEs and startups.",
+        navigate: "Navigate",
+        lines: "Lines",
+        follow: "Follow",
+        analytics: "Analytics by Tempoo Analytics",
     },
     es: {
         copyright: "Antonio Bermúdez Rodríguez",
+        tagline: "Ingeniero de software en Málaga. Consultoría de IA y tecnología para pymes y startups.",
+        navigate: "Navegar",
+        lines: "Líneas",
+        follow: "Sígueme",
+        analytics: "Analítica con Tempoo Analytics",
     },
 };

@@ -1,0 +1,70 @@
+---
+import type { Line } from "../../utils/lines";
+import type { Lang } from "../../utils/routing";
+
+interface Props {
+  line: Line;
+  lang: Lang;
+  /** Only the colored "L2" badge, without the line name. */
+  badgeOnly?: boolean;
+  size?: "sm" | "md";
+  class?: string;
+}
+
+const { line, lang, badgeOnly = false, size = "md", class: className } = Astro.props;
+---
+
+{
+  badgeOnly ? (
+    <span class:list={["badge", size, className]} style={`--line:${line.color}`} title={line.label[lang]}>
+      {line.code}
+    </span>
+  ) : (
+    <span class:list={["chip", size, className]} style={`--line:${line.color}`}>
+      <span class="badge">{line.code}</span>
+      {line.label[lang]}
+    </span>
+  )
+}
+
+<style>
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.75rem 0.3rem 0.3rem;
+    border: 1px solid var(--sep);
+    border-radius: 999px;
+    background: var(--surface);
+    color: var(--ink);
+    font-weight: 600;
+    font-size: 0.875rem;
+    line-height: 1;
+    white-space: nowrap;
+  }
+
+  .chip.sm {
+    gap: 0.4rem;
+    padding: 0.2rem 0.6rem 0.2rem 0.2rem;
+    font-size: 0.75rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.25rem 0.45rem 0.15rem;
+    border-radius: 999px;
+    background: var(--line);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .chip.sm .badge,
+  .badge.sm {
+    font-size: 0.625rem;
+  }
+</style>
