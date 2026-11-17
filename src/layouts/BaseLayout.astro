@@ -85,18 +85,12 @@ const hreflangs =
   </head>
 
   <body>
-    <div class="stack backgrounds">
+    <div class="stack page">
       <Nav entry={entry} />
       <slot />
       <Footer lang={lang} />
     </div>
     <ConsentBanner lang={lang} />
-
-    <script>
-      addEventListener("load", () =>
-        document.documentElement.classList.add("loaded"),
-      );
-    </script>
 
     <script>
       // Mermaid is large, so it is only downloaded on pages that have diagrams.
@@ -117,90 +111,9 @@ const hreflangs =
     </script>
 
     <style>
-      :root {
-        --_placeholder-bg: linear-gradient(transparent, transparent);
-        --bg-image-main: url("/assets/backgrounds/bg-main-light-800w.webp");
-        --bg-image-main-curves: url("/assets/backgrounds/bg-main-light.svg");
-        --bg-image-subtle-1: var(--_placeholder-bg);
-        --bg-image-subtle-2: var(--_placeholder-bg);
-        --bg-image-footer: var(--_placeholder-bg);
-        --bg-noise: var(--_placeholder-bg); /* lazy load noise texture */
-        --bg-svg-blend-mode: overlay;
-        --bg-blend-mode: darken;
-        --bg-image-aspect-ratio: 2.25;
-        --bg-scale: 1.68;
-        --bg-aspect-ratio: calc(var(--bg-image-aspect-ratio) / var(--bg-scale));
-        --bg-gradient-size: calc(var(--bg-scale) * 100%);
-      }
-
-      :root.theme-dark {
-        --bg-image-main: url("/assets/backgrounds/bg-main-dark-800w.webp");
-        --bg-image-main-curves: url("/assets/backgrounds/bg-main-dark.svg");
-        --bg-svg-blend-mode: darken;
-        --bg-blend-mode: lighten;
-      }
-
-      :root.loaded {
-        --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-light-800w.webp");
-        --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-light-800w.webp");
-        --bg-image-footer: url("/assets/backgrounds/bg-footer-light-800w.webp");
-        --bg-noise: url("/assets/backgrounds/noise.webp");
-      }
-      :root.loaded.theme-dark {
-        --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-dark-800w.webp");
-        --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-dark-800w.webp");
-        --bg-image-footer: url("/assets/backgrounds/bg-footer-dark-800w.webp");
-        --bg-noise: url("/assets/backgrounds/noise.webp");
-      }
-
-      @media (min-width: 50em) {
-        :root {
-          --bg-scale: 1;
-          --bg-image-main: url("/assets/backgrounds/bg-main-light-1440w.webp");
-        }
-        :root.theme-dark {
-          --bg-image-main: url("/assets/backgrounds/bg-main-dark-1440w.webp");
-        }
-
-        :root.loaded {
-          --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-light-1440w.webp");
-          --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-light-1440w.webp");
-          --bg-image-footer: url("/assets/backgrounds/bg-footer-light-1440w.webp");
-        }
-        :root.loaded.theme-dark {
-          --bg-image-subtle-1: url("/assets/backgrounds/bg-subtle-1-dark-1440w.webp");
-          --bg-image-subtle-2: url("/assets/backgrounds/bg-subtle-2-dark-1440w.webp");
-          --bg-image-footer: url("/assets/backgrounds/bg-footer-dark-1440w.webp");
-        }
-      }
-
-      .backgrounds {
-        min-height: 100%;
-        isolation: isolate;
-        background:
-					/*noise*/
-          var(--bg-noise) top center/220px repeat,
-          /*footer*/ var(--bg-image-footer) bottom
-            center/var(--bg-gradient-size) no-repeat,
-          /*header1*/ var(--bg-image-main-curves) top
-            center/var(--bg-gradient-size) no-repeat,
-          /*header2*/ var(--bg-image-main) top center/var(--bg-gradient-size)
-            no-repeat,
-          /*base*/ var(--gray-999);
-        background-blend-mode: /*noise*/
-          overlay,
-          /*footer*/ var(--bg-blend-mode),
-          /*header1*/ var(--bg-svg-blend-mode),
-          /*header2*/ normal,
-          /*base*/ normal;
-      }
-      @media (forced-colors: active) {
-        /* Deactivate custom backgrounds for high contrast users. */
-        .backgrounds {
-          background: none;
-          background-blend-mode: none;
-          --bg-gradient-size: none;
-        }
+      .page {
+        min-height: 100vh;
+        background: var(--bg);
       }
     </style>
   </body>

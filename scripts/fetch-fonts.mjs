@@ -4,8 +4,8 @@ import { dirname, join } from 'node:path';
 const OUT_DIR = 'public/fonts';
 
 const families = [
-  { name: 'Public Sans', query: 'Public+Sans:wght@400;700', fileBase: 'public-sans', weights: [400, 700] },
-  { name: 'Rubik', query: 'Rubik:wght@500', fileBase: 'rubik', weights: [500] },
+  { name: 'Overpass', query: 'Overpass:wght@400;600;700', fileBase: 'overpass', weights: [400, 600, 700] },
+  { name: 'Overpass Mono', query: 'Overpass+Mono:wght@400;700', fileBase: 'overpass-mono', weights: [400, 700] },
 ];
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36';
@@ -32,7 +32,10 @@ function extractFontUrl(block) {
   return all[0] || null;
 }
 
+// Google Fonts serves a single variable file for every weight of these families,
+// so each family is saved once (fileBase.woff2) and @font-face declares the weight range.
 async function processFamily({ name, query, fileBase, weights }) {
+  const saved = new Set();
   const cssUrl = `https://fonts.googleapis.com/css2?family=${query}&display=swap`;
   const css = await fetchText(cssUrl);
   // Split into @font-face blocks
@@ -53,8 +56,10 @@ async function processFamily({ name, query, fileBase, weights }) {
       console.warn(`[warn] No woff2 URL found for ${name} weight ${w}`);
       continue;
     }
+    if (saved.has(url)) continue;
+    saved.add(url);
     const buf = await fetchBuffer(url);
-    const outName = `${fileBase}-${w}.woff2`;
+    const outName = `${fileBase}.woff2`;
     const outPath = join(OUT_DIR, outName);
     await mkdir(dirname(outPath), { recursive: true });
     await writeFile(outPath, buf);
