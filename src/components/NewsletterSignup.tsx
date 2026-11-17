@@ -63,9 +63,9 @@ const languageNames = { es: 'Español', en: 'English' };
 
 const inputStyle: React.CSSProperties = {
     padding: '0.85rem 1rem',
-    borderRadius: '0.75rem',
-    border: '2px solid var(--blue-600)',
-    background: 'var(--blue-800)',
+    borderRadius: '4px',
+    border: '1px solid var(--sep)',
+    background: 'var(--surface)',
     color: 'var(--blue-0)',
     fontFamily: 'inherit',
     fontSize: 'var(--text-md)',
@@ -121,11 +121,10 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
 
     return (
         <section className="newsletter-signup" aria-labelledby="newsletter-title" style={{
-            background: 'rgba(255, 255, 255, 0.03)',
+            background: 'var(--surface)',
             padding: '2rem',
-            borderRadius: '1.5rem',
-            border: '1px solid var(--blue-700)',
-            boxShadow: 'var(--shadow-md)',
+            borderRadius: '6px',
+            border: '1px solid var(--sep)',
         }}>
             <h2 id="newsletter-title" style={{ color: 'var(--blue-0)', marginBottom: '0.75rem', fontSize: 'var(--text-xl)' }}>{t.title}</h2>
             <p style={{ color: 'var(--blue-200)', marginBottom: '1.5rem' }}>{t.text}</p>
@@ -135,8 +134,8 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                     marginBottom: '1.5rem',
                     background: 'var(--accent-overlay)',
                     color: 'var(--blue-0)',
-                    borderRadius: '0.75rem',
-                    border: '1px solid var(--accent-regular)',
+                    borderRadius: '4px',
+                    border: '1px solid var(--sep)',
                     fontSize: 'var(--text-sm)',
                 }}>
                     {message}
@@ -169,10 +168,10 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                     </select>
                     <button type="submit" disabled={sending} style={{
                         padding: '0.85rem 1.75rem',
-                        background: 'var(--accent-regular)',
-                        color: 'white',
+                        background: 'var(--ink)',
+                        color: 'var(--on-ink)',
                         border: 'none',
-                        borderRadius: '999rem',
+                        borderRadius: '4px',
                         cursor: sending ? 'wait' : 'pointer',
                         fontWeight: '600',
                         fontSize: 'var(--text-md)',
@@ -191,7 +190,7 @@ export default function NewsletterSignup({ lang = 'en', apiBase = import.meta.en
                     onChange={e => setWebsite(e.target.value)}
                     style={{ position: 'absolute', left: '-10000px', width: '1px', height: '1px', opacity: 0 }}
                 />
-                <label style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: 'var(--text-sm)', color: 'var(--gray-400)' }}>
+                <label style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', fontSize: 'var(--text-sm)', color: 'var(--ink-2)' }}>
                     <input type="checkbox" checked={consent} onChange={e => setConsent(e.target.checked)} required style={{ marginTop: '0.2rem' }} />
                     <span>
                         {t.consent} <a href={`/${currentLang}/privacy/`} style={{ textDecoration: 'underline' }}>{t.privacyLink}</a>.
