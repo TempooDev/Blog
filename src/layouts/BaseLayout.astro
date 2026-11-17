@@ -24,7 +24,9 @@ const { title, description, entry, noindex = false, jsonLd: pageJsonLd } = Astro
 const lang = getLangFromPath(Astro.url.pathname) ?? DEFAULT_LANG;
 const alternates = await getAlternatePaths(Astro.url.pathname, entry);
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
-const image: string | undefined = entry?.data.img || undefined;
+// Posts use their generated cover (src/pages/og); other entries keep their image from Directus.
+const isPost = entry?.collection === "blog";
+const image: string | undefined = isPost ? `/og/${entry.id}.png` : entry?.data.img || undefined;
 const isHome = Astro.url.pathname === `/${lang}/`;
 const jsonLd = pageJsonLd ?? (entry
   ? getEntryJsonLd(entry, canonicalURL, lang, new URL(image ?? DEFAULT_IMAGE, Astro.site).href)
@@ -50,7 +52,8 @@ const hreflangs =
       lang={lang}
       alternateLangs={Object.keys(alternates) as (keyof typeof alternates)[]}
       image={image}
-      imageAlt={entry ? entry.data.img_alt || entry.data.title : undefined}
+      imageAlt={entry ? (isPost ? entry.data.title : entry.data.img_alt || entry.data.title) : undefined}
+      imageSize={isPost ? { width: 1600, height: 840 } : undefined}
       article={entry ? { publishDate: entry.data.publishDate, tags: entry.data.tags } : undefined}
       jsonLd={jsonLd}
       noindex={noindex}
