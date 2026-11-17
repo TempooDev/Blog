@@ -1,0 +1,202 @@
+---
+/**
+ * Schematic map of the latest stations. Each line present gets a horizontal lane
+ * (in the fixed order L1…L5), stations sit on columns in publication order, and a
+ * post with two lines is a transfer: one pill joining both lanes. Lines with a
+ * project continue to the right edge, where the terminal is drawn.
+ * Everything is placed in % of the width so it is generated from the CMS data.
+ */
+import { LINES, TERMINALS, terminalHref, type Station } from "../../utils/lines";
+import type { Lang } from "../../utils/routing";
+
+interface Props {
+  stations: Station[]; // oldest first
+  lang: Lang;
+  /** Station drawn with a halo (the latest one). */
+  highlight?: string;
+}
+
+const { stations, lang, highlight } = Astro.props;
+
+const LANE_GAP = 112;
+const TOP = 28;
+const COLS_WIDTH = 72; // % of the width for the columns; the rest is for terminals
+
+const usedIds = new Set(stations.flatMap((s) => s.post.data.lines));
+// Posts without lines (Directus without the field yet) share a neutral ink lane.
+const hasPlain = stations.some((s) => s.lines.length === 0);
+const lanes = [
+  ...LINES.filter((l) => usedIds.has(l.id)).map((l) => ({ id: l.id as string, line: l, color: l.color })),
+  ...(hasPlain ? [{ id: "", line: undefined, color: "var(--ink)" }] : []),
+];
+const laneY = (id: string) => TOP + lanes.findIndex((l) => l.id === id) * LANE_GAP;
+const colX = (i: number) => ((i + 0.5) / stations.length) * COLS_WIDTH;
+
+const placed = stations.map((s, i) => {
+  const ids = s.lines.length ? s.post.data.lines : [""];
+  const ys = ids.map(laneY).sort((a, b) => a - b);
+  return { s, x: colX(i), top: ys[0], bottom: ys[ys.length - 1], transfer: ids.length > 1, ids };
+});
+
+const segments = lanes.map((lane) => {
+  const on = placed.filter((p) => p.ids.includes(lane.id));
+  const terminal = TERMINALS.find((t) => t.line === lane.id);
+  const from = Math.max(0, Math.min(...on.map((p) => p.x)) - 4);
+  const to = terminal ? 97 : Math.min(100, Math.max(...on.map((p) => p.x)) + 4);
+  return { lane, y: laneY(lane.id), from, to, terminal };
+});
+
+const height = TOP + (lanes.length - 1) * LANE_GAP + 96;
+---
+
+<div class="map" style={`height:${height}px`} role="img" aria-hidden="true">
+  <svg class="lines" width="100%" height={height} preserveAspectRatio="none" viewBox={`0 0 100 ${height}`}>
+    {
+      segments.map(({ lane, y, from, to }) => (
+        <line
+          x1={from}
+          x2={to}
+          y1={y}
+          y2={y}
+          stroke={lane.color}
+          stroke-width="8"
+          stroke-linecap="round"
+          vector-effect="non-scaling-stroke"
+        />
+      ))
+    }
+  </svg>
+
+  {
+    segments.map(({ lane, y, terminal }) =>
+      terminal ? (
+        <>
+          <span class="end-bar" style={`left:97%;top:${y}px`} />
+          <a class="terminal" style={`top:${y - 46}px;--c:${lane.color}`} href={terminalHref(terminal, lang)} tabindex="-1">
+            <span class="kicker">Terminal · {lane.line?.code}</span>
+            <span class="name">{terminal.name}</span>
+          </a>
+        </>
+      ) : null,
+    )
+  }
+
+  {
+    placed.map(({ s, x, top, bottom, transfer }) => (
+      <>
+        {s.post.id === highlight && (
+          <span
+            class="halo"
+            style={`left:${x}%;top:${(top + bottom) / 2}px;height:${bottom - top + 52}px;--c:${s.lines[0]?.color ?? "var(--ink)"}`}
+          />
+        )}
+        <span
+          class:list={["stop", { transfer }]}
+          style={`left:${x}%;top:${top - (transfer ? 15 : 12)}px;height:${bottom - top + (transfer ? 30 : 24)}px;--r:${transfer ? 15 : 12}px;--c:${s.lines[0]?.color ?? "var(--ink)"}`}
+        />
+        <a class="label" href={s.href} style={`left:${x}%;top:${bottom + 22}px;width:calc(${COLS_WIDTH / stations.length}% - 10px)`} tabindex="-1">
+          <span class="num">{s.number}</span>
+          <span class="title">{s.post.data.title}</span>
+        </a>
+      </>
+    ))
+  }
+</div>
+
+<style>
+  .map {
+    position: relative;
+    width: 100%;
+  }
+
+  .lines {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    overflow: visible;
+  }
+
+  .stop {
+    position: absolute;
+    width: calc(var(--r) * 2);
+    margin-left: calc(var(--r) * -1);
+    border-radius: 999px;
+    border: 4px solid var(--c);
+    background: var(--bg);
+  }
+
+  .stop.transfer {
+    border-color: var(--ink);
+  }
+
+  .halo {
+    position: absolute;
+    width: 52px;
+    margin-left: -26px;
+    transform: translateY(-50%);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--c) 20%, transparent);
+  }
+
+  .end-bar {
+    position: absolute;
+    width: 8px;
+    height: 32px;
+    margin: -16px 0 0 -4px;
+    border-radius: 2px;
+    background: var(--ink);
+  }
+
+  .terminal {
+    position: absolute;
+    right: 0;
+    display: grid;
+    justify-items: end;
+    text-align: right;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .terminal .kicker {
+    color: var(--c);
+    font-size: 0.6875rem;
+  }
+
+  .terminal .name {
+    font-weight: 700;
+    font-size: 0.9375rem;
+  }
+
+  .label {
+    position: absolute;
+    margin-left: -12px;
+    display: grid;
+    gap: 0.2rem;
+    color: var(--ink);
+    text-decoration: none;
+  }
+
+  .label:hover .title {
+    text-decoration: underline;
+  }
+
+  .num {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 0.6875rem;
+    letter-spacing: 0.08em;
+    color: var(--ink-2);
+  }
+
+  .title {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    font-weight: 600;
+    font-size: 0.8125rem;
+    line-height: 1.3;
+  }
+</style>
