@@ -11,7 +11,8 @@ on:
 jobs:
   deploy:
     if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule' || github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
+    # Pinned: ubuntu-latest moved to 26.04, where Playwright 1.58 cannot install Chromium (needed by Mermaid).
+    runs-on: ubuntu-24.04
     environment: PROD
     permissions:
       contents: read
