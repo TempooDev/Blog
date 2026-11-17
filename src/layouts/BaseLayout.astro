@@ -61,6 +61,7 @@ const hreflangs =
       ))
     }
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title="Antonio Bermúdez · Blog" href={`/${lang}/rss.xml`} />
     <script is:inline>
       (function () {
         try {
@@ -86,7 +87,11 @@ const hreflangs =
 
   <body>
     <div class="stack page">
-      <Nav entry={entry} />
+      <Nav
+        lang={lang}
+        alternates={alternates}
+        fallbackSection={entry ? (entry.collection === "blog" ? "blog" : entry.collection) : undefined}
+      />
       <slot />
       <Footer lang={lang} />
     </div>
