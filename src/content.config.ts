@@ -1,15 +1,30 @@
 import { defineCollection, z } from 'astro:content';
 
+const DIRECTUS_URL = process.env.PUBLIC_DIRECTUS_URL || 'http://127.0.0.1:8055';
+// Build-time only token (never PUBLIC_*, so it never reaches the browser). The Public role can't
+// read posts, work or digests, so drafts stay private; the build reads them with this token.
+const DIRECTUS_TOKEN = process.env.DIRECTUS_TOKEN || '';
+
+// Only published items: drafts never leave Directus, not even into the build.
+const fetchPublished = (collection) => {
+  const query = new URLSearchParams({ limit: '-1', 'filter[status][_eq]': 'published' });
+  return fetch(`${DIRECTUS_URL}/items/${collection}?${query}`, {
+    headers: DIRECTUS_TOKEN ? { Authorization: `Bearer ${DIRECTUS_TOKEN}` } : {},
+  });
+};
+
 const directusLoader = (configOrCollection) => {
   const collection = typeof configOrCollection === 'string' ? configOrCollection : configOrCollection.collection;
   return {
     name: `directus-${collection}`,
     load: async ({ store, logger, parseData, renderMarkdown }) => {
-      const DIRECTUS_URL = process.env.PUBLIC_DIRECTUS_URL || 'http://127.0.0.1:8055';
-      const response = await fetch(`${DIRECTUS_URL}/items/${collection}?limit=-1`);
-      
+      const response = await fetchPublished(collection);
+
       if (!response.ok) {
-        throw new Error(`Failed to fetch ${collection} from Directus: ${response.statusText}`);
+        const hint = response.status === 401 || response.status === 403
+          ? ' (check the DIRECTUS_TOKEN secret: it needs read access to this collection)'
+          : '';
+        throw new Error(`Failed to fetch ${collection} from Directus: ${response.status} ${response.statusText}${hint}`);
       }
       
       const data = await response.json();
@@ -54,8 +69,12 @@ const digestsLoader = () => ({
   load: async ({ store, logger, renderMarkdown }) => {
     // Start from scratch so unpublished or deleted issues don't linger in the content cache
     store.clear();
-    const DIRECTUS_URL = process.env.PUBLIC_DIRECTUS_URL || 'http://127.0.0.1:8055';
-    const response = await fetch(`${DIRECTUS_URL}/items/digests?limit=-1`);
+    const response = await fetchPublished('digests');
+    // With a token, a refusal means the token is misconfigured: fail instead of silently
+    // publishing the site without its newsletter issues (the Monday send waits for those pages).
+    if (DIRECTUS_TOKEN && (response.status === 401 || response.status === 403)) {
+      throw new Error(`Failed to fetch digests from Directus: ${response.status} ${response.statusText} (check the DIRECTUS_TOKEN secret: it needs read access to digests)`);
+    }
     if (!response.ok) {
       logger.warn(`Skipping newsletter issues, Directus answered ${response.status} ${response.statusText}`);
       return;
