@@ -115,51 +115,53 @@ const roleLabel = { prev: t.previous, current: t.here, next: t.next };
     </header>
 
     <aside class="rail">
-      <nav aria-label={primary ? `${t.line} ${primary.code}` : t.allLines}>
-        <p class="kicker rail-title">{primary ? `${t.line} ${primary.code} · ${primary.label[lang]}` : t.allLines}</p>
-        <ol class="rail-track">
+      <div class="rail-sticky">
+        <nav aria-label={primary ? `${t.line} ${primary.code}` : t.allLines}>
+          <p class="kicker rail-title">{primary ? `${t.line} ${primary.code} · ${primary.label[lang]}` : t.allLines}</p>
+          <ol class="rail-track">
+            {
+              railStations.map(({ s, role }) =>
+                s ? (
+                  <li class:list={[role, { transfer: s.lines.length > 1 }]}>
+                    {role === "current" ? (
+                      <span class="rail-link" aria-current="page">
+                        <span class="kicker">{roleLabel[role]} · {s.number}</span>
+                        <span class="rail-name">{s.post.data.title}</span>
+                      </span>
+                    ) : (
+                      <a class="rail-link" href={s.href}>
+                        <span class="kicker">{roleLabel[role]} · {s.number}</span>
+                        <span class="rail-name">{s.post.data.title}</span>
+                      </a>
+                    )}
+                  </li>
+                ) : null,
+              )
+            }
+          </ol>
           {
-            railStations.map(({ s, role }) =>
-              s ? (
-                <li class:list={[role, { transfer: s.lines.length > 1 }]}>
-                  {role === "current" ? (
-                    <span class="rail-link" aria-current="page">
-                      <span class="kicker">{roleLabel[role]} · {s.number}</span>
-                      <span class="rail-name">{s.post.data.title}</span>
-                    </span>
-                  ) : (
-                    <a class="rail-link" href={s.href}>
-                      <span class="kicker">{roleLabel[role]} · {s.number}</span>
-                      <span class="rail-name">{s.post.data.title}</span>
-                    </a>
-                  )}
-                </li>
-              ) : null,
+            secondary && (
+              <p class="rail-transfer">
+                <span>{t.transferHere}</span>
+                <LineChip line={secondary} lang={lang} size="sm" />
+              </p>
             )
           }
-        </ol>
+        </nav>
+
         {
-          secondary && (
-            <p class="rail-transfer">
-              <span>{t.transferHere}</span>
-              <LineChip line={secondary} lang={lang} size="sm" />
-            </p>
+          toc.length > 1 && (
+            <nav class="toc" aria-label={t.toc}>
+              <p class="kicker">{t.toc}</p>
+              <ol>
+                {toc.map(({ id, text }) => (
+                  <li><a href={`#${id}`}>{text}</a></li>
+                ))}
+              </ol>
+            </nav>
           )
         }
-      </nav>
-
-      {
-        toc.length > 1 && (
-          <nav class="toc" aria-label={t.toc}>
-            <p class="kicker">{t.toc}</p>
-            <ol>
-              {toc.map(({ id, text }) => (
-                <li><a href={`#${id}`}>{text}</a></li>
-              ))}
-            </ol>
-          </nav>
-        )
-      }
+      </div>
     </aside>
 
     <main class="body">
@@ -605,9 +607,15 @@ const roleLabel = { prev: t.previous, current: t.here, next: t.next };
       padding-top: 2.75rem;
     }
 
-    .rail > * {
+    /* Un único bloque sticky: si cada hijo fuera sticky por separado,
+       al hacer scroll se pegarían todos en el mismo punto y se solaparían. */
+    .rail-sticky {
       position: sticky;
       top: 2rem;
+      max-height: calc(100vh - 4rem);
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
     }
 
     .rail-title {
