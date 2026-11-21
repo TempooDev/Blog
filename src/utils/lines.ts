@@ -30,8 +30,8 @@ export const TERMINALS: {
         name: "Tempoo Analytics",
         href: "https://tempooanalytics.eu/",
         description: {
-            es: "Analítica web propia, sin cookies. API pública y servidor MCP en camino.",
-            en: "My own cookie-free web analytics. Public API and MCP server on the way.",
+            es: "Analítica web propia, sin cookies y de código abierto. Con API pública y servidor MCP.",
+            en: "My own cookie-free, open source web analytics. With a public API and MCP server.",
         },
     },
     {
